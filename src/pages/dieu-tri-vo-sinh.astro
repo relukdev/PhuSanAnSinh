@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import InlinePhoneCapture from "../components/InlinePhoneCapture.astro";
 import "../styles/global.css";
 import "../styles/landing.css";
 import reviewsData from "../data/reviews.json";
@@ -85,6 +86,11 @@ const faqs = [
                     Hành trình tuy gian nan nhưng có bác sĩ tận tâm đồng hành —
                     mọi thứ đều có thể.
                 </p>
+                <InlinePhoneCapture
+                    formType="vo-sinh"
+                    heading="Đặt lịch tư vấn vô sinh chỉ 30 giây"
+                    subheading="Bác sĩ chuyên khoa đồng hành cùng bạn"
+                />
                 <div class="landing-hero-actions">
                     <a
                         href="https://phusanansinh.com/dat-lich-hen-kham.html"

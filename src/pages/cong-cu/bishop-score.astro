@@ -1,0 +1,228 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+---
+
+<BaseLayout
+    title="Bishop Score — Đánh Giá Cổ Tử Cung | Phòng Khám An Sinh"
+    description="Công cụ tính Bishop Score đánh giá độ chín muồi cổ tử cung trước khởi phát chuyển dạ. Theo ACOG PB 107 & SOGC 432c. Miễn phí."
+>
+    <section class="hero tool-hero"><div class="container"><div class="tool-hero-content">
+        <span class="section-label">Công cụ miễn phí</span>
+        <h1>Bishop <span class="text-accent-color">Score</span></h1>
+        <p class="hero-sub">Đánh giá độ chín muồi cổ tử cung trước khởi phát chuyển dạ. Theo tiêu chuẩn Bishop (1964), ACOG PB 107 & SOGC 432c.</p>
+    </div></div></section>
+
+    <section class="section" id="calculator"><div class="container"><div class="calc-layout">
+        <div class="calc-form-panel">
+            <div class="card calc-card">
+                <h2 class="calc-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                    Đánh giá 5 thông số cổ tử cung
+                </h2>
+                <form id="bishop-form" novalidate>
+                    <!-- Dilation -->
+                    <div class="form-group"><label class="form-label">1. Độ mở cổ tử cung (cm)</label>
+                        <div class="score-chips" data-param="dilation">
+                            <button type="button" class="score-chip is-active" data-score="0">0 cm <small>(đóng kín)</small></button>
+                            <button type="button" class="score-chip" data-score="1">1-2 cm</button>
+                            <button type="button" class="score-chip" data-score="2">3-4 cm</button>
+                            <button type="button" class="score-chip" data-score="3">≥ 5 cm</button>
+                        </div>
+                    </div>
+                    <!-- Effacement -->
+                    <div class="form-group"><label class="form-label">2. Độ xóa (Effacement %)</label>
+                        <div class="score-chips" data-param="effacement">
+                            <button type="button" class="score-chip is-active" data-score="0">0-30%</button>
+                            <button type="button" class="score-chip" data-score="1">40-50%</button>
+                            <button type="button" class="score-chip" data-score="2">60-70%</button>
+                            <button type="button" class="score-chip" data-score="3">≥ 80%</button>
+                        </div>
+                    </div>
+                    <!-- Station -->
+                    <div class="form-group"><label class="form-label">3. Độ lọt (Station)</label>
+                        <div class="score-chips" data-param="station">
+                            <button type="button" class="score-chip is-active" data-score="0">-3</button>
+                            <button type="button" class="score-chip" data-score="1">-2</button>
+                            <button type="button" class="score-chip" data-score="2">-1 / 0</button>
+                            <button type="button" class="score-chip" data-score="3">+1 / +2</button>
+                        </div>
+                    </div>
+                    <!-- Consistency -->
+                    <div class="form-group"><label class="form-label">4. Mật độ cổ tử cung</label>
+                        <div class="score-chips" data-param="consistency">
+                            <button type="button" class="score-chip is-active" data-score="0">Cứng (firm)</button>
+                            <button type="button" class="score-chip" data-score="1">Trung bình</button>
+                            <button type="button" class="score-chip" data-score="2">Mềm (soft)</button>
+                        </div>
+                    </div>
+                    <!-- Position -->
+                    <div class="form-group"><label class="form-label">5. Vị trí cổ tử cung</label>
+                        <div class="score-chips" data-param="position">
+                            <button type="button" class="score-chip is-active" data-score="0">Sau (posterior)</button>
+                            <button type="button" class="score-chip" data-score="1">Giữa (mid)</button>
+                            <button type="button" class="score-chip" data-score="2">Trước (anterior)</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group bishop-divider"><label class="form-label">Thông tin bổ sung (cho khuyến cáo)</label>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item"><input type="checkbox" id="bishop-multipara" /><span>Con rạ (đã sinh ≥1 lần)</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="bishop-prev-cs" /><span>Tiền sử mổ lấy thai</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="bishop-rom" /><span>Ối đã vỡ (ROM)</span></label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-accent btn-lg calc-submit">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Tính Bishop Score
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="calc-results-panel" id="results-panel" hidden>
+            <div class="card bishop-score-card">
+                <div class="bishop-score-display">
+                    <div class="bishop-total" id="bishop-total">0</div>
+                    <div class="bishop-max">/ 13</div>
+                </div>
+                <div class="bishop-classification" id="bishop-class">—</div>
+                <div class="bishop-breakdown" id="bishop-breakdown"></div>
+            </div>
+            <div class="card" id="induction-card" hidden>
+                <h3>💊 Khuyến cáo phương pháp khởi phát</h3>
+                <div id="induction-recs"></div>
+            </div>
+        </div>
+    </div></div></section>
+
+    <section class="section section-alt"><div class="container">
+        <div class="section-header"><span class="section-label">Câu hỏi thường gặp</span><h2>Bishop Score là gì?</h2></div>
+        <div class="faq-list">
+            <details class="faq-item"><summary class="faq-question">Bishop Score dùng để làm gì?</summary><div class="faq-answer"><p>Bishop Score đánh giá mức độ "sẵn sàng" của cổ tử cung cho khởi phát chuyển dạ. Điểm ≥ 6 = cổ tử cung thuận lợi (favorable), có thể khởi phát bằng bấm ối + oxytocin. Điểm < 6 = cần làm chín muồi cổ tử cung trước.</p></div></details>
+            <details class="faq-item"><summary class="faq-question">Các phương pháp khởi phát chuyển dạ?</summary><div class="faq-answer"><p>Bishop thuận lợi (≥6): Bấm ối + Oxytocin. Bishop không thuận lợi (<6): Dinoprostone (Cervidil/Prepidil), Misoprostol, hoặc bóng Foley. Lựa chọn phụ thuộc tiền sử sản khoa, tình trạng ối, và chống chỉ định.</p></div></details>
+        </div>
+    </div></section>
+
+    <section class="section cta-section"><div class="container"><div class="cta-content">
+        <h2>Cần tư vấn về khởi phát chuyển dạ?</h2>
+        <div class="cta-actions">
+            <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-thai">Đặt Lịch Khám</button>
+            <a href="tel:0899268299" class="btn btn-outline btn-lg">Gọi: 0899 268 299</a>
+        </div>
+    </div></div></section>
+
+    <section class="disclaimer-section"><div class="container"><p class="disclaimer-text"><strong>Lưu ý y khoa:</strong> Bishop Score theo Bishop (1964), ACOG PB 107, SOGC 432c. Không thay thế đánh giá lâm sàng của bác sĩ sản khoa.</p></div></section>
+
+    <style>
+        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
+        .tool-hero-content { max-width: 700px; margin: 0 auto; }
+        .tool-hero h1 { margin-bottom: var(--space-lg); }
+        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
+        .calc-layout { display: grid; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
+        .calc-card { position: static; }
+        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
+        .form-group { margin-bottom: var(--space-xl); }
+        .form-label { display: block; font-weight: 600; font-size: .9375rem; margin-bottom: var(--space-sm); }
+        .calc-submit { width: 100%; }
+        .score-chips { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+        .score-chip { padding: .625rem .875rem; border-radius: var(--radius-md); border: 1.5px solid var(--border); background: var(--surface); font-size: .8125rem; font-weight: 500; cursor: pointer; transition: all var(--transition-fast); color: var(--text-secondary); font-family: var(--font-body); flex: 1; text-align: center; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .score-chip:hover { border-color: var(--primary); color: var(--primary); }
+        .score-chip.is-active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .score-chip small { font-size: .6875rem; opacity: .8; display: block; }
+        .checkbox-grid { display: grid; gap: var(--space-sm); }
+        .checkbox-item { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; font-size: .875rem; min-height: 44px; }
+        .checkbox-item:hover { border-color: var(--primary); }
+        .checkbox-item input { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
+        .bishop-divider { border-top: 1px solid var(--border); padding-top: var(--space-xl); margin-top: var(--space-lg); }
+
+        .bishop-score-card { text-align: center; padding: var(--space-2xl); }
+        .bishop-score-display { display: flex; align-items: baseline; justify-content: center; gap: var(--space-xs); }
+        .bishop-total { font-size: 4rem; font-weight: 800; line-height: 1; }
+        .bishop-max { font-size: 1.5rem; color: var(--text-muted); font-weight: 400; }
+        .bishop-classification { font-size: 1.125rem; font-weight: 600; padding: var(--space-sm) var(--space-xl); border-radius: var(--radius-full); display: inline-block; margin: var(--space-lg) 0; }
+        .bishop-classification.favorable { background: #f0fdf4; color: var(--success); }
+        .bishop-classification.unfavorable { background: #fef2f2; color: var(--error); }
+        .bishop-breakdown { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-sm); margin-top: var(--space-xl); }
+        .bishop-param { text-align: center; padding: var(--space-sm); border-radius: var(--radius-md); background: var(--surface-alt); }
+        .bishop-param-label { font-size: .6875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; display: block; }
+        .bishop-param-score { font-size: 1.25rem; font-weight: 700; margin-top: 2px; }
+        #induction-recs { font-size: .875rem; line-height: 1.7; }
+        .induction-method { padding: var(--space-md); border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: var(--space-sm); }
+        .induction-method-name { font-weight: 600; margin-bottom: 4px; }
+        .induction-method-dosage { font-size: .8125rem; color: var(--text-secondary); }
+        @media (max-width: 640px) { .score-chips { flex-wrap: wrap; } .bishop-breakdown { grid-template-columns: repeat(3, 1fr); } }
+    </style>
+
+    <script>
+        import { calcBishopScore, classifyBishop, getInductionMethods } from '../../utils/bishop-score-calc.js';
+
+        const scores = { dilation: 0, effacement: 0, station: 0, consistency: 0, position: 0 };
+
+        document.querySelectorAll('.score-chips').forEach(group => {
+            group.addEventListener('click', (e) => {
+                const chip = e.target.closest('.score-chip');
+                if (!chip) return;
+                group.querySelectorAll('.score-chip').forEach(c => c.classList.remove('is-active'));
+                chip.classList.add('is-active');
+                const param = group.dataset.param;
+                scores[param] = parseInt(chip.dataset.score);
+            });
+        });
+
+        document.getElementById('bishop-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const total = calcBishopScore(scores);
+            const multipara = document.getElementById('bishop-multipara').checked;
+            const parity = multipara ? 'multiparous' : 'nulliparous';
+            const classification = classifyBishop(total, parity);
+            const prevCs = document.getElementById('bishop-prev-cs').checked;
+            const rom = document.getElementById('bishop-rom').checked;
+            const recs = getInductionMethods({ score: total, parity, hasPriorCS: prevCs, hasROM: rom });
+
+            displayResults(total, classification, recs, scores);
+        });
+
+        function displayResults(total, classification, recs, params) {
+            const panel = document.getElementById('results-panel');
+            if (panel) panel.hidden = false;
+
+            const totalEl = document.getElementById('bishop-total');
+            if (totalEl) {
+                totalEl.textContent = total;
+                totalEl.style.color = classification.meetsThreshold ? 'var(--success)' : 'var(--error)';
+            }
+
+            const classEl = document.getElementById('bishop-class');
+            if (classEl) {
+                classEl.textContent = `${classification.emoji} ${classification.label}`;
+                classEl.className = `bishop-classification ${classification.meetsThreshold ? 'favorable' : 'unfavorable'}`;
+            }
+
+            const PARAM_LABELS = { dilation: 'Độ mở', effacement: 'Xóa', station: 'Lọt', consistency: 'Mật độ', position: 'Vị trí' };
+            const breakdownEl = document.getElementById('bishop-breakdown');
+            if (breakdownEl) {
+                breakdownEl.innerHTML = Object.entries(params).map(([key, val]) =>
+                    `<div class="bishop-param"><span class="bishop-param-label">${PARAM_LABELS[key]}</span><span class="bishop-param-score">${val}</span></div>`
+                ).join('');
+            }
+
+            const inductionCard = document.getElementById('induction-card');
+            const inductionRecs = document.getElementById('induction-recs');
+            if (inductionCard && recs) {
+                inductionCard.hidden = false;
+                let html = '';
+                if (recs.warnings && recs.warnings.length) {
+                    html += recs.warnings.map(w => `<div style="padding:8px 12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;margin-bottom:8px;font-size:.875rem">${w}</div>`).join('');
+                }
+                if (recs.methods && recs.methods.length) {
+                    html += recs.methods.map(m => `<div class="induction-method"><div class="induction-method-name">${m.name}</div><div class="induction-method-dosage">${m.detail || ''}</div></div>`).join('');
+                }
+                if (inductionRecs) inductionRecs.innerHTML = html;
+            }
+
+            panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</BaseLayout>

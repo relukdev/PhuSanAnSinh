@@ -1,0 +1,184 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+---
+
+<BaseLayout
+    title="Dự Đoán Đái Tháo Đường Thai Kỳ — FMF & Iowa | An Sinh"
+    description="Công cụ đánh giá nguy cơ đái tháo đường thai kỳ (GDM) theo mô hình FMF (Syngelaki 2014), PersonalGDM (Monash 2022) và Iowa (Donovan 2019). Miễn phí."
+>
+    <section class="hero tool-hero"><div class="container"><div class="tool-hero-content">
+        <span class="section-label">Công cụ miễn phí</span>
+        <h1>Dự Đoán <span class="text-accent-color">ĐTĐ Thai Kỳ</span></h1>
+        <p class="hero-sub">Đánh giá nguy cơ đái tháo đường thai kỳ (GDM) theo 3 mô hình quốc tế: FMF, PersonalGDM Outcomes, và Iowa Nulliparous.</p>
+    </div></div></section>
+
+    <section class="section" id="calculator"><div class="container"><div class="calc-layout">
+        <div class="calc-form-panel">
+            <div class="card calc-card">
+                <h2 class="calc-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    Nhập thông tin
+                </h2>
+                <form id="gdm-form" novalidate>
+                    <div class="form-row">
+                        <div class="form-group"><label for="gdm-age" class="form-label">Tuổi mẹ</label><input type="number" id="gdm-age" class="form-input" placeholder="vd: 30" min="14" max="55" required inputmode="numeric" /></div>
+                        <div class="form-group"><label for="gdm-height" class="form-label">Chiều cao (cm)</label><input type="number" id="gdm-height" class="form-input" placeholder="vd: 160" min="120" max="210" inputmode="numeric" /></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label for="gdm-weight" class="form-label">Cân nặng (kg)</label><input type="number" id="gdm-weight" class="form-input" placeholder="vd: 65" min="30" max="200" step="0.1" required inputmode="decimal" /></div>
+                        <div class="form-group"><label for="gdm-ethnicity" class="form-label">Chủng tộc</label>
+                            <select id="gdm-ethnicity" class="form-input"><option value="east_asian">Đông Á / Việt Nam</option><option value="south_central_asian">Trung/Nam Á</option><option value="caucasian">Caucasian</option><option value="african_caribbean">African-Caribbean</option><option value="hispanic">Hispanic</option><option value="other">Khác</option></select>
+                        </div>
+                    </div>
+                    <div class="form-group"><label class="form-label">Tiền sử & Yếu tố nguy cơ</label>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item"><input type="checkbox" id="gdm-prev-gdm" /><span>Tiền sử ĐTĐ thai kỳ</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="gdm-family-dm" /><span>Gia đình có người ĐTĐ type 2</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="gdm-pcos" /><span>Hội chứng buồng trứng đa nang (PCOS)</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="gdm-macrosomia" /><span>Tiền sử sinh con ≥ 4kg</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="gdm-nulliparous" /><span>Con so (chưa sinh lần nào)</span></label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-accent btn-lg calc-submit">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Đánh Giá Nguy Cơ GDM
+                    </button>
+                    <div id="form-error" class="form-error" role="alert" hidden></div>
+                </form>
+            </div>
+        </div>
+
+        <div class="calc-results-panel" id="results-panel" hidden>
+            <div class="gdm-results-grid" id="gdm-results"></div>
+            <div class="card" id="bmi-card"><h3>Chỉ số BMI</h3><p id="bmi-text"></p></div>
+        </div>
+    </div></div></section>
+
+    <section class="section section-alt"><div class="container">
+        <div class="section-header"><span class="section-label">Câu hỏi thường gặp</span><h2>Đái tháo đường thai kỳ</h2></div>
+        <div class="faq-list">
+            <details class="faq-item"><summary class="faq-question">ĐTĐ thai kỳ ảnh hưởng gì đến mẹ và bé?</summary><div class="faq-answer"><p>GDM tăng nguy cơ: thai to (macrosomia), sinh khó, tiền sản giật, hạ đường huyết sơ sinh, và mẹ có nguy cơ ĐTĐ type 2 sau sinh tăng 7 lần. Kiểm soát tốt giúp giảm đáng kể biến chứng.</p></div></details>
+            <details class="faq-item"><summary class="faq-question">Khi nào cần tầm soát GDM?</summary><div class="faq-answer"><p>Theo IADPSG/WHO: tất cả thai phụ nên được tầm soát ở tuần 24-28 bằng nghiệm pháp dung nạp glucose 75g. Phụ nữ nguy cơ cao nên tầm soát sớm ngay lần khám đầu tiên.</p></div></details>
+        </div>
+    </div></section>
+
+    <section class="section cta-section"><div class="container"><div class="cta-content">
+        <h2>Cần tư vấn về ĐTĐ thai kỳ?</h2>
+        <div class="cta-actions">
+            <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-thai">Đặt Lịch Khám</button>
+            <a href="tel:0899268299" class="btn btn-outline btn-lg">Gọi: 0899 268 299</a>
+        </div>
+    </div></div></section>
+
+    <section class="disclaimer-section"><div class="container"><p class="disclaimer-text"><strong>Lưu ý y khoa:</strong> Kết quả ước tính theo mô hình FMF, PersonalGDM, Iowa. Không thay thế xét nghiệm dung nạp glucose.</p></div></section>
+
+    <style>
+        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
+        .tool-hero-content { max-width: 700px; margin: 0 auto; }
+        .tool-hero h1 { margin-bottom: var(--space-lg); }
+        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
+        .calc-layout { display: grid; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
+        .calc-card { position: static; }
+        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
+        .form-group { margin-bottom: var(--space-lg); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+        .form-label { display: block; font-weight: 600; font-size: .9375rem; margin-bottom: var(--space-sm); }
+        .form-input { width: 100%; padding: .75rem 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; background: var(--bg-white); min-height: 44px; font-family: var(--font-body); box-sizing: border-box; }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,122,109,.1); }
+        .calc-submit { width: 100%; }
+        .form-error { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; border-radius: var(--radius-md); color: var(--error); font-size: .875rem; }
+        .checkbox-grid { display: grid; gap: var(--space-sm); }
+        .checkbox-item { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; font-size: .875rem; min-height: 44px; }
+        .checkbox-item:hover { border-color: var(--primary); }
+        .checkbox-item input { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
+        .gdm-results-grid { display: grid; gap: var(--space-md); margin-bottom: var(--space-lg); }
+        .gdm-model-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: var(--space-xl); }
+        .gdm-model-badge { font-size: .75rem; font-weight: 600; padding: 2px 10px; border-radius: var(--radius-full); display: inline-block; margin-bottom: var(--space-md); text-transform: uppercase; }
+        .gdm-risk-value { font-size: 2rem; font-weight: 700; margin-bottom: var(--space-sm); }
+        .gdm-risk-value.risk-low { color: var(--success); }
+        .gdm-risk-value.risk-moderate { color: #d97706; }
+        .gdm-risk-value.risk-high { color: var(--error); }
+        .gdm-risk-label { font-size: .875rem; font-weight: 600; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-md); display: inline-block; }
+        @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+    </style>
+
+    <script>
+        import { calcFmfGDMRisk, stratifyFmfRisk, calcFmfPrevGDM, calcIowaGDMRisk, stratifyIowaRisk, calcBMI } from '../../utils/gdm-calc.js';
+
+        document.getElementById('gdm-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('form-error');
+            try {
+                const age = parseInt(document.getElementById('gdm-age').value);
+                const weight = parseFloat(document.getElementById('gdm-weight').value);
+                const height = parseFloat(document.getElementById('gdm-height').value);
+                const ethnicity = document.getElementById('gdm-ethnicity').value;
+                const prevGdm = document.getElementById('gdm-prev-gdm').checked;
+                const familyDm = document.getElementById('gdm-family-dm').checked;
+                const pcos = document.getElementById('gdm-pcos').checked;
+                const macrosomia = document.getElementById('gdm-macrosomia').checked;
+                const nulliparous = document.getElementById('gdm-nulliparous').checked;
+
+                if (!age) throw new Error('Vui lòng nhập tuổi mẹ.');
+                if (!weight) throw new Error('Vui lòng nhập cân nặng.');
+
+                const bmi = height ? calcBMI(weight, height) : null;
+                const results = [];
+
+                // FMF Model
+                if (prevGdm) {
+                    const risk = calcFmfPrevGDM(weight) * 100;
+                    const strat = stratifyFmfRisk(risk);
+                    results.push({ model: 'FMF (Tiền sử GDM)', risk, strat, badge: 'var(--primary-light)', badgeColor: 'var(--primary)' });
+                } else {
+                    const fmfResult = calcFmfGDMRisk({
+                        age, weight, height: height || 160, parity: nulliparous ? 0 : 1,
+                        ethnicity, familyDM: familyDm, pcos,
+                        priorMacrosomia: macrosomia, priorGDM: false
+                    });
+                    const strat = stratifyFmfRisk(fmfResult.risk * 100);
+                    results.push({ model: 'FMF (Syngelaki 2014)', risk: fmfResult.risk * 100, strat, badge: 'var(--primary-light)', badgeColor: 'var(--primary)' });
+                }
+
+                // Iowa Model (nulliparous only)
+                if (nulliparous && bmi) {
+                    const iowaResult = calcIowaGDMRisk({ age, bmi, ethnicity, familyDM: familyDm, pcos });
+                    const strat = stratifyIowaRisk(iowaResult.risk * 100);
+                    results.push({ model: 'Iowa (Donovan 2019)', risk: iowaResult.risk * 100, strat, badge: '#eff6ff', badgeColor: '#2563eb' });
+                }
+
+                displayResults(results, bmi);
+                if (errorEl) errorEl.hidden = true;
+            } catch (err) {
+                if (errorEl) { errorEl.textContent = err.message; errorEl.hidden = false; }
+            }
+        });
+
+        function displayResults(results, bmi) {
+            const panel = document.getElementById('results-panel');
+            if (panel) panel.hidden = false;
+
+            const grid = document.getElementById('gdm-results');
+            if (grid) {
+                grid.innerHTML = results.map(r => {
+                    const riskClass = r.risk > 20 ? 'risk-high' : r.risk > 8 ? 'risk-moderate' : 'risk-low';
+                    const labelBg = r.strat.color || (r.risk > 20 ? '#fef2f2' : r.risk > 8 ? '#fffbeb' : '#f0fdf4');
+                    return `<div class="gdm-model-card">
+                        <span class="gdm-model-badge" style="background:${r.badge};color:${r.badgeColor}">${r.model}</span>
+                        <div class="gdm-risk-value ${riskClass}">${r.risk.toFixed(1)}%</div>
+                        <span class="gdm-risk-label" style="background:${labelBg}">${r.strat.label}</span>
+                    </div>`;
+                }).join('');
+            }
+
+            const bmiText = document.getElementById('bmi-text');
+            if (bmiText && bmi) {
+                const bmiCat = bmi < 18.5 ? 'Nhẹ cân' : bmi < 25 ? 'Bình thường' : bmi < 30 ? 'Thừa cân' : 'Béo phì';
+                bmiText.innerHTML = `BMI = <strong>${bmi.toFixed(1)}</strong> kg/m² — ${bmiCat}`;
+            }
+
+            panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</BaseLayout>

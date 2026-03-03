@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import InlinePhoneCapture from "../components/InlinePhoneCapture.astro";
 import "../styles/global.css";
 import "../styles/landing.css";
 import reviewsData from "../data/reviews.json";
@@ -87,6 +88,11 @@ const faqs = [
                     Tại An Sinh, bạn được khám bởi bác sĩ nữ tận tâm, trong
                     không gian riêng tư, thoải mái.
                 </p>
+                <InlinePhoneCapture
+                    formType="phu-khoa"
+                    heading="Đặt lịch khám phụ khoa chỉ 30 giây"
+                    subheading="Riêng tư, bác sĩ nữ liên hệ bạn ngay"
+                />
                 <div class="landing-hero-actions">
                     <a
                         href="https://phusanansinh.com/dat-lich-hen-kham.html"

@@ -1,0 +1,211 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+---
+
+<BaseLayout
+    title="Đánh Giá Khối U Buồng Trứng — RMI & ROMA | An Sinh"
+    description="Công cụ đánh giá nguy cơ ác tính khối u buồng trứng theo RMI (Risk of Malignancy Index) và ROMA (Risk of Ovarian Malignancy Algorithm). Miễn phí."
+>
+    <section class="hero tool-hero"><div class="container"><div class="tool-hero-content">
+        <span class="section-label">Công cụ miễn phí</span>
+        <h1>Đánh Giá <span class="text-accent-color">Khối U Buồng Trứng</span></h1>
+        <p class="hero-sub">Đánh giá nguy cơ ác tính theo RMI (Jacobs 1990) và ROMA (Moore 2009). Kết hợp CA-125, HE4, siêu âm và tình trạng mãn kinh.</p>
+    </div></div></section>
+
+    <section class="section" id="calculator"><div class="container"><div class="calc-layout">
+        <div class="calc-form-panel">
+            <div class="card calc-card">
+                <h2 class="calc-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                    Nhập dữ liệu lâm sàng
+                </h2>
+                <form id="ovarian-form" novalidate>
+                    <div class="form-group"><label class="form-label">Tình trạng mãn kinh</label>
+                        <div class="method-chips" id="meno-chips">
+                            <button type="button" class="method-chip is-active" data-value="pre">Chưa mãn kinh</button>
+                            <button type="button" class="method-chip" data-value="post">Đã mãn kinh</button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label for="ov-ca125" class="form-label">CA-125 (U/mL)</label><input type="number" id="ov-ca125" class="form-input" placeholder="vd: 45" min="0" max="10000" step="0.1" inputmode="decimal" required /></div>
+                        <div class="form-group"><label for="ov-he4" class="form-label">HE4 (pmol/L)</label><input type="number" id="ov-he4" class="form-input" placeholder="vd: 70" min="0" max="10000" step="0.1" inputmode="decimal" /><small class="form-help">Để trống nếu không có</small></div>
+                    </div>
+                    <div class="form-group"><label for="ov-size" class="form-label">Kích thước u (cm)</label><input type="number" id="ov-size" class="form-input" placeholder="vd: 5" min="0" max="50" step="0.1" inputmode="decimal" /></div>
+                    <div class="form-group"><label class="form-label">Đặc điểm siêu âm <small>(chọn các dấu hiệu có)</small></label>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item"><input type="checkbox" id="ov-multilocular" /><span>Đa thùy (multilocular / thành dày)</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="ov-solid" /><span>Thành phần đặc (solid areas)</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="ov-bilateral" /><span>Hai bên (bilateral)</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="ov-ascites" /><span>Dịch ổ bụng (ascites)</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="ov-mets" /><span>Nghi di căn (metastasis)</span></label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-accent btn-lg calc-submit">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Phân Tích Nguy Cơ
+                    </button>
+                    <div id="form-error" class="form-error" role="alert" hidden></div>
+                </form>
+            </div>
+        </div>
+
+        <div class="calc-results-panel" id="results-panel" hidden>
+            <div class="ov-results-grid" id="results-grid"></div>
+            <div class="card" id="action-card" hidden><h3>📋 Khuyến cáo hành động</h3><ul id="action-list"></ul></div>
+        </div>
+    </div></div></section>
+
+    <section class="section section-alt"><div class="container">
+        <div class="section-header"><span class="section-label">Câu hỏi thường gặp</span><h2>Về đánh giá u buồng trứng</h2></div>
+        <div class="faq-list">
+            <details class="faq-item"><summary class="faq-question">RMI là gì?</summary><div class="faq-answer"><p>Risk of Malignancy Index (RMI) kết hợp: Điểm siêu âm × Điểm mãn kinh × CA-125. RMI ≥ 200 gợi ý ác tính, cần chuyển đến trung tâm ung bướu phụ khoa. Độ nhạy 78%, độ đặc hiệu 87% (Jacobs 1990).</p></div></details>
+            <details class="faq-item"><summary class="faq-question">ROMA khác gì RMI?</summary><div class="faq-answer"><p>ROMA (Risk of Ovarian Malignancy Algorithm) sử dụng CA-125 + HE4 + tình trạng mãn kinh. ROMA có ưu điểm phân biệt tốt hơn ở giai đoạn sớm và không phụ thuộc siêu âm. Ngưỡng: tiền mãn kinh ≥ 11.4%, hậu mãn kinh ≥ 29.9%.</p></div></details>
+        </div>
+    </div></section>
+
+    <section class="section cta-section"><div class="container"><div class="cta-content">
+        <h2>Cần tư vấn chuyên gia?</h2>
+        <div class="cta-actions">
+            <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-phu-khoa">Đặt Lịch Khám</button>
+            <a href="tel:0899268299" class="btn btn-outline btn-lg">Gọi: 0899 268 299</a>
+        </div>
+    </div></div></section>
+
+    <section class="disclaimer-section"><div class="container"><p class="disclaimer-text"><strong>Lưu ý y khoa:</strong> Kết quả ước tính theo RMI (Jacobs 1990) và ROMA (Moore 2009). Không thay thế chẩn đoán mô bệnh học.</p></div></section>
+
+    <style>
+        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
+        .tool-hero-content { max-width: 700px; margin: 0 auto; }
+        .tool-hero h1 { margin-bottom: var(--space-lg); }
+        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
+        .calc-layout { display: grid; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
+        .calc-card { position: static; }
+        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
+        .form-group { margin-bottom: var(--space-lg); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+        .form-label { display: block; font-weight: 600; font-size: .9375rem; margin-bottom: var(--space-sm); }
+        .form-input { width: 100%; padding: .75rem 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; background: var(--bg-white); min-height: 44px; font-family: var(--font-body); box-sizing: border-box; }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,122,109,.1); }
+        .form-help { display: block; font-size: .8125rem; color: var(--text-muted); margin-top: var(--space-xs); }
+        .calc-submit { width: 100%; }
+        .form-error { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; border-radius: var(--radius-md); color: var(--error); font-size: .875rem; }
+        .method-chips { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+        .method-chip { padding: .625rem 1rem; border-radius: var(--radius-full); border: 1.5px solid var(--border); background: var(--surface); font-size: .875rem; font-weight: 500; cursor: pointer; transition: all var(--transition-fast); color: var(--text-secondary); font-family: var(--font-body); min-height: 44px; }
+        .method-chip:hover { border-color: var(--primary); color: var(--primary); }
+        .method-chip.is-active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .checkbox-grid { display: grid; gap: var(--space-sm); }
+        .checkbox-item { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; font-size: .875rem; min-height: 44px; }
+        .checkbox-item:hover { border-color: var(--primary); }
+        .checkbox-item input { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
+        .ov-results-grid { display: grid; gap: var(--space-md); margin-bottom: var(--space-lg); }
+        .ov-result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: var(--space-xl); text-align: center; }
+        .ov-model-name { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; padding: 2px 10px; border-radius: var(--radius-full); display: inline-block; margin-bottom: var(--space-md); background: var(--primary-light); color: var(--primary); }
+        .ov-score { font-size: 2rem; font-weight: 700; margin-bottom: var(--space-sm); }
+        .ov-risk { font-size: .9375rem; font-weight: 600; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-md); display: inline-block; }
+        .ov-risk.risk-low { background: #f0fdf4; color: var(--success); }
+        .ov-risk.risk-moderate { background: #fffbeb; color: #d97706; }
+        .ov-risk.risk-high { background: #fef2f2; color: var(--error); }
+        #action-list { padding-left: var(--space-xl); }
+        #action-list li { margin-bottom: var(--space-sm); font-size: .875rem; line-height: 1.6; }
+        @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+    </style>
+
+    <script>
+        import { screenPatient, getActionPlan } from '../../utils/ovarian-risk-engine.js';
+
+        let menoStatus = 'pre';
+        document.getElementById('meno-chips')?.addEventListener('click', (e) => {
+            const chip = e.target.closest('.method-chip');
+            if (!chip) return;
+            document.querySelectorAll('#meno-chips .method-chip').forEach(c => c.classList.remove('is-active'));
+            chip.classList.add('is-active');
+            menoStatus = chip.dataset.value;
+        });
+
+        document.getElementById('ovarian-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('form-error');
+            try {
+                const ca125 = parseFloat(document.getElementById('ov-ca125').value);
+                const he4Raw = document.getElementById('ov-he4').value;
+                const he4 = he4Raw ? parseFloat(he4Raw) : null;
+                const size = parseFloat(document.getElementById('ov-size').value) || null;
+
+                if (isNaN(ca125) || ca125 < 0) throw new Error('Vui lòng nhập CA-125.');
+
+                const usFeatures = {
+                    multilocular: document.getElementById('ov-multilocular').checked,
+                    solidAreas: document.getElementById('ov-solid').checked,
+                    bilateral: document.getElementById('ov-bilateral').checked,
+                    ascites: document.getElementById('ov-ascites').checked,
+                    metastasis: document.getElementById('ov-mets').checked,
+                };
+
+                const postmenopausal = menoStatus === 'post';
+                const result = screenPatient({ ca125, he4, postmenopausal, usFeatures, tumorSize: size });
+                const actions = getActionPlan(result.overallRisk);
+                displayResults(result, actions);
+                if (errorEl) errorEl.hidden = true;
+            } catch (err) {
+                if (errorEl) { errorEl.textContent = err.message; errorEl.hidden = false; }
+            }
+        });
+
+        function displayResults(result, actions) {
+            const panel = document.getElementById('results-panel');
+            if (panel) panel.hidden = false;
+
+            const grid = document.getElementById('results-grid');
+            if (grid) {
+                const cards = [];
+                const RISK_CLASS = { HIGH: 'risk-high', MODERATE: 'risk-moderate', LOW: 'risk-low' };
+                const RISK_LABEL = { HIGH: 'Nguy cơ CAO', MODERATE: 'Nguy cơ TRUNG BÌNH', LOW: 'Nguy cơ THẤP' };
+
+                // RMI cards
+                const rmiVersions = [
+                    { name: 'RMI-1 (Jacobs)', score: result.rmi1, cat: result.rmi1Cat },
+                    { name: 'RMI-2 (Tingulstad)', score: result.rmi2, cat: result.rmi2Cat },
+                    { name: 'RMI-3 (Tingulstad 2)', score: result.rmi3, cat: result.rmi3Cat },
+                    { name: 'RMI-4 (Yamamoto)', score: result.rmi4, cat: result.rmi4Cat },
+                ];
+                rmiVersions.forEach(v => {
+                    cards.push(`<div class="ov-result-card">
+                        <span class="ov-model-name">${v.name}</span>
+                        <div class="ov-score">${Math.round(v.score)}</div>
+                        <span class="ov-risk ${RISK_CLASS[v.cat] || 'risk-low'}">${RISK_LABEL[v.cat] || v.cat}</span>
+                    </div>`);
+                });
+
+                // ROMA card
+                if (result.hasHE4 && result.roma !== null) {
+                    cards.push(`<div class="ov-result-card">
+                        <span class="ov-model-name" style="background:#eff6ff;color:#2563eb">ROMA</span>
+                        <div class="ov-score">${result.roma.toFixed(1)}%</div>
+                        <span class="ov-risk ${RISK_CLASS[result.romaCat] || 'risk-low'}">${RISK_LABEL[result.romaCat] || result.romaCat}</span>
+                    </div>`);
+                }
+
+                // Overall risk
+                cards.push(`<div class="ov-result-card" style="border-color:var(--primary)">
+                    <span class="ov-model-name">TỔNG THỂ</span>
+                    <div class="ov-score" style="color:${result.overallRisk === 'HIGH' ? 'var(--error)' : result.overallRisk === 'MODERATE' ? '#d97706' : 'var(--success)'}">${RISK_LABEL[result.overallRisk]}</div>
+                </div>`);
+
+                grid.innerHTML = cards.join('');
+            }
+
+            // Action plan
+            const actionCard = document.getElementById('action-card');
+            const actionList = document.getElementById('action-list');
+            if (actionCard && actions && actions.length) {
+                actionCard.hidden = false;
+                actionList.innerHTML = actions.map(a => `<li>${a}</li>`).join('');
+            } else if (actionCard) {
+                actionCard.hidden = true;
+            }
+
+            panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</BaseLayout>

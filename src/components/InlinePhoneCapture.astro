@@ -1,0 +1,119 @@
+---
+interface Props {
+  formType?: string;
+  heading?: string;
+  subheading?: string;
+}
+
+const {
+  formType = "tu-van",
+  heading = "Đặt lịch chỉ 30 giây",
+  subheading = "Chỉ cần SĐT — Bác sĩ liên hệ bạn ngay",
+} = Astro.props;
+---
+
+<div class="phone-capture" data-form-type={formType}>
+  <div class="phone-capture-content">
+    <h3 class="phone-capture-heading">{heading}</h3>
+    <p class="phone-capture-sub">{subheading}</p>
+    <form class="phone-capture-form" onsubmit="window._capturePhone(event)">
+      <input
+        type="tel"
+        name="phone"
+        class="phone-capture-input"
+        placeholder="Nhập số điện thoại"
+        required
+        autocomplete="tel"
+        inputmode="numeric"
+        pattern="0[0-9]{8,10}"
+      />
+      <button type="submit" class="phone-capture-btn">
+        ĐẶT LỊCH NGAY
+      </button>
+    </form>
+  </div>
+</div>
+
+<style>
+  .phone-capture {
+    background: linear-gradient(135deg, var(--primary-light) 0%, rgba(255,255,255,0.95) 100%);
+    border: 1.5px solid var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .phone-capture-heading {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem;
+  }
+
+  .phone-capture-sub {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin: 0 0 0.875rem;
+  }
+
+  .phone-capture-form {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .phone-capture-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: #fff;
+    outline: none;
+    min-width: 0;
+    transition: border-color 0.2s;
+  }
+  .phone-capture-input:focus {
+    border-color: var(--primary);
+  }
+  .phone-capture-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .phone-capture-btn {
+    padding: 0.75rem 1.25rem;
+    background: var(--accent, #e74c3c);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 800;
+    font-family: var(--font-body);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .phone-capture-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+  .phone-capture-btn:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 480px) {
+    .phone-capture {
+      padding: 1rem;
+    }
+    .phone-capture-form {
+      flex-direction: column;
+    }
+    .phone-capture-btn {
+      width: 100%;
+      padding: 0.875rem;
+      font-size: 1rem;
+    }
+  }
+</style>

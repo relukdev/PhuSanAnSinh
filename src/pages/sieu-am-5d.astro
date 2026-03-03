@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import InlinePhoneCapture from "../components/InlinePhoneCapture.astro";
 import "../styles/global.css";
 import "../styles/landing.css";
 import reviewsData from "../data/reviews.json";
@@ -89,6 +90,11 @@ const faqs = [
                     bác sĩ 20+ năm kinh nghiệm giải thích tận tình. Xem kết quả
                     online ngay trên điện thoại.
                 </p>
+                <InlinePhoneCapture
+                    formType="sieu-am"
+                    heading="Đặt lịch siêu âm 5D chỉ 30 giây"
+                    subheading="Chỉ cần SĐT — Bác sĩ liên hệ bạn ngay"
+                />
                 <div class="landing-hero-actions">
                     <a
                         href="https://phusanansinh.com/dat-lich-hen-kham.html"

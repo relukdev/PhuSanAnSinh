@@ -1,0 +1,278 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+---
+
+<BaseLayout
+    title="Sàng Lọc Tiền Sản Giật — ACOG & NICE | Phòng Khám An Sinh"
+    description="Công cụ sàng lọc nguy cơ tiền sản giật theo ACOG/USPSTF 2021 và NICE NG133. Xác định chỉ định Aspirin liều thấp. Miễn phí."
+>
+    <section class="hero tool-hero"><div class="container"><div class="tool-hero-content">
+        <span class="section-label">Công cụ miễn phí</span>
+        <h1>Sàng Lọc <span class="text-accent-color">Tiền Sản Giật</span></h1>
+        <p class="hero-sub">Đánh giá nguy cơ tiền sản giật theo chuẩn ACOG/USPSTF 2021 và NICE NG133. Xác định chỉ định Aspirin liều thấp.</p>
+    </div></div></section>
+
+    <section class="section" id="calculator"><div class="container"><div class="calc-layout">
+        <div class="calc-form-panel">
+            <div class="card calc-card">
+                <h2 class="calc-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+                    Nhập thông tin sản phụ
+                </h2>
+                <form id="pe-form" novalidate>
+                    <div class="form-row">
+                        <div class="form-group"><label for="pe-age" class="form-label">Tuổi mẹ</label><input type="number" id="pe-age" class="form-input" placeholder="vd: 32" min="14" max="55" inputmode="numeric" required /></div>
+                        <div class="form-group"><label for="pe-ga" class="form-label">Tuổi thai (tuần)</label><input type="number" id="pe-ga" class="form-input" placeholder="vd: 12" min="4" max="42" inputmode="numeric" /></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label for="pe-weight" class="form-label">Cân nặng (kg)</label><input type="number" id="pe-weight" class="form-input" placeholder="vd: 60" min="30" max="200" step="0.1" inputmode="decimal" /></div>
+                        <div class="form-group"><label for="pe-height" class="form-label">Chiều cao (cm)</label><input type="number" id="pe-height" class="form-input" placeholder="vd: 160" min="120" max="210" step="1" inputmode="numeric" /></div>
+                    </div>
+
+                    <div class="form-group"><label class="form-label">Yếu tố NGUY CƠ CAO</label>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item"><input type="checkbox" id="pe-prior-pe" /><span>Tiền sử tiền sản giật</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="pe-chronic-htn" /><span>Tăng huyết áp mạn</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="pe-diabetes" /><span>Đái tháo đường (type 1/2)</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="pe-kidney" /><span>Bệnh thận mạn</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="pe-autoimmune" /><span>Bệnh tự miễn (SLE/APS)</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="pe-multifetal" /><span>Đa thai</span></label>
+                        </div>
+                    </div>
+
+                    <div class="form-group"><label class="form-label">Yếu tố NGUY CƠ TRUNG BÌNH</label>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item"><input type="checkbox" id="pe-nulliparous" /><span>Con so (chưa sinh lần nào)</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="pe-bmi35" /><span>BMI ≥ 30 trước mang thai</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="pe-family" /><span>Tiền sử gia đình (mẹ/chị em) bị PE</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="pe-prior-preterm" /><span>Tiền sử sinh non / SGA</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="pe-ivf" /><span>IVF / Thụ tinh nhân tạo</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="pe-interval" /><span>Khoảng cách thai kỳ > 10 năm</span></label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-accent btn-lg calc-submit">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Đánh Giá Nguy Cơ
+                    </button>
+                    <div id="form-error" class="form-error" role="alert" hidden></div>
+                </form>
+            </div>
+            <div class="edu-note">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <p>Dựa trên <strong>ACOG/USPSTF Practice Advisory (12/2021)</strong> và <strong>NICE NG133 (2019/2023)</strong>.</p>
+            </div>
+        </div>
+
+        <div class="calc-results-panel" id="results-panel" hidden>
+            <div class="pe-results-grid">
+                <div class="pe-result-card" id="acog-result">
+                    <div class="pe-badge">ACOG / USPSTF</div>
+                    <div class="pe-risk-level" id="acog-level">—</div>
+                    <div class="pe-factors" id="acog-factors"></div>
+                    <div class="pe-aspirin" id="acog-aspirin"></div>
+                </div>
+                <div class="pe-result-card" id="nice-result">
+                    <div class="pe-badge nice-badge">NICE NG133</div>
+                    <div class="pe-risk-level" id="nice-level">—</div>
+                    <div class="pe-factors" id="nice-factors"></div>
+                    <div class="pe-aspirin" id="nice-aspirin"></div>
+                </div>
+            </div>
+            <div class="card" id="concordance-card" hidden>
+                <h3 class="concordance-title" id="concordance-title"></h3>
+                <div id="concordance-reasons"></div>
+            </div>
+            <div class="card" id="aspirin-timing-card" hidden>
+                <h3>⏰ Thời điểm dùng Aspirin</h3>
+                <p id="aspirin-timing-text"></p>
+            </div>
+            <div class="card" id="followup-card" hidden>
+                <h3>📋 Kế hoạch theo dõi</h3>
+                <ul id="followup-list"></ul>
+            </div>
+        </div>
+    </div></div></section>
+
+    <!-- FAQ -->
+    <section class="section section-alt" id="faq"><div class="container">
+        <div class="section-header"><span class="section-label">Câu hỏi thường gặp</span><h2>Tiền sản giật là gì?</h2></div>
+        <div class="faq-list">
+            <details class="faq-item"><summary class="faq-question">Tiền sản giật là gì?</summary><div class="faq-answer"><p>Tiền sản giật là tình trạng tăng huyết áp + protein niệu (hoặc tổn thương cơ quan đích) xuất hiện sau tuần 20 thai kỳ. Ảnh hưởng 5-8% thai phụ toàn cầu, là nguyên nhân hàng đầu gây tử vong mẹ và thai.</p></div></details>
+            <details class="faq-item"><summary class="faq-question">Aspirin liều thấp phòng ngừa tiền sản giật như thế nào?</summary><div class="faq-answer"><p>Aspirin 81-150mg/ngày trước 16 tuần giảm nguy cơ tiền sản giật đến <strong>17-62%</strong>. ACOG khuyến cáo dùng cho phụ nữ có ≥1 yếu tố nguy cơ cao hoặc ≥2 yếu tố nguy cơ trung bình.</p></div></details>
+            <details class="faq-item"><summary class="faq-question">ACOG và NICE khác gì nhau?</summary><div class="faq-answer"><p>ACOG (Mỹ): Tuổi ≥35 = nguy cơ trung bình, BMI ≥30 = trung bình, tính IVF. NICE (Anh): Tuổi ≥40 = trung bình, BMI ≥35 = trung bình, không tính IVF. Cả hai đều đồng thuận về yếu tố nguy cơ cao.</p></div></details>
+        </div>
+    </div></section>
+
+    <section class="section cta-section"><div class="container"><div class="cta-content">
+        <h2>Cần tư vấn về nguy cơ tiền sản giật?</h2>
+        <p>Bác sĩ chuyên khoa sản tại An Sinh sẵn sàng đồng hành cùng bạn.</p>
+        <div class="cta-actions">
+            <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-thai">Đặt Lịch Khám Thai</button>
+            <a href="tel:0899268299" class="btn btn-outline btn-lg">Gọi: 0899 268 299</a>
+        </div>
+    </div></div></section>
+
+    <section class="disclaimer-section"><div class="container"><p class="disclaimer-text"><strong>Lưu ý y khoa:</strong> Công cụ sàng lọc dựa trên hướng dẫn ACOG/USPSTF 2021 và NICE NG133. Kết quả là <em>tham khảo</em>, không thay thế khám lâm sàng.</p></div></section>
+
+    <style>
+        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
+        .tool-hero-content { max-width: 700px; margin: 0 auto; }
+        .tool-hero h1 { margin-bottom: var(--space-lg); }
+        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
+        .calc-layout { display: grid; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
+        .calc-card { position: static; }
+        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
+        .form-group { margin-bottom: var(--space-lg); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+        .form-label { display: block; font-weight: 600; font-size: .9375rem; margin-bottom: var(--space-sm); color: var(--text-primary); }
+        .form-input { width: 100%; padding: .75rem 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; background: var(--bg-white); min-height: 44px; font-family: var(--font-body); box-sizing: border-box; }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,122,109,.1); }
+        .calc-submit { width: 100%; }
+        .form-error { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; border-radius: var(--radius-md); color: var(--error); font-size: .875rem; }
+        .edu-note { display: flex; gap: var(--space-sm); padding: var(--space-md); background: #eff6ff; border-radius: var(--radius-md); border-left: 3px solid var(--info); margin-top: var(--space-lg); }
+        .edu-note svg { flex-shrink: 0; margin-top: 2px; }
+        .edu-note p { font-size: .8125rem; color: var(--text-secondary); margin: 0; line-height: 1.6; }
+        .checkbox-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-sm); }
+        .checkbox-item { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); font-size: .875rem; min-height: 44px; }
+        .checkbox-item:hover { border-color: var(--primary); background: var(--primary-light); }
+        .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
+
+        .pe-results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-lg); }
+        .pe-result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: var(--space-xl); }
+        .pe-badge { display: inline-block; font-size: .75rem; font-weight: 600; padding: 2px 10px; border-radius: var(--radius-full); background: var(--primary-light); color: var(--primary); margin-bottom: var(--space-md); text-transform: uppercase; letter-spacing: .04em; }
+        .nice-badge { background: #eff6ff; color: #2563eb; }
+        .pe-risk-level { font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-md); }
+        .pe-risk-level.risk-high { color: var(--error); }
+        .pe-risk-level.risk-moderate { color: var(--warning); }
+        .pe-risk-level.risk-low { color: var(--success); }
+        .pe-factors { font-size: .8125rem; color: var(--text-secondary); margin-bottom: var(--space-md); }
+        .pe-factors ul { margin: var(--space-xs) 0 0; padding-left: var(--space-lg); }
+        .pe-aspirin { font-size: .875rem; font-weight: 600; padding: var(--space-sm) var(--space-md); border-radius: var(--radius-md); }
+        .pe-aspirin.aspirin-yes { background: #f0fdf4; color: var(--success); border: 1px solid #86efac; }
+        .pe-aspirin.aspirin-no { background: var(--surface-alt); color: var(--text-muted); }
+        .concordance-title { font-size: 1.125rem; margin-bottom: var(--space-md); }
+        #followup-list { padding-left: var(--space-xl); }
+        #followup-list li { margin-bottom: var(--space-sm); font-size: .875rem; line-height: 1.6; }
+
+        @media (max-width: 640px) {
+            .pe-results-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <script>
+        import { preprocess, classifyACOG, classifyNICE, checkConcordance, aspirinTiming, getFollowUp, screenPatient, createEmptyPatient } from '../../utils/preeclampsia-engine.js';
+
+        document.getElementById('pe-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('form-error');
+
+            try {
+                const age = parseInt(document.getElementById('pe-age').value);
+                if (!age || age < 14 || age > 55) throw new Error('Vui lòng nhập tuổi mẹ hợp lệ (14-55).');
+
+                const gaWeeks = parseInt(document.getElementById('pe-ga').value) || null;
+                const weight = parseFloat(document.getElementById('pe-weight').value) || null;
+                const height = parseFloat(document.getElementById('pe-height').value) || null;
+
+                const patient = createEmptyPatient();
+                patient.age = age;
+                patient.gaWeeks = gaWeeks;
+                if (weight) patient.weight = weight;
+                if (height) patient.height = height;
+
+                patient.priorPreeclampsia = document.getElementById('pe-prior-pe').checked;
+                patient.chronicHypertension = document.getElementById('pe-chronic-htn').checked;
+                patient.pregestationalDiabetes = document.getElementById('pe-diabetes').checked;
+                patient.renalDisease = document.getElementById('pe-kidney').checked;
+                patient.autoimmune = document.getElementById('pe-autoimmune').checked;
+                patient.multifetal = document.getElementById('pe-multifetal').checked;
+                patient.nulliparous = document.getElementById('pe-nulliparous').checked;
+                patient.familyHistory = document.getElementById('pe-family').checked;
+                patient.priorPretermSGA = document.getElementById('pe-prior-preterm').checked;
+                patient.ivf = document.getElementById('pe-ivf').checked;
+                patient.interpregnancyInterval10 = document.getElementById('pe-interval').checked;
+
+                const result = screenPatient(patient);
+                displayResults(result, gaWeeks);
+
+                if (errorEl) errorEl.hidden = true;
+            } catch (err) {
+                if (errorEl) { errorEl.textContent = err.message; errorEl.hidden = false; }
+            }
+        });
+
+        function displayResults(result, gaWeeks) {
+            const panel = document.getElementById('results-panel');
+            if (panel) panel.hidden = false;
+
+            const RISK_LABELS = { HIGH: 'Nguy cơ CAO', MODERATE: 'Nguy cơ TRUNG BÌNH', LOW: 'Nguy cơ THẤP' };
+            const RISK_CLASS = { HIGH: 'risk-high', MODERATE: 'risk-moderate', LOW: 'risk-low' };
+
+            // ACOG
+            const acogLevel = document.getElementById('acog-level');
+            const acogFactors = document.getElementById('acog-factors');
+            const acogAspirin = document.getElementById('acog-aspirin');
+            if (acogLevel) { acogLevel.textContent = RISK_LABELS[result.acog.category]; acogLevel.className = `pe-risk-level ${RISK_CLASS[result.acog.category]}`; }
+            if (acogFactors) {
+                let html = '';
+                if (result.acog.high_factors.length) html += `<div><strong>Yếu tố nguy cơ cao:</strong><ul>${result.acog.high_factors.map(f => `<li>${f}</li>`).join('')}</ul></div>`;
+                if (result.acog.moderate_factors.length) html += `<div><strong>Yếu tố nguy cơ trung bình:</strong><ul>${result.acog.moderate_factors.map(f => `<li>${f}</li>`).join('')}</ul></div>`;
+                acogFactors.innerHTML = html || '<p>Không phát hiện yếu tố nguy cơ.</p>';
+            }
+            if (acogAspirin) {
+                const rec = result.acog.aspirin;
+                acogAspirin.textContent = rec ? '✅ Chỉ định Aspirin liều thấp' : '❌ Không chỉ định Aspirin';
+                acogAspirin.className = `pe-aspirin ${rec ? 'aspirin-yes' : 'aspirin-no'}`;
+            }
+
+            // NICE
+            const niceLevel = document.getElementById('nice-level');
+            const niceFactors = document.getElementById('nice-factors');
+            const niceAspirin = document.getElementById('nice-aspirin');
+            if (niceLevel) { niceLevel.textContent = RISK_LABELS[result.nice.category]; niceLevel.className = `pe-risk-level ${RISK_CLASS[result.nice.category]}`; }
+            if (niceFactors) {
+                let html = '';
+                if (result.nice.high_factors.length) html += `<div><strong>Yếu tố nguy cơ cao:</strong><ul>${result.nice.high_factors.map(f => `<li>${f}</li>`).join('')}</ul></div>`;
+                if (result.nice.moderate_factors.length) html += `<div><strong>Yếu tố nguy cơ trung bình:</strong><ul>${result.nice.moderate_factors.map(f => `<li>${f}</li>`).join('')}</ul></div>`;
+                niceFactors.innerHTML = html || '<p>Không phát hiện yếu tố nguy cơ.</p>';
+            }
+            if (niceAspirin) {
+                niceAspirin.textContent = result.nice.aspirin ? '✅ Chỉ định Aspirin liều thấp' : '❌ Không chỉ định Aspirin';
+                niceAspirin.className = `pe-aspirin ${result.nice.aspirin ? 'aspirin-yes' : 'aspirin-no'}`;
+            }
+
+            // Concordance
+            const concCard = document.getElementById('concordance-card');
+            if (concCard && result.concordance) {
+                concCard.hidden = false;
+                const title = document.getElementById('concordance-title');
+                if (title) title.textContent = result.concordance.agree ? '✅ ACOG & NICE đồng thuận' : '⚠️ ACOG & NICE không đồng thuận';
+                const reasons = document.getElementById('concordance-reasons');
+                if (reasons && result.concordance.reasons.length) {
+                    reasons.innerHTML = `<ul>${result.concordance.reasons.map(r => `<li style="font-size:.875rem;margin-bottom:4px">${r}</li>`).join('')}</ul>`;
+                }
+            }
+
+            // Aspirin timing
+            if (result.aspirinTiming) {
+                const timingCard = document.getElementById('aspirin-timing-card');
+                const timingText = document.getElementById('aspirin-timing-text');
+                if (timingCard) timingCard.hidden = false;
+                if (timingText) timingText.textContent = result.aspirinTiming.text;
+            }
+
+            // Follow-up
+            const followupCard = document.getElementById('followup-card');
+            const followupList = document.getElementById('followup-list');
+            if (followupCard && result.followUp && result.followUp.length) {
+                followupCard.hidden = false;
+                followupList.innerHTML = result.followUp.map(f => `<li>${f}</li>`).join('');
+            }
+
+            panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</BaseLayout>

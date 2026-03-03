@@ -1,0 +1,209 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+---
+
+<BaseLayout
+    title="Dự Đoán Sinh Non — FMF & QUiPP | Phòng Khám An Sinh"
+    description="Công cụ đánh giá nguy cơ sinh non theo mô hình FMF (To 2006) và QUiPP. Dựa trên chiều dài cổ tử cung, fFN, tiền sử sản khoa. Miễn phí."
+>
+    <section class="hero tool-hero"><div class="container"><div class="tool-hero-content">
+        <span class="section-label">Công cụ miễn phí</span>
+        <h1>Dự Đoán <span class="text-accent-color">Sinh Non</span></h1>
+        <p class="hero-sub">Đánh giá nguy cơ sinh non theo mô hình FMF (To et al. 2006) và QUiPP-style. Kết hợp chiều dài cổ tử cung, fFN, và tiền sử sản khoa.</p>
+    </div></div></section>
+
+    <section class="section" id="calculator"><div class="container"><div class="calc-layout">
+        <div class="calc-form-panel">
+            <div class="card calc-card">
+                <h2 class="calc-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Nhập thông tin lâm sàng
+                </h2>
+                <form id="ptb-form" novalidate>
+                    <div class="form-row">
+                        <div class="form-group"><label for="ptb-age" class="form-label">Tuổi mẹ</label><input type="number" id="ptb-age" class="form-input" placeholder="vd: 30" min="14" max="55" inputmode="numeric" required /></div>
+                        <div class="form-group"><label for="ptb-ga-weeks" class="form-label">Tuổi thai (tuần)</label><input type="number" id="ptb-ga-weeks" class="form-input" placeholder="vd: 24" min="16" max="36" inputmode="numeric" required /></div>
+                    </div>
+                    <div class="form-group"><label for="ptb-cl" class="form-label">Chiều dài cổ tử cung CL (mm)</label><input type="number" id="ptb-cl" class="form-input" placeholder="vd: 25" min="0" max="60" step="1" inputmode="numeric" /><small class="form-help">Đo bằng siêu âm đầu dò âm đạo</small></div>
+                    <div class="form-group"><label for="ptb-ffn" class="form-label">fFN — Fetal Fibronectin (ng/mL)</label><input type="number" id="ptb-ffn" class="form-input" placeholder="vd: 50" min="0" max="500" step="1" inputmode="numeric" /><small class="form-help">Dương tính nếu ≥ 50 ng/mL (để trống nếu không có)</small></div>
+                    <div class="form-group"><label class="form-label">Tiền sử sản khoa</label>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item"><input type="checkbox" id="ptb-prev-ptb" /><span>Tiền sử sinh non trước 37 tuần</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="ptb-prev-ptb32" /><span>Tiền sử sinh non trước 32 tuần</span></label>
+                            <label class="checkbox-item"><input type="checkbox" id="ptb-symptomatic" /><span>Có triệu chứng (cơn gò, ra huyết...)</span></label>
+                        </div>
+                    </div>
+                    <div class="form-group"><label for="ptb-ethnicity" class="form-label">Chủng tộc</label>
+                        <select id="ptb-ethnicity" class="form-input"><option value="caucasian">Caucasian / Châu Á</option><option value="african-caribbean">African-Caribbean</option><option value="south-asian">Nam Á</option><option value="east-asian">Đông Á</option><option value="other">Khác</option></select>
+                    </div>
+                    <button type="submit" class="btn btn-accent btn-lg calc-submit">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Đánh Giá Nguy Cơ
+                    </button>
+                    <div id="form-error" class="form-error" role="alert" hidden></div>
+                </form>
+            </div>
+        </div>
+
+        <div class="calc-results-panel" id="results-panel" hidden>
+            <div class="card risk-summary-card">
+                <h3>Phân tầng nguy cơ</h3>
+                <div class="risk-badge-large" id="risk-badge">—</div>
+                <p id="risk-reason" class="risk-reason"></p>
+            </div>
+            <div class="card"><h3>FMF Model — Nguy cơ sinh non tự phát</h3>
+                <div class="risk-bars" id="fmf-bars"></div>
+            </div>
+            <div class="card" id="quipp-card" hidden><h3>QUiPP-style — Nguy cơ ngắn hạn</h3>
+                <div class="risk-bars" id="quipp-bars"></div>
+            </div>
+        </div>
+    </div></div></section>
+
+    <section class="section section-alt"><div class="container">
+        <div class="section-header"><span class="section-label">Câu hỏi thường gặp</span><h2>Sinh non và cách phòng ngừa</h2></div>
+        <div class="faq-list">
+            <details class="faq-item"><summary class="faq-question">Chiều dài cổ tử cung bao nhiêu là nguy hiểm?</summary><div class="faq-answer"><p>CL < 25mm ở 16-24 tuần cần theo dõi sát. CL < 15mm tăng nguy cơ sinh non đáng kể. Phụ nữ có tiền sử sinh non + CL ngắn có thể được chỉ định progesterone hoặc khâu vòng cổ tử cung.</p></div></details>
+            <details class="faq-item"><summary class="faq-question">fFN (Fetal Fibronectin) là gì?</summary><div class="faq-answer"><p>fFN là protein kết dính giữa màng ối và niêm mạc tử cung. fFN ≥ 50 ng/mL ở 22-34 tuần gợi ý nguy cơ sinh non trong 7-14 ngày. Giá trị tiên đoán âm > 95% (nếu âm tính, khả năng cao không sinh non).</p></div></details>
+        </div>
+    </div></section>
+
+    <section class="section cta-section"><div class="container"><div class="cta-content">
+        <h2>Cần tư vấn về nguy cơ sinh non?</h2>
+        <p>Bác sĩ chuyên khoa sản tại An Sinh sẵn sàng hỗ trợ bạn.</p>
+        <div class="cta-actions">
+            <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-thai">Đặt Lịch Khám</button>
+            <a href="tel:0899268299" class="btn btn-outline btn-lg">Gọi: 0899 268 299</a>
+        </div>
+    </div></div></section>
+
+    <section class="disclaimer-section"><div class="container"><p class="disclaimer-text"><strong>Lưu ý y khoa:</strong> Kết quả ước tính dựa trên mô hình FMF (To et al. 2006) và QUiPP. Không thay thế đánh giá lâm sàng chuyên sâu.</p></div></section>
+
+    <style>
+        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
+        .tool-hero-content { max-width: 700px; margin: 0 auto; }
+        .tool-hero h1 { margin-bottom: var(--space-lg); }
+        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
+        .calc-layout { display: grid; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
+        .calc-card { position: static; }
+        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
+        .form-group { margin-bottom: var(--space-lg); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+        .form-label { display: block; font-weight: 600; font-size: .9375rem; margin-bottom: var(--space-sm); }
+        .form-input { width: 100%; padding: .75rem 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; background: var(--bg-white); min-height: 44px; font-family: var(--font-body); box-sizing: border-box; }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,122,109,.1); }
+        .form-help { display: block; font-size: .8125rem; color: var(--text-muted); margin-top: var(--space-xs); }
+        .calc-submit { width: 100%; }
+        .form-error { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; border-radius: var(--radius-md); color: var(--error); font-size: .875rem; }
+        .checkbox-grid { display: grid; gap: var(--space-sm); }
+        .checkbox-item { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); font-size: .875rem; min-height: 44px; }
+        .checkbox-item:hover { border-color: var(--primary); }
+        .checkbox-item input { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
+        .risk-summary-card { text-align: center; }
+        .risk-badge-large { font-size: 1.5rem; font-weight: 700; padding: var(--space-md) var(--space-xl); border-radius: var(--radius-lg); display: inline-block; margin: var(--space-md) 0; }
+        .risk-badge-large.level-1 { background: #f0fdf4; color: var(--success); }
+        .risk-badge-large.level-2 { background: #eff6ff; color: #2563eb; }
+        .risk-badge-large.level-3 { background: #fffbeb; color: #d97706; }
+        .risk-badge-large.level-4 { background: #fff7ed; color: #ea580c; }
+        .risk-badge-large.level-5 { background: #fef2f2; color: var(--error); }
+        .risk-reason { font-size: .875rem; color: var(--text-secondary); margin-top: var(--space-sm); }
+        .risk-bars { display: flex; flex-direction: column; gap: var(--space-md); }
+        .risk-bar-item { display: flex; align-items: center; gap: var(--space-md); }
+        .risk-bar-label { font-size: .875rem; font-weight: 500; min-width: 120px; color: var(--text-secondary); }
+        .risk-bar-track { flex: 1; height: 24px; background: var(--border); border-radius: var(--radius-full); overflow: hidden; position: relative; }
+        .risk-bar-fill { height: 100%; border-radius: var(--radius-full); transition: width .6s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: .75rem; font-weight: 600; color: #fff; min-width: fit-content; }
+        .risk-bar-fill.low { background: var(--success); }
+        .risk-bar-fill.moderate { background: #f59e0b; }
+        .risk-bar-fill.high { background: var(--error); }
+        @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } .risk-bar-label { min-width: 90px; font-size: .8125rem; } }
+    </style>
+
+    <script>
+        import { calcFmfRisk, stratifyRisk, estimateQuippRisk, validatePretermInputs } from '../../utils/preterm-birth-calc.js';
+
+        document.getElementById('ptb-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('form-error');
+            try {
+                const age = parseInt(document.getElementById('ptb-age').value);
+                const gaWeeks = parseInt(document.getElementById('ptb-ga-weeks').value);
+                const cl = parseFloat(document.getElementById('ptb-cl').value);
+                const ffnRaw = document.getElementById('ptb-ffn').value;
+                const ffn = ffnRaw ? parseFloat(ffnRaw) : null;
+                const hasPrevPtb = document.getElementById('ptb-prev-ptb').checked;
+                const hasPrevPtb32 = document.getElementById('ptb-prev-ptb32').checked;
+                const symptomatic = document.getElementById('ptb-symptomatic').checked;
+
+                if (!age || age < 14) throw new Error('Vui lòng nhập tuổi mẹ.');
+                if (!gaWeeks || gaWeeks < 16 || gaWeeks > 36) throw new Error('Tuổi thai phải từ 16-36 tuần.');
+                if (isNaN(cl)) throw new Error('Vui lòng nhập chiều dài cổ tử cung.');
+
+                // FMF risk
+                const obsHistory = hasPrevPtb32 ? 'previous_ptb_before_32' : hasPrevPtb ? 'previous_ptb_32_36' : 'no_previous_ptb';
+                const fmfResult = calcFmfRisk({ maternalAge: age, obstetricHistory: obsHistory, cervicalLength: cl });
+
+                // Stratification
+                const strat = stratifyRisk({ cl, ffn, hasRiskFactor: hasPrevPtb, hasPreviousPtb32: hasPrevPtb32 });
+
+                // QUiPP
+                let quippResult = null;
+                if (gaWeeks >= 22 && gaWeeks <= 34) {
+                    quippResult = estimateQuippRisk({ gaWeeks, gaDays: 0, cl, ffn, hasRiskFactor: hasPrevPtb, symptomatic });
+                }
+
+                displayResults(fmfResult, strat, quippResult);
+                if (errorEl) errorEl.hidden = true;
+            } catch (err) {
+                if (errorEl) { errorEl.textContent = err.message; errorEl.hidden = false; }
+            }
+        });
+
+        function displayResults(fmf, strat, quipp) {
+            const panel = document.getElementById('results-panel');
+            if (panel) panel.hidden = false;
+
+            // Risk badge
+            const badge = document.getElementById('risk-badge');
+            if (badge) {
+                badge.textContent = strat.label;
+                badge.className = `risk-badge-large level-${strat.level}`;
+            }
+            const reason = document.getElementById('risk-reason');
+            if (reason) reason.textContent = strat.reason;
+
+            // FMF bars
+            const fmfBars = document.getElementById('fmf-bars');
+            if (fmfBars) {
+                const items = [
+                    { label: '< 32 tuần', value: (fmf.riskBelow32 * 100) },
+                    { label: '< 34 tuần', value: (fmf.riskBelow34 * 100) },
+                    { label: '< 37 tuần', value: (fmf.riskBelow37 * 100) },
+                ];
+                fmfBars.innerHTML = items.map(item => {
+                    const pct = Math.min(item.value, 100);
+                    const cls = pct > 10 ? 'high' : pct > 3 ? 'moderate' : 'low';
+                    return `<div class="risk-bar-item"><span class="risk-bar-label">${item.label}</span><div class="risk-bar-track"><div class="risk-bar-fill ${cls}" style="width:${Math.max(pct, 3)}%">${pct.toFixed(1)}%</div></div></div>`;
+                }).join('');
+            }
+
+            // QUiPP bars
+            const quippCard = document.getElementById('quipp-card');
+            const quippBars = document.getElementById('quipp-bars');
+            if (quipp && quippCard && quippBars) {
+                quippCard.hidden = false;
+                const items = [
+                    { label: '7 ngày', value: quipp.risk7d },
+                    { label: '14 ngày', value: quipp.risk14d },
+                    { label: '28 ngày', value: quipp.risk28d },
+                ];
+                quippBars.innerHTML = items.map(item => {
+                    const cls = item.value > 10 ? 'high' : item.value > 3 ? 'moderate' : 'low';
+                    return `<div class="risk-bar-item"><span class="risk-bar-label">${item.label}</span><div class="risk-bar-track"><div class="risk-bar-fill ${cls}" style="width:${Math.max(item.value, 3)}%">${item.value.toFixed(1)}%</div></div></div>`;
+                }).join('');
+            }
+
+            panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</BaseLayout>

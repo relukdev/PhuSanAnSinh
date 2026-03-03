@@ -373,6 +373,21 @@ p {
   border: 0;
 }
 
+/* ── Mobile spacing optimization ── */
+@media (max-width: 768px) {
+  .section {
+    padding: var(--space-2xl) 0;  /* 6rem → 3rem */
+  }
+
+  .section-header {
+    margin-bottom: var(--space-xl);  /* 4rem → 2rem */
+  }
+
+  .section-header h2 {
+    margin-bottom: var(--space-sm);
+  }
+}
+
 /* ── Small Phone ── */
 @media (max-width: 374px) {
   :root {
@@ -388,7 +403,11 @@ p {
   }
 
   .section {
-    padding: var(--space-2xl) 0;
+    padding: var(--space-xl) 0;  /* Even tighter on small phones */
+  }
+
+  .section-header {
+    margin-bottom: var(--space-lg);
   }
 
   .btn-lg {

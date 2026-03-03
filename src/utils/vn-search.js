@@ -117,11 +117,12 @@ export function highlight(text, query) {
         const normText = normalize(text);
         const starts = [];
         let searchFrom = 0;
-        while (true) {
+        let safety = 0;
+        while (safety++ < 1000) {
             const idx = normText.indexOf(token, searchFrom);
             if (idx === -1) break;
             starts.push({ start: idx, end: idx + token.length });
-            searchFrom = idx + 1;
+            searchFrom = idx + token.length;
         }
         // Apply highlights from end to start to preserve indices
         for (let i = starts.length - 1; i >= 0; i--) {

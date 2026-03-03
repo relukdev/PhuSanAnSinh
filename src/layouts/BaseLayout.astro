@@ -1850,13 +1850,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         left: 0;
         right: 0;
         z-index: 99;
-        background: var(--surface);
+        background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         padding: var(--space-sm) var(--space-md)
           calc(var(--space-sm) + env(safe-area-inset-bottom));
         justify-content: space-around;
         align-items: center;
-        border-top: 1px solid var(--border);
-        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+        border-top: 1px solid var(--border-light);
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+      }
+
+      .sticky-cta.is-hidden {
+        transform: translateY(100%);
+        opacity: 0;
+        pointer-events: none;
       }
 
       .sticky-cta-item {
@@ -4956,10 +4965,30 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           }
         }
       }
-      var scrollTimer;
+      var lastScrollTop = 0;
+      var stickyBar = document.querySelector('.sticky-cta');
+      var scrollThreshold = 10;
+
       window.addEventListener('scroll', function() {
+        var st = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Check milestone tracking
         clearTimeout(scrollTimer);
         scrollTimer = setTimeout(checkScrollMilestone, 200);
+
+        // Scroll to hide/show sticky bar
+        if (!stickyBar) return;
+        
+        if (Math.abs(lastScrollTop - st) <= scrollThreshold) return;
+
+        if (st > lastScrollTop && st > 100) {
+          // Scrolling down
+          stickyBar.classList.add('is-hidden');
+        } else {
+          // Scrolling up
+          stickyBar.classList.remove('is-hidden');
+        }
+        lastScrollTop = st <= 0 ? 0 : st;
       }, { passive: true });
 
       // Console log for development

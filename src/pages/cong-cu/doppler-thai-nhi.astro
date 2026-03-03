@@ -1,0 +1,270 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+---
+
+<BaseLayout
+    title="Doppler Thai Nhi — INTERGROWTH-21st | Phòng Khám An Sinh"
+    description="Công cụ phân tích Doppler thai nhi: UA PI/RI, MCA-PSV, UtA-PI, CPR. Theo INTERGROWTH-21st, Mari MCA-PSV, FMF Ciobanu 2019. Miễn phí."
+>
+    <section class="hero tool-hero"><div class="container"><div class="tool-hero-content">
+        <span class="section-label">Công cụ miễn phí</span>
+        <h1>Doppler <span class="text-accent-color">Thai Nhi</span></h1>
+        <p class="hero-sub">Phân tích chỉ số Doppler: UA PI/RI, MCA-PSV, UtA-PI, CPR. Theo chuẩn INTERGROWTH-21st, Mari et al., và FMF Ciobanu 2019.</p>
+    </div></div></section>
+
+    <section class="section" id="calculator"><div class="container"><div class="calc-layout">
+        <div class="calc-form-panel">
+            <div class="card calc-card">
+                <h2 class="calc-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    Nhập chỉ số Doppler
+                </h2>
+                <form id="doppler-form" novalidate>
+                    <div class="form-group"><label for="dop-ga" class="form-label">Tuổi thai (tuần)</label><input type="number" id="dop-ga" class="form-input" placeholder="vd: 32" min="20" max="42" required inputmode="numeric" /><small class="form-help">20-42 tuần</small></div>
+
+                    <fieldset class="form-fieldset">
+                        <legend class="form-legend">🔴 Động mạch rốn (Umbilical Artery)</legend>
+                        <div class="form-row">
+                            <div class="form-group"><label for="dop-ua-pi" class="form-label">UA PI</label><input type="number" id="dop-ua-pi" class="form-input" placeholder="vd: 1.2" min="0" max="5" step="0.01" inputmode="decimal" /></div>
+                            <div class="form-group"><label for="dop-ua-ri" class="form-label">UA RI</label><input type="number" id="dop-ua-ri" class="form-input" placeholder="vd: 0.65" min="0" max="1" step="0.01" inputmode="decimal" /></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Dòng cuối tâm trương</label>
+                            <div class="method-chips" id="edf-chips">
+                                <button type="button" class="method-chip is-active" data-value="present">Có (present)</button>
+                                <button type="button" class="method-chip" data-value="absent">Mất (AEDF)</button>
+                                <button type="button" class="method-chip" data-value="reversed">Đảo ngược (REDF)</button>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-fieldset">
+                        <legend class="form-legend">🔵 Động mạch não giữa (MCA)</legend>
+                        <div class="form-row">
+                            <div class="form-group"><label for="dop-mca-psv" class="form-label">MCA-PSV (cm/s)</label><input type="number" id="dop-mca-psv" class="form-input" placeholder="vd: 45" min="0" max="200" step="0.1" inputmode="decimal" /><small class="form-help">Vận tốc đỉnh tâm thu</small></div>
+                            <div class="form-group"><label for="dop-mca-pi" class="form-label">MCA PI</label><input type="number" id="dop-mca-pi" class="form-input" placeholder="vd: 1.8" min="0" max="5" step="0.01" inputmode="decimal" /></div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="form-fieldset">
+                        <legend class="form-legend">🟡 Động mạch tử cung (UtA)</legend>
+                        <div class="form-row">
+                            <div class="form-group"><label for="dop-uta-left" class="form-label">UtA PI trái</label><input type="number" id="dop-uta-left" class="form-input" placeholder="vd: 0.85" min="0" max="5" step="0.01" inputmode="decimal" /></div>
+                            <div class="form-group"><label for="dop-uta-right" class="form-label">UtA PI phải</label><input type="number" id="dop-uta-right" class="form-input" placeholder="vd: 0.90" min="0" max="5" step="0.01" inputmode="decimal" /></div>
+                        </div>
+                    </fieldset>
+
+                    <button type="submit" class="btn btn-accent btn-lg calc-submit">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Phân Tích Doppler
+                    </button>
+                    <div id="form-error" class="form-error" role="alert" hidden></div>
+                </form>
+            </div>
+        </div>
+
+        <div class="calc-results-panel" id="results-panel" hidden>
+            <!-- Overall Assessment -->
+            <div class="card severity-card">
+                <h3>Đánh giá tổng thể</h3>
+                <div class="severity-badge" id="severity-badge">—</div>
+                <p class="severity-desc" id="severity-desc"></p>
+            </div>
+
+            <!-- Individual Results -->
+            <div class="doppler-results" id="doppler-results"></div>
+
+            <!-- Warnings -->
+            <div id="doppler-warnings"></div>
+        </div>
+    </div></div></section>
+
+    <section class="section section-alt"><div class="container">
+        <div class="section-header"><span class="section-label">Câu hỏi thường gặp</span><h2>Về Doppler thai nhi</h2></div>
+        <div class="faq-list">
+            <details class="faq-item"><summary class="faq-question">Khi nào cần Doppler thai nhi?</summary><div class="faq-answer"><p>Doppler được chỉ định khi: thai chậm tăng trưởng (FGR/IUGR), tiền sản giật, đa thai có biến chứng, nghi thiếu máu thai, bất thường nước ối, tiền sử thai lưu. Doppler thường quy ở thai kỳ bình thường không khuyến cáo.</p></div></details>
+            <details class="faq-item"><summary class="faq-question">MCA-PSV đánh giá thiếu máu thai như thế nào?</summary><div class="faq-answer"><p>MCA-PSV > 1.5 MoM (Multiple of Median) gợi ý thiếu máu thai trung bình-nặng với độ nhạy ~100%. Đây là phương pháp không xâm lấn thay thế chọc ối để chẩn đoán thiếu máu thai trong bất đồng Rh.</p></div></details>
+        </div>
+    </div></section>
+
+    <section class="section cta-section"><div class="container"><div class="cta-content">
+        <h2>Cần tư vấn về Doppler thai nhi?</h2>
+        <div class="cta-actions">
+            <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-thai">Đặt Lịch Khám</button>
+            <a href="tel:0899268299" class="btn btn-outline btn-lg">Gọi: 0899 268 299</a>
+        </div>
+    </div></div></section>
+
+    <section class="disclaimer-section"><div class="container"><p class="disclaimer-text"><strong>Lưu ý y khoa:</strong> Kết quả theo INTERGROWTH-21st, Mari et al. (2000), FMF Ciobanu (2019). Không thay thế diễn giải bác sĩ chuyên khoa.</p></div></section>
+
+    <style>
+        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
+        .tool-hero-content { max-width: 700px; margin: 0 auto; }
+        .tool-hero h1 { margin-bottom: var(--space-lg); }
+        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
+        .calc-layout { display: grid; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
+        .calc-card { position: static; }
+        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
+        .form-group { margin-bottom: var(--space-lg); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+        .form-label { display: block; font-weight: 600; font-size: .9375rem; margin-bottom: var(--space-sm); }
+        .form-input { width: 100%; padding: .75rem 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; background: var(--bg-white); min-height: 44px; font-family: var(--font-body); box-sizing: border-box; }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,122,109,.1); }
+        .form-help { display: block; font-size: .8125rem; color: var(--text-muted); margin-top: var(--space-xs); }
+        .calc-submit { width: 100%; }
+        .form-error { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; border-radius: var(--radius-md); color: var(--error); font-size: .875rem; }
+        .form-fieldset { border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: var(--space-lg); margin-bottom: var(--space-xl); }
+        .form-legend { font-weight: 600; font-size: 1rem; padding: 0 var(--space-sm); }
+        .method-chips { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+        .method-chip { padding: .5rem .75rem; border-radius: var(--radius-full); border: 1.5px solid var(--border); background: var(--surface); font-size: .8125rem; font-weight: 500; cursor: pointer; transition: all var(--transition-fast); color: var(--text-secondary); font-family: var(--font-body); min-height: 40px; }
+        .method-chip:hover { border-color: var(--primary); }
+        .method-chip.is-active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        .severity-card { text-align: center; }
+        .severity-badge { font-size: 1.5rem; font-weight: 700; padding: var(--space-md) var(--space-xl); border-radius: var(--radius-lg); display: inline-block; margin: var(--space-md) 0; }
+        .severity-badge.normal { background: #f0fdf4; color: var(--success); }
+        .severity-badge.mild { background: #fffbeb; color: #d97706; }
+        .severity-badge.moderate { background: #fff7ed; color: #ea580c; }
+        .severity-badge.severe { background: #fef2f2; color: var(--error); }
+        .severity-badge.critical { background: #7f1d1d; color: #fff; }
+        .severity-desc { font-size: .875rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto; line-height: 1.6; }
+
+        .doppler-results { display: grid; gap: var(--space-md); }
+        .doppler-result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: var(--space-lg); }
+        .doppler-result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md); }
+        .doppler-param-name { font-weight: 600; font-size: .9375rem; }
+        .doppler-status { font-size: .75rem; font-weight: 600; padding: 2px 10px; border-radius: var(--radius-full); }
+        .doppler-status.normal { background: #f0fdf4; color: var(--success); }
+        .doppler-status.abnormal { background: #fef2f2; color: var(--error); }
+        .doppler-status.warning { background: #fffbeb; color: #d97706; }
+        .doppler-detail { font-size: .8125rem; color: var(--text-secondary); line-height: 1.6; }
+        .doppler-detail strong { color: var(--text-primary); }
+
+        .doppler-warning { display: flex; gap: var(--space-sm); padding: var(--space-md); border-radius: var(--radius-md); margin-top: var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; align-items: flex-start; }
+        .doppler-warning p { font-size: .875rem; margin: 0; line-height: 1.6; }
+        @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+    </style>
+
+    <script>
+        import { calcIG21, calcMcaPsv, calcFmfDoppler, calcUtaPi, classifyDoppler } from '../../utils/fetal-doppler-calc.js';
+
+        let edfStatus = 'present';
+        document.getElementById('edf-chips')?.addEventListener('click', (e) => {
+            const chip = e.target.closest('.method-chip');
+            if (!chip) return;
+            document.querySelectorAll('#edf-chips .method-chip').forEach(c => c.classList.remove('is-active'));
+            chip.classList.add('is-active');
+            edfStatus = chip.dataset.value;
+        });
+
+        document.getElementById('doppler-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('form-error');
+            try {
+                const ga = parseInt(document.getElementById('dop-ga').value);
+                if (!ga || ga < 20 || ga > 42) throw new Error('Tuổi thai phải từ 20-42 tuần.');
+
+                const uaPi = parseFloat(document.getElementById('dop-ua-pi').value) || null;
+                const uaRi = parseFloat(document.getElementById('dop-ua-ri').value) || null;
+                const mcaPsvVal = parseFloat(document.getElementById('dop-mca-psv').value) || null;
+                const mcaPiVal = parseFloat(document.getElementById('dop-mca-pi').value) || null;
+                const utaLeft = parseFloat(document.getElementById('dop-uta-left').value) || null;
+                const utaRight = parseFloat(document.getElementById('dop-uta-right').value) || null;
+
+                if (!uaPi && !mcaPsvVal && !utaLeft) throw new Error('Vui lòng nhập ít nhất một chỉ số Doppler.');
+
+                const results = [];
+                const classifyInput = { gaWeeks: ga, endDiastolic: edfStatus };
+
+                // UA assessment via INTERGROWTH-21st
+                if (uaPi) {
+                    const uaIG21 = calcIG21(uaPi, 'UA_PI', ga);
+                    classifyInput.uaIG21 = uaIG21;
+                    results.push({ name: '🔴 Động mạch rốn (UA PI)', status: uaIG21.zScore > 2 ? 'abnormal' : 'normal', detail: `Z-score: <strong>${uaIG21.zScore.toFixed(2)}</strong> | Centile: <strong>${uaIG21.centile.toFixed(1)}</strong>` });
+                    if (uaRi) {
+                        const riIG21 = calcIG21(uaRi, 'UA_RI', ga);
+                        results.push({ name: '🔴 UA RI', status: riIG21.zScore > 2 ? 'abnormal' : 'normal', detail: `Z-score: <strong>${riIG21.zScore.toFixed(2)}</strong> | Centile: <strong>${riIG21.centile.toFixed(1)}</strong>` });
+                    }
+                }
+
+                // MCA-PSV (Anemia screening)
+                if (mcaPsvVal) {
+                    const mcaPsv = calcMcaPsv(mcaPsvVal, ga);
+                    classifyInput.mcaPsv = mcaPsv;
+                    const anemiaLabel = mcaPsv.anemiaRisk !== 'none' ? ` | Thiếu máu: <strong>${mcaPsv.anemiaRisk}</strong>` : '';
+                    results.push({ name: '🔵 MCA-PSV (Thiếu máu)', status: mcaPsv.anemiaRisk !== 'none' ? 'abnormal' : 'normal', detail: `MoM: <strong>${mcaPsv.mom.toFixed(2)}</strong>${anemiaLabel}` });
+                }
+
+                // FMF Doppler (CPR)
+                if (uaPi && mcaPiVal) {
+                    const fmf = calcFmfDoppler(uaPi, mcaPiVal, ga);
+                    classifyInput.fmf = fmf;
+                    results.push({ name: '📊 CPR (MCA/UA)', status: fmf.cprCentile < 5 ? 'abnormal' : fmf.cprCentile < 10 ? 'warning' : 'normal', detail: `CPR: <strong>${fmf.cpr.toFixed(2)}</strong> | Centile: <strong>${fmf.cprCentile.toFixed(1)}</strong>` });
+                }
+
+                // UtA-PI
+                if (utaLeft || utaRight) {
+                    const piL = utaLeft || utaRight;
+                    const piR = utaRight || utaLeft;
+                    const uta = calcUtaPi(piL, piR, ga);
+                    classifyInput.uta = uta;
+                    results.push({ name: '🟡 UtA-PI trung bình', status: uta.zScore > 2 ? 'abnormal' : uta.zScore > 1.5 ? 'warning' : 'normal', detail: `Mean PI: <strong>${uta.meanPi.toFixed(2)}</strong> | Z-score: <strong>${uta.zScore.toFixed(2)}</strong> | Centile: <strong>${uta.centile.toFixed(1)}</strong>` });
+                }
+
+                // Overall classification
+                const overall = classifyDoppler(classifyInput);
+
+                displayResults(results, overall);
+                if (errorEl) errorEl.hidden = true;
+            } catch (err) {
+                if (errorEl) { errorEl.textContent = err.message; errorEl.hidden = false; }
+            }
+        });
+
+        function displayResults(results, overall) {
+            const panel = document.getElementById('results-panel');
+            if (panel) panel.hidden = false;
+
+            // Overall severity
+            const badge = document.getElementById('severity-badge');
+            const desc = document.getElementById('severity-desc');
+            if (badge && overall) {
+                const SEVERITY_LABELS = { normal: 'Bình thường', abnormal_mild: 'Bất thường nhẹ', abnormal_moderate: 'Bất thường vừa', abnormal_severe: 'Bất thường nặng', critical: 'Nguy kịch' };
+                const SEVERITY_CLASS = { normal: 'normal', abnormal_mild: 'mild', abnormal_moderate: 'moderate', abnormal_severe: 'severe', critical: 'critical' };
+                badge.textContent = SEVERITY_LABELS[overall.severity] || overall.severity;
+                badge.className = `severity-badge ${SEVERITY_CLASS[overall.severity] || overall.severity}`;
+            }
+            if (desc && overall) {
+                desc.textContent = overall.summary || '';
+            }
+
+            // Individual results
+            const resultsEl = document.getElementById('doppler-results');
+            if (resultsEl) {
+                resultsEl.innerHTML = results.map(r => {
+                    const statusClass = r.status === 'normal' ? 'normal' : r.status === 'abnormal' ? 'abnormal' : 'warning';
+                    const statusLabel = r.status === 'normal' ? 'Bình thường' : r.status === 'abnormal' ? 'Bất thường' : 'Cần theo dõi';
+                    return `<div class="doppler-result-card">
+                        <div class="doppler-result-header">
+                            <span class="doppler-param-name">${r.name}</span>
+                            <span class="doppler-status ${statusClass}">${statusLabel}</span>
+                        </div>
+                        <div class="doppler-detail">${r.detail}</div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Warnings
+            const warningsEl = document.getElementById('doppler-warnings');
+            if (warningsEl && overall?.warnings?.length) {
+                warningsEl.innerHTML = overall.warnings.map(w => `
+                    <div class="doppler-warning"><span>🚨</span><p>${w}</p></div>
+                `).join('');
+            } else if (warningsEl) {
+                warningsEl.innerHTML = '';
+            }
+
+            panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</BaseLayout>
