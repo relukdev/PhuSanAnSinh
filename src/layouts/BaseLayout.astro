@@ -2673,7 +2673,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         color: var(--text-muted);
       }
 
-      .search-suggestions {
+      :global(.search-suggestions) {
         display: flex;
         flex-wrap: wrap;
         gap: var(--space-sm);
@@ -2681,7 +2681,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         margin-top: var(--space-md);
       }
 
-      .search-suggestions a {
+      :global(.search-suggestions a) {
         font-size: 0.75rem;
         padding: 0.35rem 0.75rem;
         border-radius: var(--radius-full);
@@ -2692,7 +2692,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         transition: all var(--transition-fast);
       }
 
-      .search-suggestions a:hover {
+      :global(.search-suggestions a:hover) {
         background: var(--primary-light);
         border-color: var(--primary);
         color: var(--primary-dark);
@@ -4968,19 +4968,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         clearTimeout(scrollTimer);
         scrollTimer = setTimeout(checkScrollMilestone, 200);
 
-        // Scroll to hide/show sticky bar
-        if (!stickyBar) return;
-        
-        if (Math.abs(lastScrollTop - st) <= scrollThreshold) return;
-
-        if (st > lastScrollTop && st > 100) {
-          // Scrolling down
-          stickyBar.classList.add('is-hidden');
-        } else {
-          // Scrolling up
-          stickyBar.classList.remove('is-hidden');
-        }
-        lastScrollTop = st <= 0 ? 0 : st;
+        // Removed hide/show logic for stickyBar on scroll to improve UX on calculator pages
+        // The bar will now act as a standard permanent bottom action bar
       }, { passive: true });
 
       // Console log for development
