@@ -1,0 +1,175 @@
+<style is:global>
+    /* Shared Bottom Sheet CSS */
+    .bs-backdrop { 
+        position: fixed; 
+        inset: 0; 
+        background: rgba(0,0,0,.4); 
+        z-index: 998; 
+        opacity: 0; 
+        transition: opacity var(--transition-base); 
+        pointer-events: none;
+    }
+    .bs-backdrop.is-visible { 
+        opacity: 1; 
+        pointer-events: auto;
+    }
+    .bs-sheet { 
+        position: fixed; 
+        bottom: 0; 
+        left: 0; 
+        right: 0; 
+        z-index: 999; 
+        background: var(--bg-white); 
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0; 
+        box-shadow: 0 -8px 30px rgba(0,0,0,.12); 
+        transform: translateY(100%); 
+        transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1); 
+        max-height: 92vh; 
+        display: flex; 
+        flex-direction: column; 
+    }
+    .bs-sheet.is-open { 
+        transform: translateY(0); 
+    }
+    .bs-handle { 
+        display: flex; 
+        justify-content: center; 
+        padding: var(--space-sm) 0; 
+        cursor: grab; 
+    }
+    .bs-handle span { 
+        width: 40px; 
+        height: 4px; 
+        background: var(--border); 
+        border-radius: var(--radius-full); 
+    }
+    .bs-header { 
+        padding: 0 var(--space-lg) var(--space-md); 
+        position: relative; 
+        border-bottom: 1px solid var(--border-light); 
+    }
+    .bs-title { 
+        font-size: 1.125rem; 
+        margin-bottom: 2px; 
+    }
+    .bs-subtitle { 
+        font-size: .8125rem; 
+        color: var(--text-muted); 
+        margin: 0; 
+    }
+    .bs-close { 
+        position: absolute; 
+        top: 0; 
+        right: var(--space-lg); 
+        background: none; 
+        border: none; 
+        font-size: 1.25rem; 
+        color: var(--text-muted); 
+        cursor: pointer; 
+        padding: var(--space-sm); 
+        min-width: 44px; 
+        min-height: 44px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+    }
+    .bs-body { 
+        flex: 1; 
+        overflow-y: auto; 
+        padding: var(--space-md) var(--space-lg); 
+        -webkit-overflow-scrolling: touch; 
+    }
+    .bs-tier-group { 
+        margin-bottom: var(--space-lg); 
+    }
+    .bs-tier-label { 
+        display: flex; 
+        align-items: center; 
+        gap: var(--space-sm); 
+        font-size: .8125rem; 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        letter-spacing: .04em; 
+        margin-bottom: var(--space-sm); 
+        padding-bottom: var(--space-xs); 
+        border-bottom: 2px solid var(--border-light); 
+    }
+    .bs-tier-label.tier-critical { color: #DC2626; border-color: #fca5a5; }
+    .bs-tier-label.tier-recommended { color: #D97706; border-color: #fbbf24; }
+    .bs-tier-label.tier-monitoring { color: #059669; border-color: #6ee7b7; }
+    
+    .bs-milestone { 
+        display: flex; 
+        gap: var(--space-sm); 
+        align-items: flex-start; 
+        padding: var(--space-sm) 0; 
+        border-bottom: 1px solid var(--border-light); 
+    }
+    .bs-milestone:last-child { border-bottom: none; }
+    .bs-milestone input[type=checkbox] { 
+        width: 20px; 
+        height: 20px; 
+        margin-top: 2px; 
+        flex-shrink: 0; 
+        accent-color: var(--primary); 
+        cursor: pointer; 
+    }
+    .bs-milestone-info { flex: 1; }
+    .bs-milestone-head { display: flex; justify-content: space-between; align-items: center; }
+    .bs-milestone-title { font-weight: 600; font-size: .875rem; }
+    .bs-milestone-week { font-size: .6875rem; color: var(--text-muted); white-space: nowrap; }
+    .bs-milestone-note { font-size: .75rem; color: var(--text-secondary); line-height: 1.4; margin-top: 2px; }
+    
+    .bs-prefs { 
+        padding: var(--space-md) var(--space-lg); 
+        border-top: 1px solid var(--border-light); 
+        background: var(--surface-alt); 
+    }
+    .bs-prefs-title { font-size: .875rem; margin-bottom: var(--space-sm); }
+    .bs-pref-row { 
+        display: flex; 
+        align-items: center; 
+        gap: var(--space-sm); 
+        margin-bottom: var(--space-sm); 
+        flex-wrap: wrap; 
+    }
+    .bs-pref-label { 
+        font-size: .8125rem; 
+        color: var(--text-secondary); 
+        font-weight: 500; 
+        min-width: 85px; 
+    }
+    .bs-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .bs-chip { 
+        padding: 6px 14px; 
+        border-radius: var(--radius-full); 
+        border: 1.5px solid var(--border); 
+        background: var(--bg-white); 
+        font-size: .8125rem; 
+        font-weight: 500; 
+        cursor: pointer; 
+        transition: all var(--transition-fast); 
+        color: var(--text-secondary); 
+        font-family: var(--font-body); 
+        min-height: 36px; 
+    }
+    .bs-chip:hover { border-color: var(--primary); color: var(--primary); }
+    .bs-chip.is-active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .bs-sms-section { margin-top: var(--space-sm); }
+    .bs-sms-toggle { font-size: .8125rem; color: var(--text-secondary); cursor: pointer; padding: var(--space-xs) 0; font-weight: 500; }
+    .bs-sms-body { padding-top: var(--space-sm); }
+    .bs-sms-body .form-input { font-size: .875rem; padding: .625rem .875rem; }
+    .bs-actions { display: flex; gap: var(--space-sm); padding: var(--space-md) var(--space-lg); border-top: 1px solid var(--border-light); }
+    .bs-action-btn { flex: 1; font-size: .875rem; padding: .75rem 1rem; }
+    .bs-footer-cta { text-align: center; padding: var(--space-sm) var(--space-lg) var(--space-lg); }
+    .bs-book-link { font-size: .8125rem; color: var(--primary); font-weight: 600; text-decoration: underline; }
+    .form-help { font-size: .75rem; color: var(--text-muted); display: block; margin-top: 4px; }
+
+    @media (min-width: 640px) {
+        .bs-sheet { max-width: 520px; left: 50%; transform: translateX(-50%) translateY(100%); }
+        .bs-sheet.is-open { transform: translateX(-50%) translateY(0); }
+    }
+    @media (max-width: 640px) {
+        .bs-actions { flex-direction: column; }
+    }
+</style>
