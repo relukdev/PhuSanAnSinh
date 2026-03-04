@@ -1,0 +1,530 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Theo Dõi Thai Kỳ — Lịch Khám Thai Định Kỳ | Phòng Khám An Sinh';
+const description = 'Công cụ theo dõi thai kỳ và nhắc lịch khám thai định kỳ. Tải lịch 13 mốc khám theo chuẩn Bộ Y Tế vào Calendar. Từ Sơn, Bắc Ninh.';
+---
+
+<BaseLayout title={title} description={description}>
+    <slot name="head">
+        <script type="application/ld+json" set:html={JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "MedicalWebPage",
+            "name": "Theo Dõi Thai Kỳ — Lịch Khám Thai Định Kỳ",
+            "description": description,
+            "specialty": "Obstetrics",
+            "about": {
+                "@type": "MedicalCondition",
+                "name": "Pregnancy",
+                "alternateName": "Thai kỳ"
+            },
+            "isPartOf": {
+                "@type": "WebSite",
+                "name": "Phòng Khám An Sinh",
+                "url": "https://phusanansinh.com"
+            }
+        })} />
+    </slot>
+
+    <!-- Hero -->
+    <section class="tdtk-hero">
+        <div class="container tdtk-hero-content">
+            <div class="tdtk-hero-icon">🤰</div>
+            <h1>Theo Dõi Thai Kỳ</h1>
+            <p class="tdtk-hero-desc">
+                Nhập ngày kinh cuối để xem lịch khám thai cá nhân hoá — 
+                13 mốc theo chuẩn <strong>Bộ Y Tế</strong> & <strong>WHO</strong>.
+            </p>
+        </div>
+    </section>
+
+    <!-- Input Section -->
+    <section class="section">
+        <div class="container">
+            <!-- Skeleton Loading -->
+            <div class="calc-skeleton" id="calc-skeleton" style="max-width:480px;margin:0 auto">
+                <div class="skeleton skeleton-heading" style="margin:0 auto"></div>
+                <div class="skeleton skeleton-text" style="width:55%"></div>
+                <div class="skeleton skeleton-input"></div>
+                <div class="skeleton skeleton-btn"></div>
+            </div>
+            <div class="tdtk-input-card card calc-form-hidden" id="input-card">
+                <h2 class="tdtk-input-title">📅 Nhập thông tin</h2>
+                <div class="tdtk-field">
+                    <label for="tdtk-lmp" class="form-label">Ngày đầu kỳ kinh cuối (LMP)</label>
+                    <input type="date" id="tdtk-lmp" class="form-input" />
+                </div>
+                <button type="button" class="btn btn-primary btn-lg tdtk-calc-btn" id="tdtk-calc">
+                    Xem lịch khám thai
+                </button>
+                <p class="tdtk-note" id="tdtk-error" hidden></p>
+            </div>
+
+            <!-- Results (hidden initially) -->
+            <div id="tdtk-results" hidden>
+                <!-- Summary Card -->
+                <div class="card tdtk-summary-card" id="tdtk-summary">
+                    <div class="tdtk-summary-grid">
+                        <div class="tdtk-stat">
+                            <span class="tdtk-stat-label">Thai kỳ</span>
+                            <span class="tdtk-stat-value" id="tdtk-ga">—</span>
+                        </div>
+                        <div class="tdtk-stat">
+                            <span class="tdtk-stat-label">Ngày dự sinh</span>
+                            <span class="tdtk-stat-value" id="tdtk-edd">—</span>
+                        </div>
+                        <div class="tdtk-stat">
+                            <span class="tdtk-stat-label">Tam cá nguyệt</span>
+                            <span class="tdtk-stat-value" id="tdtk-tri">—</span>
+                        </div>
+                    </div>
+                    <div class="tdtk-progress-bar">
+                        <div class="tdtk-progress-fill" id="tdtk-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="tdtk-progress-label"><span id="tdtk-progress-pct">0</span>% thai kỳ</p>
+                </div>
+
+                <!-- Timeline -->
+                <h2 class="tdtk-timeline-title">🗓️ Lịch khám thai 13 mốc</h2>
+                <p class="tdtk-timeline-desc">Mốc <strong>đã qua</strong> hiển thị mờ. Mốc <strong>sắp tới</strong> được đánh dấu nổi bật.</p>
+                <div class="tdtk-timeline" id="tdtk-timeline"></div>
+
+                <!-- Reminder CTA -->
+                <div class="card tdtk-reminder-card" id="tdtk-reminder-cta">
+                    <div class="tdtk-reminder-content">
+                        <div class="tdtk-reminder-icon">🔔</div>
+                        <div>
+                            <h3 class="tdtk-reminder-title">Tải lịch vào điện thoại</h3>
+                            <p class="tdtk-reminder-desc">Nhắc tự động trước mỗi mốc quan trọng. Không bỏ lỡ bất kỳ lần khám nào.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-accent btn-lg tdtk-reminder-btn" id="tdtk-open-sheet">
+                        📥 Xem & Tải lịch khám
+                    </button>
+                </div>
+
+                <!-- CTA -->
+                <div class="tdtk-cta">
+                    <a href="tel:0899268299" class="btn btn-primary btn-lg">📞 Đặt lịch khám: 0899 268 299</a>
+                    <a href="/cong-cu/tinh-ngay-du-sinh" class="btn btn-outline">🧮 Tính ngày dự sinh chi tiết</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-header">
+                <h2>❓ Câu hỏi thường gặp</h2>
+            </div>
+            <div class="tdtk-faq">
+                <details class="tdtk-faq-item">
+                    <summary>Tại sao cần khám thai đúng lịch?</summary>
+                    <p>Mỗi mốc khám có mục đích riêng — phát hiện sớm bất thường, sàng lọc dị tật, tiêm phòng đúng thời điểm. Bỏ lỡ một số mốc (như tuần 12 đo NT) sẽ không thể làm lại.</p>
+                </details>
+                <details class="tdtk-faq-item">
+                    <summary>13 mốc khám thai dựa trên tiêu chuẩn nào?</summary>
+                    <p>Lịch khám theo WHO 8-contact ANC model (2024), hướng dẫn ACOG 2025, và Thông tư 34/2016/TT-BYT của Bộ Y Tế Việt Nam. Phòng Khám An Sinh mở rộng thêm các mốc theo dõi giai đoạn cuối.</p>
+                </details>
+                <details class="tdtk-faq-item">
+                    <summary>Tôi có thể thay đổi ngày khám sau khi tải lịch?</summary>
+                    <p>Có. File .ics tải về có thể chỉnh sửa trực tiếp trong Apple Calendar hoặc Google Calendar. Bạn chỉ cần kéo thả sự kiện sang ngày mới.</p>
+                </details>
+                <details class="tdtk-faq-item">
+                    <summary>Phòng khám An Sinh khám vào giờ nào?</summary>
+                    <p>Thứ 2–Thứ 7: 17:00–22:00. Chủ nhật: 08:00–22:00. Hotline: 0899 268 299.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ BOTTOM SHEET (reused from tinh-ngay-du-sinh) ═══ -->
+    <div class="bs-backdrop" id="bs-backdrop" hidden></div>
+    <div class="bs-sheet" id="bs-sheet" role="dialog" aria-hidden="true" aria-label="Lịch thăm khám thai kỳ">
+        <div class="bs-handle"><span></span></div>
+        <div class="bs-header">
+            <h3 class="bs-title">📅 Lịch Thăm Khám Thai Kỳ</h3>
+            <p class="bs-subtitle" id="bs-ga-info">—</p>
+            <button type="button" class="bs-close" id="bs-close" aria-label="Đóng">✕</button>
+        </div>
+        <div class="bs-body" id="bs-body"></div>
+        <div class="bs-prefs">
+            <h4 class="bs-prefs-title">⚙️ Tuỳ chọn lịch</h4>
+            <div class="bs-pref-row">
+                <span class="bs-pref-label">Khám ngày:</span>
+                <div class="bs-chips" id="day-pref-chips">
+                    <button type="button" class="bs-chip is-active" data-val="weekday">T2-T7</button>
+                    <button type="button" class="bs-chip" data-val="sunday">Chủ nhật</button>
+                </div>
+            </div>
+            <div class="bs-pref-row" id="time-pref-row" hidden>
+                <span class="bs-pref-label">Ca khám:</span>
+                <div class="bs-chips" id="time-pref-chips">
+                    <button type="button" class="bs-chip is-active" data-val="morning">☀️ Sáng</button>
+                    <button type="button" class="bs-chip" data-val="afternoon">🌤️ Chiều</button>
+                    <button type="button" class="bs-chip" data-val="evening">🌙 Tối</button>
+                </div>
+            </div>
+            <div class="bs-pref-row">
+                <span class="bs-pref-label">Nhắc trước:</span>
+                <div class="bs-chips" id="reminder-chips">
+                    <button type="button" class="bs-chip is-active" data-val="24">24 giờ</button>
+                    <button type="button" class="bs-chip" data-val="8">8 giờ</button>
+                </div>
+            </div>
+            <!-- SMS Section (Hidden for core flow testing) -->
+            <details class="bs-sms-section" hidden>
+                <summary class="bs-sms-toggle">📱 Nhận tin nhắn nhắc lịch (tuỳ chọn)</summary>
+                <div class="bs-sms-body">
+                    <input type="tel" id="sms-phone" class="form-input" placeholder="0899 268 299" pattern="[0-9]{10}" inputmode="tel" />
+                    <small class="form-help">Nhập số điện thoại để nhận SMS nhắc lịch (sắp ra mắt)</small>
+                </div>
+            </details>
+        </div>
+        <div class="bs-actions">
+            <button type="button" class="btn btn-primary btn-lg bs-action-btn" id="bs-save-cal">📥 Lưu vào Calendar</button>
+            <button type="button" class="btn btn-accent btn-lg bs-action-btn" id="bs-download">📲 Tải về điện thoại</button>
+        </div>
+        <div class="bs-footer-cta">
+            <a href="tel:0899268299" class="bs-book-link">📞 Đặt lịch khám tại An Sinh: 0899 268 299</a>
+        </div>
+    </div>
+
+    <style>
+        /* Hero */
+        .tdtk-hero { background: linear-gradient(135deg, var(--primary-light) 0%, #E0F2EF 50%, var(--bg) 100%); padding: var(--space-3xl) 0; text-align: center; }
+        .tdtk-hero-content { max-width: 600px; margin: 0 auto; }
+        .tdtk-hero-icon { font-size: 3.5rem; margin-bottom: var(--space-md); }
+        .tdtk-hero h1 { margin-bottom: var(--space-sm); }
+        .tdtk-hero-desc { font-size: 1rem; color: var(--text-secondary); margin: 0; line-height: 1.6; }
+
+        /* Input */
+        .tdtk-input-card { max-width: 480px; margin: 0 auto; text-align: center; }
+        .tdtk-input-title { font-size: 1.25rem; margin-bottom: var(--space-lg); }
+        .tdtk-field { text-align: left; margin-bottom: var(--space-lg); }
+        .form-label { display: block; font-size: .875rem; font-weight: 600; color: var(--text-secondary); margin-bottom: var(--space-xs); }
+        .form-input { width: 100%; padding: .75rem 1rem; border: 1.5px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; font-family: var(--font-body); transition: border-color var(--transition-fast); background: var(--bg-white); }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,122,109,.1); }
+        .tdtk-calc-btn { width: 100%; }
+        .tdtk-note { font-size: .8125rem; color: var(--error); margin-top: var(--space-sm); text-align: center; }
+
+        /* Summary */
+        .tdtk-summary-card { margin: var(--space-xl) 0; }
+        .tdtk-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); text-align: center; margin-bottom: var(--space-lg); }
+        .tdtk-stat-label { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; display: block; }
+        .tdtk-stat-value { font-size: 1.125rem; font-weight: 700; color: var(--primary); display: block; margin-top: 4px; }
+        .tdtk-progress-bar { height: 8px; background: var(--border-light); border-radius: var(--radius-full); overflow: hidden; }
+        .tdtk-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: var(--radius-full); transition: width 600ms ease; }
+        .tdtk-progress-label { text-align: center; font-size: .75rem; color: var(--text-muted); margin-top: var(--space-xs); }
+
+        /* Timeline */
+        .tdtk-timeline-title { font-size: 1.25rem; margin: var(--space-xl) 0 var(--space-xs); }
+        .tdtk-timeline-desc { font-size: .8125rem; color: var(--text-muted); margin-bottom: var(--space-lg); }
+        .tdtk-timeline { display: flex; flex-direction: column; gap: var(--space-md); }
+        .tdtk-tl-item { display: flex; gap: var(--space-md); padding: var(--space-md); border-radius: var(--radius-md); border: 1px solid var(--border-light); transition: all var(--transition-fast); position: relative; }
+        .tdtk-tl-item:hover { box-shadow: var(--shadow-sm); }
+        .tdtk-tl-item.is-past { opacity: .45; }
+        .tdtk-tl-item.is-current { border-color: var(--primary); background: var(--primary-light); border-width: 2px; }
+        .tdtk-tl-item.is-upcoming { }
+        .tdtk-tl-dot { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; background: var(--surface-alt); }
+        .tdtk-tl-item.is-past .tdtk-tl-dot { background: var(--border); }
+        .tdtk-tl-item.is-current .tdtk-tl-dot { background: var(--primary); color: #fff; font-size: 1rem; }
+        .tdtk-tl-info { flex: 1; }
+        .tdtk-tl-week { font-size: .6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+        .tdtk-tl-item.tier-critical .tdtk-tl-week { color: #DC2626; }
+        .tdtk-tl-item.tier-recommended .tdtk-tl-week { color: #D97706; }
+        .tdtk-tl-item.tier-monitoring .tdtk-tl-week { color: #059669; }
+        .tdtk-tl-name { font-weight: 600; font-size: .9375rem; margin-bottom: 2px; }
+        .tdtk-tl-desc { font-size: .8125rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+        .tdtk-tl-tests { display: flex; flex-wrap: wrap; gap: 4px; margin-top: var(--space-xs); }
+        .tdtk-tl-tag { font-size: .6875rem; background: var(--surface-alt); padding: 2px 8px; border-radius: var(--radius-full); color: var(--text-muted); }
+        .tdtk-tl-item.is-current .tdtk-tl-tag { background: rgba(27,122,109,.15); color: var(--primary-dark); }
+        .tdtk-tl-tier-badge { position: absolute; top: var(--space-sm); right: var(--space-sm); font-size: .625rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: .03em; }
+        .tier-critical .tdtk-tl-tier-badge { background: #fef2f2; color: #DC2626; }
+        .tier-recommended .tdtk-tl-tier-badge { background: #fffbeb; color: #D97706; }
+        .tier-monitoring .tdtk-tl-tier-badge { background: #ecfdf5; color: #059669; }
+
+        /* Reminder CTA */
+        .tdtk-reminder-card { margin-top: var(--space-xl); background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%); border: 2px solid var(--accent); }
+        .tdtk-reminder-content { display: flex; gap: var(--space-md); align-items: center; margin-bottom: var(--space-lg); }
+        .tdtk-reminder-icon { font-size: 2.5rem; line-height: 1; flex-shrink: 0; }
+        .tdtk-reminder-title { font-size: 1.125rem; margin-bottom: 4px; }
+        .tdtk-reminder-desc { font-size: .8125rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+        .tdtk-reminder-btn { width: 100%; }
+
+        /* CTA */
+        .tdtk-cta { display: flex; flex-direction: column; gap: var(--space-sm); align-items: center; margin-top: var(--space-xl); }
+
+        /* FAQ */
+        .tdtk-faq { max-width: 700px; margin: 0 auto; }
+        .tdtk-faq-item { border: 1px solid var(--border-light); border-radius: var(--radius-md); margin-bottom: var(--space-sm); overflow: hidden; }
+        .tdtk-faq-item summary { padding: var(--space-md); font-weight: 600; cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; }
+        .tdtk-faq-item summary::after { content: "+"; font-size: 1.25rem; color: var(--text-muted); transition: transform var(--transition-fast); }
+        .tdtk-faq-item[open] summary::after { content: "−"; }
+        .tdtk-faq-item p { padding: 0 var(--space-md) var(--space-md); font-size: .875rem; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+        /* Bottom Sheet (copied from tinh-ngay-du-sinh) */
+        .bs-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 998; opacity: 0; transition: opacity var(--transition-base); }
+        .bs-backdrop.is-visible { opacity: 1; }
+        .bs-sheet { position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; background: var(--bg-white); border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: 0 -8px 30px rgba(0,0,0,.12); transform: translateY(100%); transition: transform 300ms cubic-bezier(0.4,0,0.2,1); max-height: 92vh; display: flex; flex-direction: column; }
+        .bs-sheet.is-open { transform: translateY(0); }
+        .bs-handle { display: flex; justify-content: center; padding: var(--space-sm) 0; cursor: grab; }
+        .bs-handle span { width: 40px; height: 4px; background: var(--border); border-radius: var(--radius-full); }
+        .bs-header { padding: 0 var(--space-lg) var(--space-md); position: relative; border-bottom: 1px solid var(--border-light); }
+        .bs-title { font-size: 1.125rem; margin-bottom: 2px; }
+        .bs-subtitle { font-size: .8125rem; color: var(--text-muted); margin: 0; }
+        .bs-close { position: absolute; top: 0; right: var(--space-lg); background: none; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; padding: var(--space-sm); min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+        .bs-body { flex: 1; overflow-y: auto; padding: var(--space-md) var(--space-lg); -webkit-overflow-scrolling: touch; }
+        .bs-tier-group { margin-bottom: var(--space-lg); }
+        .bs-tier-label { display: flex; align-items: center; gap: var(--space-sm); font-size: .8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-bottom: var(--space-sm); padding-bottom: var(--space-xs); border-bottom: 2px solid var(--border-light); }
+        .bs-tier-label.tier-critical { color: #DC2626; border-color: #fca5a5; }
+        .bs-tier-label.tier-recommended { color: #D97706; border-color: #fbbf24; }
+        .bs-tier-label.tier-monitoring { color: #059669; border-color: #6ee7b7; }
+        .bs-milestone { display: flex; gap: var(--space-sm); align-items: flex-start; padding: var(--space-sm) 0; border-bottom: 1px solid var(--border-light); }
+        .bs-milestone:last-child { border-bottom: none; }
+        .bs-milestone input[type=checkbox] { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; accent-color: var(--primary); cursor: pointer; }
+        .bs-milestone-info { flex: 1; }
+        .bs-milestone-head { display: flex; justify-content: space-between; align-items: center; }
+        .bs-milestone-title { font-weight: 600; font-size: .875rem; }
+        .bs-milestone-week { font-size: .6875rem; color: var(--text-muted); white-space: nowrap; }
+        .bs-milestone-note { font-size: .75rem; color: var(--text-secondary); line-height: 1.4; margin-top: 2px; }
+        .bs-prefs { padding: var(--space-md) var(--space-lg); border-top: 1px solid var(--border-light); background: var(--surface-alt); }
+        .bs-prefs-title { font-size: .875rem; margin-bottom: var(--space-sm); }
+        .bs-pref-row { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm); flex-wrap: wrap; }
+        .bs-pref-label { font-size: .8125rem; color: var(--text-secondary); font-weight: 500; min-width: 85px; }
+        .bs-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+        .bs-chip { padding: 6px 14px; border-radius: var(--radius-full); border: 1.5px solid var(--border); background: var(--bg-white); font-size: .8125rem; font-weight: 500; cursor: pointer; transition: all var(--transition-fast); color: var(--text-secondary); font-family: var(--font-body); min-height: 36px; }
+        .bs-chip:hover { border-color: var(--primary); color: var(--primary); }
+        .bs-chip.is-active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .bs-sms-section { margin-top: var(--space-sm); }
+        .bs-sms-toggle { font-size: .8125rem; color: var(--text-secondary); cursor: pointer; padding: var(--space-xs) 0; font-weight: 500; }
+        .bs-sms-body { padding-top: var(--space-sm); }
+        .bs-sms-body .form-input { font-size: .875rem; padding: .625rem .875rem; }
+        .bs-actions { display: flex; gap: var(--space-sm); padding: var(--space-md) var(--space-lg); border-top: 1px solid var(--border-light); }
+        .bs-action-btn { flex: 1; font-size: .875rem; padding: .75rem 1rem; }
+        .bs-footer-cta { text-align: center; padding: var(--space-sm) var(--space-lg) var(--space-lg); }
+        .bs-book-link { font-size: .8125rem; color: var(--primary); font-weight: 600; text-decoration: underline; }
+        .form-help { font-size: .75rem; color: var(--text-muted); display: block; margin-top: 4px; }
+
+        @media (min-width: 640px) {
+            .bs-sheet { max-width: 520px; left: 50%; transform: translateX(-50%) translateY(100%); }
+            .bs-sheet.is-open { transform: translateX(-50%) translateY(0); }
+        }
+        @media (max-width: 640px) {
+            .tdtk-summary-grid { grid-template-columns: 1fr; gap: var(--space-sm); }
+            .bs-actions { flex-direction: column; }
+        }
+    </style>
+
+    <script type="module">
+        // Reveal form, hide skeleton
+        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
+        document.getElementById('input-card')?.classList.remove('calc-form-hidden');
+
+        const {
+            calculateDueDate, calculateGestationalAge, getTrimester,
+            getPregnancyProgress, formatDateVN
+        } = await import('../../utils/due-date-calc.js');
+        const {
+            generateReminderSchedule, getAllMilestones, generateIcsCalendar,
+            downloadIcsFile, saveToCalendar, calcGestationalAge
+        } = await import('../../utils/prenatal-reminder-engine.js');
+
+        let currentLmp = null;
+        let currentGa = null;
+
+        // Auto-fill from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const lmpParam = urlParams.get('lmp');
+        if (lmpParam) {
+            const lmpInput = document.getElementById('tdtk-lmp');
+            if (lmpInput) lmpInput.value = lmpParam;
+            // Auto-calculate
+            setTimeout(() => document.getElementById('tdtk-calc')?.click(), 300);
+        }
+
+        // Calculate
+        document.getElementById('tdtk-calc')?.addEventListener('click', () => {
+            const lmpInput = document.getElementById('tdtk-lmp');
+            const errorEl = document.getElementById('tdtk-error');
+            const lmpValue = lmpInput?.value;
+            if (!lmpValue) {
+                errorEl.textContent = 'Vui lòng nhập ngày kinh cuối.';
+                errorEl.hidden = false;
+                return;
+            }
+
+            try {
+                const edd = calculateDueDate(lmpValue);
+                const ga = calculateGestationalAge(lmpValue);
+                const trimester = getTrimester(ga.weeks);
+                const progress = getPregnancyProgress(lmpValue);
+
+                currentLmp = lmpValue;
+                currentGa = ga;
+
+                // Update summary
+                document.getElementById('tdtk-ga').textContent = `${ga.weeks} tuần ${ga.days} ngày`;
+                document.getElementById('tdtk-edd').textContent = formatDateVN(edd);
+                document.getElementById('tdtk-tri').textContent = `Tam cá nguyệt ${trimester}`;
+                document.getElementById('tdtk-progress').style.width = `${progress}%`;
+                document.getElementById('tdtk-progress-pct').textContent = progress;
+
+                // Render timeline
+                renderTimeline(lmpValue, ga);
+
+                // Show results
+                document.getElementById('tdtk-results').hidden = false;
+                errorEl.hidden = true;
+                document.getElementById('tdtk-results').scrollIntoView({ behavior: 'smooth' });
+            } catch (err) {
+                errorEl.textContent = err.message || 'Ngày không hợp lệ.';
+                errorEl.hidden = false;
+            }
+        });
+
+        function renderTimeline(lmpDate, ga) {
+            const allMilestones = getAllMilestones();
+            const container = document.getElementById('tdtk-timeline');
+
+            const tierBadgeLabels = {
+                critical: 'Quan trọng',
+                recommended: 'Khuyến nghị',
+                monitoring: 'Theo dõi',
+            };
+
+            container.innerHTML = allMilestones.map(m => {
+                let status = 'is-upcoming';
+                if (m.week < ga.weeks - 1) status = 'is-past';
+                else if (Math.abs(m.week - ga.weeks) <= 1) status = 'is-current';
+
+                return `
+                    <div class="tdtk-tl-item ${status} tier-${m.tier}">
+                        <div class="tdtk-tl-dot">${m.icon}</div>
+                        <div class="tdtk-tl-info">
+                            <div class="tdtk-tl-week">${m.tierConfig.emoji} Tuần ${m.week}</div>
+                            <div class="tdtk-tl-name">${m.title}</div>
+                            <p class="tdtk-tl-desc">${m.urgencyNote}</p>
+                            <div class="tdtk-tl-tests">
+                                ${m.tests.slice(0, 3).map(t => `<span class="tdtk-tl-tag">${t}</span>`).join('')}
+                                ${m.tests.length > 3 ? `<span class="tdtk-tl-tag">+${m.tests.length - 3}</span>` : ''}
+                            </div>
+                        </div>
+                        <span class="tdtk-tl-tier-badge">${tierBadgeLabels[m.tier]}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ═══════════════════════════════════════════════
+        // BOTTOM SHEET LOGIC (same as tinh-ngay-du-sinh)
+        // ═══════════════════════════════════════════════
+        const bsBackdrop = document.getElementById('bs-backdrop');
+        const bsSheet = document.getElementById('bs-sheet');
+        const bsBody = document.getElementById('bs-body');
+        const bsGaInfo = document.getElementById('bs-ga-info');
+
+        let bsDayPref = 'weekday';
+        let bsTimePref = 'morning';
+        let bsReminderHours = 24;
+        let bsSchedule = [];
+
+        function openSheet() {
+            if (!currentLmp) return;
+            bsSchedule = generateReminderSchedule(currentLmp);
+            if (bsGaInfo && currentGa) {
+                bsGaInfo.textContent = `Thai kỳ: Tuần ${currentGa.weeks} ngày ${currentGa.days} — Còn ${bsSchedule.length} mốc phía trước`;
+            }
+            renderSheetMilestones(bsSchedule);
+            bsBackdrop.hidden = false;
+            bsSheet.setAttribute('aria-hidden', 'false');
+            requestAnimationFrame(() => {
+                bsBackdrop.classList.add('is-visible');
+                bsSheet.classList.add('is-open');
+            });
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSheet() {
+            bsBackdrop.classList.remove('is-visible');
+            bsSheet.classList.remove('is-open');
+            bsSheet.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            setTimeout(() => { bsBackdrop.hidden = true; }, 300);
+        }
+
+        function renderSheetMilestones(schedule) {
+            const grouped = { critical: [], recommended: [], monitoring: [] };
+            for (const m of schedule) grouped[m.tier].push(m);
+            const tierOrder = ['critical', 'recommended', 'monitoring'];
+            const tierLabels = {
+                critical: '🔴 Quan trọng — Không thể bỏ qua',
+                recommended: '🟡 Khuyến nghị — Nên đi để yên tâm',
+                monitoring: '🟢 Theo dõi — Giai đoạn cuối',
+            };
+            bsBody.innerHTML = tierOrder.map(tier => {
+                if (grouped[tier].length === 0) return '';
+                return `<div class="bs-tier-group">
+                    <div class="bs-tier-label tier-${tier}">${tierLabels[tier]}</div>
+                    ${grouped[tier].map(m => `<div class="bs-milestone">
+                        <input type="checkbox" id="chk-${m.id}" data-id="${m.id}" checked />
+                        <div class="bs-milestone-info">
+                            <div class="bs-milestone-head">
+                                <span class="bs-milestone-title">${m.icon} ${m.title}</span>
+                                <span class="bs-milestone-week">Tuần ${m.week}</span>
+                            </div>
+                            <div class="bs-milestone-note">${m.urgencyNote}</div>
+                        </div>
+                    </div>`).join('')}
+                </div>`;
+            }).join('');
+        }
+
+        function getSelectedMilestones() {
+            const checked = bsBody.querySelectorAll('input[type=checkbox]:checked');
+            const ids = new Set([...checked].map(c => c.dataset.id));
+            return bsSchedule.filter(m => ids.has(m.id));
+        }
+
+        document.getElementById('tdtk-open-sheet')?.addEventListener('click', openSheet);
+        document.getElementById('bs-close')?.addEventListener('click', closeSheet);
+        bsBackdrop?.addEventListener('click', closeSheet);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && bsSheet?.classList.contains('is-open')) closeSheet(); });
+
+        // Chip handlers
+        document.getElementById('day-pref-chips')?.addEventListener('click', (e) => {
+            const chip = e.target.closest('.bs-chip');
+            if (!chip) return;
+            document.querySelectorAll('#day-pref-chips .bs-chip').forEach(c => c.classList.remove('is-active'));
+            chip.classList.add('is-active');
+            bsDayPref = chip.dataset.val;
+            document.getElementById('time-pref-row').hidden = bsDayPref !== 'sunday';
+        });
+        document.getElementById('time-pref-chips')?.addEventListener('click', (e) => {
+            const chip = e.target.closest('.bs-chip');
+            if (!chip) return;
+            document.querySelectorAll('#time-pref-chips .bs-chip').forEach(c => c.classList.remove('is-active'));
+            chip.classList.add('is-active');
+            bsTimePref = chip.dataset.val;
+        });
+        document.getElementById('reminder-chips')?.addEventListener('click', (e) => {
+            const chip = e.target.closest('.bs-chip');
+            if (!chip) return;
+            document.querySelectorAll('#reminder-chips .bs-chip').forEach(c => c.classList.remove('is-active'));
+            chip.classList.add('is-active');
+            bsReminderHours = parseInt(chip.dataset.val);
+        });
+
+        document.getElementById('bs-save-cal')?.addEventListener('click', () => {
+            const selected = getSelectedMilestones();
+            if (selected.length === 0) return alert('Vui lòng chọn ít nhất 1 mốc khám.');
+            saveToCalendar(selected, { lmpDate: currentLmp, dayPref: bsDayPref, timePref: bsTimePref, reminderHours: bsReminderHours });
+        });
+        document.getElementById('bs-download')?.addEventListener('click', () => {
+            const selected = getSelectedMilestones();
+            if (selected.length === 0) return alert('Vui lòng chọn ít nhất 1 mốc khám.');
+            downloadIcsFile(generateIcsCalendar(selected, { lmpDate: currentLmp, dayPref: bsDayPref, timePref: bsTimePref, reminderHours: bsReminderHours }));
+        });
+    </script>
+</BaseLayout>

@@ -15,7 +15,18 @@ import "../../styles/global.css";
 
     <section class="section" id="calculator"><div class="container"><div class="calc-layout">
         <div class="calc-form-panel">
-            <div class="card calc-card">
+            <!-- Skeleton Loading -->
+            <div class="calc-skeleton" id="calc-skeleton">
+                <div class="skeleton skeleton-heading"></div>
+                <div class="skeleton skeleton-text" style="width:50%"></div>
+                <div class="skeleton skeleton-input"></div>
+                <div class="skeleton skeleton-text" style="width:60%"></div>
+                <div class="skeleton skeleton-input"></div>
+                <div class="skeleton skeleton-text" style="width:55%"></div>
+                <div class="skeleton skeleton-input"></div>
+                <div class="skeleton skeleton-btn"></div>
+            </div>
+            <div class="card calc-card calc-form-hidden" id="calc-form-panel">
                 <h2 class="calc-title">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                     Nhập chỉ số Doppler
@@ -146,7 +157,11 @@ import "../../styles/global.css";
     </style>
 
     <script>
-        import { calcIG21, calcMcaPsv, calcFmfDoppler, calcUtaPi, classifyDoppler } from '../../utils/fetal-doppler-calc.js';
+        // Reveal form, hide skeleton
+        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
+        document.getElementById('calc-form-panel')?.classList.remove('calc-form-hidden');
+
+        const { calcIG21, calcMcaPsv, calcFmfDoppler, calcUtaPi, classifyDoppler } = await import('../../utils/fetal-doppler-calc.js');
 
         let edfStatus = 'present';
         document.getElementById('edf-chips')?.addEventListener('click', (e) => {

@@ -15,7 +15,18 @@ import "../../styles/global.css";
 
     <section class="section" id="calculator"><div class="container"><div class="calc-layout">
         <div class="calc-form-panel">
-            <div class="card calc-card">
+            <!-- Skeleton Loading -->
+            <div class="calc-skeleton" id="calc-skeleton">
+                <div class="skeleton skeleton-heading"></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton skeleton-text" style="width:70%"></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton skeleton-text" style="width:70%"></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton skeleton-btn"></div>
+            </div>
+            <div class="card calc-card calc-form-hidden" id="calc-form-panel">
                 <h2 class="calc-title">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
                     Nhập thông tin sản phụ
@@ -163,7 +174,11 @@ import "../../styles/global.css";
     </style>
 
     <script>
-        import { preprocess, classifyACOG, classifyNICE, checkConcordance, aspirinTiming, getFollowUp, screenPatient, createEmptyPatient } from '../../utils/preeclampsia-engine.js';
+        // Reveal form, hide skeleton
+        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
+        document.getElementById('calc-form-panel')?.classList.remove('calc-form-hidden');
+
+        const { preprocess, classifyACOG, classifyNICE, checkConcordance, aspirinTiming, getFollowUp, screenPatient, createEmptyPatient } = await import('../../utils/preeclampsia-engine.js');
 
         document.getElementById('pe-form')?.addEventListener('submit', (e) => {
             e.preventDefault();

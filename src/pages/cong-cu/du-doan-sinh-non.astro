@@ -15,7 +15,19 @@ import "../../styles/global.css";
 
     <section class="section" id="calculator"><div class="container"><div class="calc-layout">
         <div class="calc-form-panel">
-            <div class="card calc-card">
+            <!-- Skeleton Loading -->
+            <div class="calc-skeleton" id="calc-skeleton">
+                <div class="skeleton skeleton-heading"></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton skeleton-text" style="width:55%"></div>
+                <div class="skeleton skeleton-input"></div>
+                <div class="skeleton skeleton-text" style="width:50%"></div>
+                <div class="skeleton skeleton-input"></div>
+                <div class="skeleton skeleton-text" style="width:60%"></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton skeleton-btn"></div>
+            </div>
+            <div class="card calc-card calc-form-hidden" id="calc-form-panel">
                 <h2 class="calc-title">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                     Nhập thông tin lâm sàng
@@ -120,7 +132,11 @@ import "../../styles/global.css";
     </style>
 
     <script>
-        import { calcFmfRisk, stratifyRisk, estimateQuippRisk, validatePretermInputs } from '../../utils/preterm-birth-calc.js';
+        // Reveal form, hide skeleton
+        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
+        document.getElementById('calc-form-panel')?.classList.remove('calc-form-hidden');
+
+        const { calcFmfRisk, stratifyRisk, estimateQuippRisk, validatePretermInputs } = await import('../../utils/preterm-birth-calc.js');
 
         document.getElementById('ptb-form')?.addEventListener('submit', (e) => {
             e.preventDefault();

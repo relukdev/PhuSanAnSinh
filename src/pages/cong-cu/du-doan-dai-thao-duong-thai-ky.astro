@@ -15,7 +15,16 @@ import "../../styles/global.css";
 
     <section class="section" id="calculator"><div class="container"><div class="calc-layout">
         <div class="calc-form-panel">
-            <div class="card calc-card">
+            <!-- Skeleton Loading -->
+            <div class="calc-skeleton" id="calc-skeleton">
+                <div class="skeleton skeleton-heading"></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton skeleton-text" style="width:60%"></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton skeleton-btn"></div>
+            </div>
+            <div class="card calc-card calc-form-hidden" id="calc-form-panel">
                 <h2 class="calc-title">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                     Nhập thông tin
@@ -104,7 +113,11 @@ import "../../styles/global.css";
     </style>
 
     <script>
-        import { calcFmfGDMRisk, stratifyFmfRisk, calcFmfPrevGDM, calcIowaGDMRisk, stratifyIowaRisk, calcBMI } from '../../utils/gdm-calc.js';
+        // Reveal form, hide skeleton
+        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
+        document.getElementById('calc-form-panel')?.classList.remove('calc-form-hidden');
+
+        const { calcFmfGDMRisk, stratifyFmfRisk, calcFmfPrevGDM, calcIowaGDMRisk, stratifyIowaRisk, calcBMI } = await import('../../utils/gdm-calc.js');
 
         document.getElementById('gdm-form')?.addEventListener('submit', (e) => {
             e.preventDefault();

@@ -15,7 +15,18 @@ import "../../styles/global.css";
 
     <section class="section" id="calculator"><div class="container"><div class="calc-layout">
         <div class="calc-form-panel">
-            <div class="card calc-card">
+            <!-- Skeleton Loading -->
+            <div class="calc-skeleton" id="calc-skeleton">
+                <div class="skeleton skeleton-heading"></div>
+                <div class="skeleton skeleton-text" style="width:65%"></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton skeleton-text" style="width:65%"></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton skeleton-text" style="width:65%"></div>
+                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
+                <div class="skeleton skeleton-btn"></div>
+            </div>
+            <div class="card calc-card calc-form-hidden" id="calc-form-panel">
                 <h2 class="calc-title">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                     Đánh giá 5 thông số cổ tử cung
@@ -156,7 +167,11 @@ import "../../styles/global.css";
     </style>
 
     <script>
-        import { calcBishopScore, classifyBishop, getInductionMethods } from '../../utils/bishop-score-calc.js';
+        // Reveal form, hide skeleton
+        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
+        document.getElementById('calc-form-panel')?.classList.remove('calc-form-hidden');
+
+        const { classifyBishop, getInductionMethods } = await import('../../utils/bishop-score-calc.js');
 
         const scores = { dilation: 0, effacement: 0, station: 0, consistency: 0, position: 0 };
 
@@ -173,7 +188,9 @@ import "../../styles/global.css";
 
         document.getElementById('bishop-form')?.addEventListener('submit', (e) => {
             e.preventDefault();
-            const total = calcBishopScore(scores);
+            // Sum numeric scores directly (chip data-score values are the Bishop points)
+            const total = scores.dilation + scores.effacement + scores.station
+                + scores.consistency + scores.position;
             const multipara = document.getElementById('bishop-multipara').checked;
             const parity = multipara ? 'multiparous' : 'nulliparous';
             const classification = classifyBishop(total, parity);
