@@ -393,12 +393,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
               </div>
             </li>
 
-            <!-- Công cụ Dropdown -->
-            <li class="nav-has-dropdown">
+            <!-- Công cụ — opens tools sheet overlay -->
+            <li>
               <button
                 class="nav-dropdown-trigger"
+                id="tools-sheet-trigger"
                 aria-expanded="false"
-                aria-haspopup="true"
+                aria-haspopup="dialog"
               >
                 <span class="nav-trigger-content">
                   <svg
@@ -432,280 +433,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
                   ><polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
               </button>
-              <div class="nav-dropdown nav-dropdown-mega" role="menu">
-                <div class="dropdown-mega-inner">
-                  <div class="dropdown-grid dropdown-tools">
-                    <a
-                      href="/tinh-ngay-rung-trung"
-                      class="dropdown-tool-card"
-                      role="menuitem"
-                    >
-                      <span class="tool-icon">
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--primary)"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          ><rect
-                            x="3"
-                            y="4"
-                            width="18"
-                            height="18"
-                            rx="2"
-                            ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"
-                          ></line><line x1="8" y1="2" x2="8" y2="6"></line><line
-                            x1="3"
-                            y1="10"
-                            x2="21"
-                            y2="10"></line>
-                        </svg>
-                      </span>
-                      <div class="tool-info">
-                        <strong>Tính ngày rụng trứng</strong>
-                        <span>Dự đoán ngày rụng trứng & cửa sổ thụ thai</span>
-                      </div>
-                    </a>
-                    <a
-                      href="/cong-cu/tinh-ngay-du-sinh"
-                      class="dropdown-tool-card"
-                      role="menuitem"
-                    >
-                      <span class="tool-icon">
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--primary)"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          ><circle cx="12" cy="12" r="10"></circle><path
-                            d="M8 14s1.5 2 4 2 4-2 4-2"></path><line
-                            x1="9"
-                            y1="9"
-                            x2="9.01"
-                            y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"
-                          ></line>
-                        </svg>
-                      </span>
-                      <div class="tool-info">
-                        <strong>Tính ngày dự sinh</strong>
-                        <span>Tính EDD theo công thức Naegele</span>
-                      </div>
-                    </a>
-                    <a
-                      href="/can-nang-thai-nhi"
-                      class="dropdown-tool-card"
-                      role="menuitem"
-                    >
-                      <span class="tool-icon">
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--primary)"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          ><path d="M12 3v17.25M18 9l-6 3.5L6 9"></path><path
-                            d="M18 9c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-6c0-1.1.9-2 2-2"
-                          ></path>
-                        </svg>
-                      </span>
-                      <div class="tool-info">
-                        <strong>Cân nặng thai nhi</strong>
-                        <span>Tra bảng chuẩn WHO theo tuần</span>
-                      </div>
-                    </a>
-                    <a
-                      href="/cong-cu/du-doan-sinh-non"
-                      class="dropdown-tool-card"
-                      role="menuitem"
-                    >
-                      <span class="tool-icon">
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--warning)"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          ><path
-                            d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
-                          ></path><line x1="12" y1="9" x2="12" y2="13"
-                          ></line><line x1="12" y1="17" x2="12.01" y2="17"
-                          ></line>
-                        </svg>
-                      </span>
-                      <div class="tool-info">
-                        <strong>Dự đoán sinh non</strong>
-                        <span>Đánh giá nguy cơ QUiPP + FMF</span>
-                      </div>
-                    </a>
-                    <a
-                      href="/cong-cu/sang-loc-tien-san-giat"
-                      class="dropdown-tool-card"
-                      role="menuitem"
-                    >
-                      <span class="tool-icon">
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--primary)"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          ><path
-                            d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"
-                          ></path><rect
-                            x="8"
-                            y="2"
-                            width="8"
-                            height="4"
-                            rx="1"
-                            ry="1"></rect><path d="M9 14l2 2 4-4"></path>
-                        </svg>
-                      </span>
-                      <div class="tool-info">
-                        <strong>Sàng lọc tiền sản giật</strong>
-                        <span>ACOG/USPSTF 2021 + NICE NG133</span>
-                      </div>
-                    </a>
-                    <a
-                      href="/cong-cu/du-doan-dai-thao-duong-thai-ky"
-                      class="dropdown-tool-card"
-                      role="menuitem"
-                    >
-                      <span class="tool-icon">
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--primary)"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          ><path
-                            d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-                          ></path>
-                        </svg>
-                      </span>
-                      <div class="tool-info">
-                        <strong>Dự đoán ĐTĐ thai kỳ</strong>
-                        <span>FMF + PersonalGDM + Iowa</span>
-                      </div>
-                    </a>
-                    <a
-                      href="/cong-cu/danh-gia-khoi-u-buong-trung"
-                      class="dropdown-tool-card"
-                      role="menuitem"
-                    >
-                      <span class="tool-icon">
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--primary)"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          ><circle cx="11" cy="11" r="8"></circle><line
-                            x1="21"
-                            y1="21"
-                            x2="16.65"
-                            y2="16.65"></line>
-                        </svg>
-                      </span>
-                      <div class="tool-info">
-                        <strong>Đánh giá u buồng trứng</strong>
-                        <span>RMI 1–4 + ROMA score</span>
-                      </div>
-                    </a>
-                    <a
-                      href="/cong-cu/bishop-score"
-                      class="dropdown-tool-card"
-                      role="menuitem"
-                    >
-                      <span class="tool-icon">
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--primary)"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          ><path d="M22 11.08V12a10 10 0 11-5.93-9.14"
-                          ></path><polyline points="22 4 12 14.01 9 11.01"
-                          ></polyline>
-                        </svg>
-                      </span>
-                      <div class="tool-info">
-                        <strong>Bishop Score</strong>
-                        <span>Đánh giá CTC & khởi phát chuyển dạ</span>
-                      </div>
-                    </a>
-                    <a
-                      href="/cong-cu/doppler-thai-nhi"
-                      class="dropdown-tool-card"
-                      role="menuitem"
-                    >
-                      <span class="tool-icon">
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--primary)"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          ><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                        </svg>
-                      </span>
-                      <div class="tool-info">
-                        <strong>Doppler thai nhi</strong>
-                        <span>UA-PI, MCA-PSV, CPR, UtA-PI</span>
-                      </div>
-                    </a>
-                  </div>
-                  <div class="dropdown-promo">
-                    <span class="promo-label">
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        style="vertical-align: -2px; margin-right: 4px;"
-                        ><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"
-                        ></path><path
-                          d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"></path>
-                      </svg>
-                      Bài viết liên quan
-                    </span>
-                    <a href="/blog" class="promo-link">Mang thai & Sinh con →</a
-                    >
-                    <a href="/blog" class="promo-link">Sức khỏe sinh sản →</a>
-                  </div>
-                </div>
-              </div>
             </li>
 
             <li>
@@ -874,6 +601,290 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         </button>
       </div>
     </header>
+
+    <!-- Tools Sheet Overlay -->
+    <div
+      class="tools-sheet-overlay"
+      id="tools-sheet"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Công cụ thai kỳ"
+      hidden
+    >
+      <div class="tools-sheet-backdrop" id="tools-sheet-backdrop"></div>
+      <div class="tools-sheet-panel">
+        <!-- UX: Doherty Threshold — drag handle hint for mobile -->
+        <div class="tools-sheet-drag-handle" aria-hidden="true">
+          <span></span>
+        </div>
+        <div class="tools-sheet-header">
+          <h2>Công cụ thai kỳ</h2>
+          <button
+            class="tools-sheet-close"
+            id="tools-sheet-close"
+            aria-label="Đóng"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><line x1="18" y1="6" x2="6" y2="18"></line><line
+                x1="6"
+                y1="6"
+                x2="18"
+                y2="18"></line></svg
+            >
+          </button>
+        </div>
+        <div class="tools-sheet-body">
+          <div class="tools-sheet-grid">
+            <a href="/tinh-ngay-rung-trung" class="tools-sheet-card">
+              <span class="tool-icon"
+                ><svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--primary)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><rect x="3" y="4" width="18" height="18" rx="2" ry="2"
+                  ></rect><line x1="16" y1="2" x2="16" y2="6"></line><line
+                    x1="8"
+                    y1="2"
+                    x2="8"
+                    y2="6"></line><line x1="3" y1="10" x2="21" y2="10"
+                  ></line></svg
+                ></span
+              >
+              <div class="tool-info">
+                <strong>Tính ngày rụng trứng</strong><span
+                  >Dự đoán ngày rụng trứng & cửa sổ thụ thai</span
+                >
+              </div>
+            </a>
+            <a href="/cong-cu/tinh-ngay-du-sinh" class="tools-sheet-card">
+              <span class="tool-icon"
+                ><svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--primary)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><circle cx="12" cy="12" r="10"></circle><path
+                    d="M8 14s1.5 2 4 2 4-2 4-2"></path><line
+                    x1="9"
+                    y1="9"
+                    x2="9.01"
+                    y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"
+                  ></line></svg
+                ></span
+              >
+              <div class="tool-info">
+                <strong>Tính ngày dự sinh</strong><span
+                  >Tính EDD theo công thức Naegele</span
+                >
+              </div>
+            </a>
+            <a href="/can-nang-thai-nhi" class="tools-sheet-card">
+              <span class="tool-icon"
+                ><svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--primary)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M12 3v17.25M18 9l-6 3.5L6 9"></path><path
+                    d="M18 9c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-6c0-1.1.9-2 2-2"
+                  ></path></svg
+                ></span
+              >
+              <div class="tool-info">
+                <strong>Cân nặng thai nhi</strong><span
+                  >Tra bảng chuẩn WHO theo tuần</span
+                >
+              </div>
+            </a>
+            <a href="/cong-cu/du-doan-sinh-non" class="tools-sheet-card">
+              <span class="tool-icon"
+                ><svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--warning)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path
+                    d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                  ></path><line x1="12" y1="9" x2="12" y2="13"></line><line
+                    x1="12"
+                    y1="17"
+                    x2="12.01"
+                    y2="17"></line></svg
+                ></span
+              >
+              <div class="tool-info">
+                <strong>Dự đoán sinh non</strong><span
+                  >Đánh giá nguy cơ QUiPP + FMF</span
+                >
+              </div>
+            </a>
+            <a href="/cong-cu/sang-loc-tien-san-giat" class="tools-sheet-card">
+              <span class="tool-icon"
+                ><svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--primary)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path
+                    d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"
+                  ></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"
+                  ></rect><path d="M9 14l2 2 4-4"></path></svg
+                ></span
+              >
+              <div class="tool-info">
+                <strong>Sàng lọc tiền sản giật</strong><span
+                  >ACOG/USPSTF 2021 + NICE NG133</span
+                >
+              </div>
+            </a>
+            <a
+              href="/cong-cu/du-doan-dai-thao-duong-thai-ky"
+              class="tools-sheet-card"
+            >
+              <span class="tool-icon"
+                ><svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--primary)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path
+                    d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+                  ></path></svg
+                ></span
+              >
+              <div class="tool-info">
+                <strong>Dự đoán ĐTĐ thai kỳ</strong><span
+                  >FMF + PersonalGDM + Iowa</span
+                >
+              </div>
+            </a>
+            <a
+              href="/cong-cu/danh-gia-khoi-u-buong-trung"
+              class="tools-sheet-card"
+            >
+              <span class="tool-icon"
+                ><svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--primary)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><circle cx="11" cy="11" r="8"></circle><line
+                    x1="21"
+                    y1="21"
+                    x2="16.65"
+                    y2="16.65"></line></svg
+                ></span
+              >
+              <div class="tool-info">
+                <strong>Đánh giá u buồng trứng</strong><span
+                  >RMI 1–4 + ROMA score</span
+                >
+              </div>
+            </a>
+            <a href="/cong-cu/bishop-score" class="tools-sheet-card">
+              <span class="tool-icon"
+                ><svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--primary)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path><polyline
+                    points="22 4 12 14.01 9 11.01"></polyline></svg
+                ></span
+              >
+              <div class="tool-info">
+                <strong>Bishop Score</strong><span
+                  >Đánh giá CTC & khởi phát chuyển dạ</span
+                >
+              </div>
+            </a>
+            <a href="/cong-cu/doppler-thai-nhi" class="tools-sheet-card">
+              <span class="tool-icon"
+                ><svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--primary)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg
+                ></span
+              >
+              <div class="tool-info">
+                <strong>Doppler thai nhi</strong><span
+                  >UA-PI, MCA-PSV, CPR, UtA-PI</span
+                >
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="tools-sheet-footer">
+          <span class="promo-label">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              style="vertical-align: -2px; margin-right: 4px;"
+              ><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"></path><path
+                d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"></path></svg
+            >
+            Bài viết liên quan
+          </span>
+          <div class="tools-sheet-promo-links">
+            <a href="/blog" class="promo-link">Mang thai & Sinh con →</a>
+            <a href="/blog" class="promo-link">Sức khỏe sinh sản →</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Universal Search Modal -->
     <div
@@ -2197,6 +2208,228 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         }
       }
 
+      /* ═══════════════════════════════════════
+         Tools Sheet Overlay
+         ═══════════════════════════════════════ */
+
+      .tools-sheet-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .tools-sheet-overlay[hidden] {
+        display: none;
+      }
+
+      .tools-sheet-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        animation: toolsBackdropIn 200ms ease;
+      }
+
+      @keyframes toolsBackdropIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .tools-sheet-panel {
+        position: relative;
+        z-index: 1;
+        background: #fff;
+        border-radius: var(--radius-xl, 16px);
+        box-shadow:
+          0 24px 80px rgba(0, 0, 0, 0.18),
+          0 4px 16px rgba(0, 0, 0, 0.08);
+        width: 92%;
+        max-width: 640px;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        animation: toolsPanelIn 300ms cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+      }
+
+      @keyframes toolsPanelIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95) translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      /* UX: Doherty Threshold — drag handle for mobile affordance */
+      .tools-sheet-drag-handle {
+        display: none;
+      }
+
+      .tools-sheet-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-md) var(--space-lg);
+        border-bottom: 1px solid var(--border-light);
+        flex-shrink: 0;
+      }
+
+      .tools-sheet-header h2 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+      }
+
+      /* UX: Fitts's Law — close button ≥ 44px touch target */
+      .tools-sheet-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        border: none;
+        background: var(--surface-alt);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        color: var(--text-secondary);
+        transition: all var(--transition-fast);
+      }
+
+      .tools-sheet-close:hover {
+        background: var(--primary-light);
+        color: var(--primary);
+      }
+
+      .tools-sheet-body {
+        flex: 1;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: var(--space-md) var(--space-lg);
+      }
+
+      /* UX: Miller's Law — 2-col grid chunks info into manageable groups */
+      .tools-sheet-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+      }
+
+      /* UX: Fitts's Law — touch targets ≥ 44px */
+      .tools-sheet-card {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-sm);
+        padding: 0.75rem;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all var(--transition-fast);
+        min-height: 44px;
+        cursor: pointer;
+      }
+
+      .tools-sheet-card:hover {
+        background: var(--primary-light);
+      }
+
+      .tools-sheet-card:hover .tool-info strong {
+        color: var(--primary-dark);
+      }
+
+      .tools-sheet-card:hover .tool-info span {
+        color: var(--primary);
+      }
+
+      .tools-sheet-card:hover .tool-icon {
+        background: #fff;
+      }
+
+      .tools-sheet-footer {
+        flex-shrink: 0;
+        padding: var(--space-sm) var(--space-lg) var(--space-md);
+        border-top: 1px solid var(--border-light);
+        background: var(--surface-alt);
+      }
+
+      .tools-sheet-promo-links {
+        display: flex;
+        gap: var(--space-md);
+        margin-top: var(--space-xs);
+      }
+
+      /* ── Mobile bottom sheet ── */
+      @media (max-width: 768px) {
+        .tools-sheet-overlay {
+          align-items: flex-end;
+        }
+
+        .tools-sheet-panel {
+          width: 100%;
+          max-width: 100%;
+          max-height: 90vh;
+          border-radius: var(--radius-xl, 16px) var(--radius-xl, 16px) 0 0;
+          animation: toolsSlideUp 350ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes toolsSlideUp {
+          from {
+            opacity: 0;
+            transform: translateY(100%);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .tools-sheet-drag-handle {
+          display: flex;
+          justify-content: center;
+          padding: 10px 0 2px;
+          flex-shrink: 0;
+        }
+
+        .tools-sheet-drag-handle span {
+          width: 36px;
+          height: 4px;
+          border-radius: 2px;
+          background: var(--border);
+        }
+
+        .tools-sheet-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tools-sheet-card {
+          min-height: 48px;
+          padding: 0.75rem 0.5rem;
+        }
+
+        .tools-sheet-promo-links {
+          flex-direction: column;
+          gap: var(--space-xs);
+        }
+
+        /* Hide the Công cụ button chevron in mobile drawer since it now opens overlay */
+        #tools-sheet-trigger .dropdown-chevron {
+          display: none;
+        }
+      }
+
       /* ── Reduced Motion ── */
       @media (prefers-reduced-motion: reduce) {
         .main-nav,
@@ -2751,6 +2984,65 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           { passive: true },
         );
       }
+
+      // ═══════════════════════════════════════
+      // Tools Sheet Overlay
+      // ═══════════════════════════════════════
+
+      const toolsTrigger = document.getElementById("tools-sheet-trigger");
+      const toolsSheet = document.getElementById("tools-sheet");
+      const toolsBackdrop = document.getElementById("tools-sheet-backdrop");
+      const toolsClose = document.getElementById("tools-sheet-close");
+
+      function openToolsSheet() {
+        if (!toolsSheet) return;
+        toolsSheet.hidden = false;
+        document.body.style.overflow = "hidden";
+        toolsTrigger?.setAttribute("aria-expanded", "true");
+
+        // Close mobile drawer if open
+        if (window.innerWidth <= 768) {
+          closeDrawer();
+        }
+      }
+
+      function closeToolsSheet() {
+        if (!toolsSheet) return;
+        toolsSheet.hidden = true;
+        document.body.style.overflow = "";
+        toolsTrigger?.setAttribute("aria-expanded", "false");
+      }
+
+      if (toolsTrigger) {
+        toolsTrigger.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const isOpen = toolsTrigger.getAttribute("aria-expanded") === "true";
+          isOpen ? closeToolsSheet() : openToolsSheet();
+        });
+      }
+
+      if (toolsBackdrop) {
+        toolsBackdrop.addEventListener("click", closeToolsSheet);
+      }
+
+      if (toolsClose) {
+        toolsClose.addEventListener("click", closeToolsSheet);
+      }
+
+      // Close tools sheet on Escape (add to existing handler)
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && toolsSheet && !toolsSheet.hidden) {
+          closeToolsSheet();
+        }
+      });
+
+      // Close tools sheet when clicking a link inside it
+      toolsSheet?.querySelectorAll("a[href]").forEach((link) => {
+        link.addEventListener("click", () => {
+          setTimeout(closeToolsSheet, 100);
+        });
+      });
 
       // ═══════════════════════════════════════
       // Universal Search
