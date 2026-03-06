@@ -1,291 +1,1324 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
 import "../../styles/global.css";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+const title =
+    "Doppler Thai Nhi & Theo Dõi Sức Khỏe Thai — INTERGROWTH-21st · FMF · Mari | An Sinh";
+const description =
+    "Công cụ phân tích Doppler thai nhi: UA-PI, MCA-PSV, CPR, UtA-PI. Tính toán z-score, centile, MoM theo INTERGROWTH-21st, Mari, FMF. Tạo prompt AI. Miễn phí, offline.";
 ---
 
-<BaseLayout
-    title="Doppler Thai Nhi — INTERGROWTH-21st | Phòng Khám An Sinh"
-    description="Công cụ phân tích Doppler thai nhi: UA PI/RI, MCA-PSV, UtA-PI, CPR. Theo INTERGROWTH-21st, Mari MCA-PSV, FMF Ciobanu 2019. Miễn phí."
->
-    <section class="hero tool-hero"><div class="container"><div class="tool-hero-content">
-        <span class="section-label">Công cụ miễn phí</span>
-        <h1>Doppler <span class="text-accent-color">Thai Nhi</span></h1>
-        <p class="hero-sub">Phân tích chỉ số Doppler: UA PI/RI, MCA-PSV, UtA-PI, CPR. Theo chuẩn INTERGROWTH-21st, Mari et al., và FMF Ciobanu 2019.</p>
-    </div></div></section>
+<BaseLayout title={title} description={description}>
+    <script
+        type="application/ld+json"
+        set:html={JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+                {
+                    "@type": "Question",
+                    name: "Doppler động mạch rốn bất thường nghĩa là gì?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "UA-PI > 95th centile cho thấy tăng trở kháng nhau thai. AEDF (vắng dòng cuối tâm trương) hoặc REDF (đảo ngược) là dấu hiệu nghiêm trọng cần nhập viện theo dõi.",
+                    },
+                },
+                {
+                    "@type": "Question",
+                    name: "MCA-PSV MoM ≥ 1.5 có ý nghĩa gì?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "Gợi ý thiếu máu thai nhi mức trung bình-nặng (Mari et al. 2000). Cần cân nhắc cordocentesis hoặc truyền máu trong tử cung.",
+                    },
+                },
+                {
+                    "@type": "Question",
+                    name: "CPR (Cerebroplacental Ratio) là gì?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "CPR = MCA-PI / UA-PI. CPR < 5th centile gợi ý hiện tượng brain-sparing — thai nhi tái phân bố tuần hoàn ưu tiên não, dấu hiệu suy thai mạn.",
+                    },
+                },
+            ],
+        })}
+    ></script>
 
-    <section class="section" id="calculator"><div class="container"><div class="calc-layout">
-        <div class="calc-form-panel">
-            <!-- Skeleton Loading -->
-            <div class="calc-skeleton" id="calc-skeleton">
-                <div class="skeleton skeleton-heading"></div>
-                <div class="skeleton skeleton-text" style="width:50%"></div>
-                <div class="skeleton skeleton-input"></div>
-                <div class="skeleton skeleton-text" style="width:60%"></div>
-                <div class="skeleton skeleton-input"></div>
-                <div class="skeleton skeleton-text" style="width:55%"></div>
-                <div class="skeleton skeleton-input"></div>
-                <div class="skeleton skeleton-btn"></div>
+    <!-- Hero -->
+    <section class="dp-hero">
+        <div class="container">
+            <div class="hero-badge">
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    ><path d="M22 11.08V12a10 10 0 11-5.93-9.14"
+                    ></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                INTERGROWTH-21st · FMF 2019 · Mari 2000 · Miễn phí 100%
             </div>
-            <div class="card calc-card calc-form-hidden" id="calc-form-panel">
-                <h2 class="calc-title">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                    Nhập chỉ số Doppler
-                </h2>
-                <form id="doppler-form" novalidate>
-                    <div class="form-group"><label for="dop-ga" class="form-label">Tuổi thai (tuần)</label><input type="number" id="dop-ga" class="form-input" placeholder="vd: 32" min="20" max="42" required inputmode="numeric" /><small class="form-help">20-42 tuần</small></div>
+            <h1>
+                Doppler Thai Nhi & <span class="text-accent-color"
+                    >Theo Dõi Sức Khỏe Thai</span>
+            </h1>
+            <p class="hero-sub">
+                Phân tích Doppler động mạch rốn, não giữa, tử cung. Tính
+                z-score, centile, MoM. Tạo prompt AI tư vấn lâm sàng. Toàn bộ
+                logic chạy trên trình duyệt — không lưu dữ liệu.
+            </p>
+        </div>
+    </section>
 
-                    <fieldset class="form-fieldset">
-                        <legend class="form-legend">🔴 Động mạch rốn (Umbilical Artery)</legend>
-                        <div class="form-row">
-                            <div class="form-group"><label for="dop-ua-pi" class="form-label">UA PI</label><input type="number" id="dop-ua-pi" class="form-input" placeholder="vd: 1.2" min="0" max="5" step="0.01" inputmode="decimal" /></div>
-                            <div class="form-group"><label for="dop-ua-ri" class="form-label">UA RI</label><input type="number" id="dop-ua-ri" class="form-input" placeholder="vd: 0.65" min="0" max="1" step="0.01" inputmode="decimal" /></div>
+    <!-- Tool -->
+    <section class="dp-section">
+        <div class="container">
+            <div class="dp-grid">
+                <!-- Input Panel -->
+                <div class="dp-input-panel card">
+                    <h2 class="dp-panel-title">
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--primary)"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                            ><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                        Nhập số liệu Doppler
+                    </h2>
+
+                    <!-- Basic Info -->
+                    <fieldset class="dp-fieldset">
+                        <legend class="dp-legend">1. Thông tin chung</legend>
+                        <div class="form-row form-row-2">
+                            <div class="form-group">
+                                <label for="dp-ga-weeks" class="form-label"
+                                    >Tuổi thai (tuần)</label
+                                ><input
+                                    type="number"
+                                    id="dp-ga-weeks"
+                                    class="form-input"
+                                    min="18"
+                                    max="42"
+                                    placeholder="VD: 32"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="dp-ga-days" class="form-label"
+                                    >Ngày</label
+                                ><input
+                                    type="number"
+                                    id="dp-ga-days"
+                                    class="form-input"
+                                    min="0"
+                                    max="6"
+                                    placeholder="0-6"
+                                />
+                            </div>
                         </div>
-                        <div class="form-group"><label class="form-label">Dòng cuối tâm trương</label>
-                            <div class="method-chips" id="edf-chips">
-                                <button type="button" class="method-chip is-active" data-value="present">Có (present)</button>
-                                <button type="button" class="method-chip" data-value="absent">Mất (AEDF)</button>
-                                <button type="button" class="method-chip" data-value="reversed">Đảo ngược (REDF)</button>
+                        <div class="form-row form-row-2">
+                            <div class="form-group">
+                                <label for="dp-mother-age" class="form-label"
+                                    >Tuổi mẹ</label
+                                ><input
+                                    type="number"
+                                    id="dp-mother-age"
+                                    class="form-input"
+                                    min="14"
+                                    max="55"
+                                    placeholder="VD: 30"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="dp-bmi" class="form-label"
+                                    >BMI mẹ</label
+                                ><input
+                                    type="number"
+                                    id="dp-bmi"
+                                    class="form-input"
+                                    step="0.1"
+                                    placeholder="VD: 22.5"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <div class="form-group">
+                                <label for="dp-parity" class="form-label"
+                                    >Con so/con rạ</label
+                                >
+                                <select id="dp-parity" class="form-input"
+                                    ><option value="">Chọn...</option><option
+                                        value="nullipara"
+                                        >Nullipara (con so)</option
+                                    ><option value="multipara"
+                                        >Multipara (con rạ)</option
+                                    >
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="dp-history" class="form-label"
+                                    >Tiền sử đặc biệt</label
+                                ><input
+                                    type="text"
+                                    id="dp-history"
+                                    class="form-input"
+                                    placeholder="VD: Tiền sản giật..."
+                                />
                             </div>
                         </div>
                     </fieldset>
 
-                    <fieldset class="form-fieldset">
-                        <legend class="form-legend">🔵 Động mạch não giữa (MCA)</legend>
-                        <div class="form-row">
-                            <div class="form-group"><label for="dop-mca-psv" class="form-label">MCA-PSV (cm/s)</label><input type="number" id="dop-mca-psv" class="form-input" placeholder="vd: 45" min="0" max="200" step="0.1" inputmode="decimal" /><small class="form-help">Vận tốc đỉnh tâm thu</small></div>
-                            <div class="form-group"><label for="dop-mca-pi" class="form-label">MCA PI</label><input type="number" id="dop-mca-pi" class="form-input" placeholder="vd: 1.8" min="0" max="5" step="0.01" inputmode="decimal" /></div>
+                    <!-- UA Doppler -->
+                    <fieldset class="dp-fieldset dp-fieldset-ua">
+                        <legend class="dp-legend">2. Động mạch rốn (UA)</legend>
+                        <div class="form-row form-row-3">
+                            <div class="form-group">
+                                <label for="dp-ua-sd" class="form-label"
+                                    >S/D ratio</label
+                                ><input
+                                    type="number"
+                                    id="dp-ua-sd"
+                                    class="form-input"
+                                    step="0.01"
+                                    placeholder="VD: 2.8"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="dp-ua-ri" class="form-label"
+                                    >RI</label
+                                ><input
+                                    type="number"
+                                    id="dp-ua-ri"
+                                    class="form-input"
+                                    step="0.01"
+                                    placeholder="VD: 0.65"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="dp-ua-pi" class="form-label"
+                                    >PI</label
+                                ><input
+                                    type="number"
+                                    id="dp-ua-pi"
+                                    class="form-input"
+                                    step="0.01"
+                                    placeholder="VD: 1.35"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End-diastolic flow</label>
+                            <div class="dp-radio-row">
+                                <label class="dp-radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="dp-edf"
+                                        value="present"
+                                        checked
+                                    /><span>Có</span>
+                                </label>
+                                <label class="dp-radio-card dp-radio-warn"
+                                    ><input
+                                        type="radio"
+                                        name="dp-edf"
+                                        value="AEDF"
+                                    /><span>Vắng (AEDF)</span>
+                                </label>
+                                <label class="dp-radio-card dp-radio-danger"
+                                    ><input
+                                        type="radio"
+                                        name="dp-edf"
+                                        value="REDF"
+                                    /><span>Đảo (REDF)</span>
+                                </label>
+                            </div>
                         </div>
                     </fieldset>
 
-                    <fieldset class="form-fieldset">
-                        <legend class="form-legend">🟡 Động mạch tử cung (UtA)</legend>
-                        <div class="form-row">
-                            <div class="form-group"><label for="dop-uta-left" class="form-label">UtA PI trái</label><input type="number" id="dop-uta-left" class="form-input" placeholder="vd: 0.85" min="0" max="5" step="0.01" inputmode="decimal" /></div>
-                            <div class="form-group"><label for="dop-uta-right" class="form-label">UtA PI phải</label><input type="number" id="dop-uta-right" class="form-input" placeholder="vd: 0.90" min="0" max="5" step="0.01" inputmode="decimal" /></div>
+                    <!-- MCA -->
+                    <fieldset class="dp-fieldset dp-fieldset-mca">
+                        <legend class="dp-legend"
+                            >3. Động mạch não giữa (MCA)</legend
+                        >
+                        <div class="form-row form-row-2">
+                            <div class="form-group">
+                                <label for="dp-mca-psv" class="form-label"
+                                    >MCA-PSV (cm/s)</label
+                                ><input
+                                    type="number"
+                                    id="dp-mca-psv"
+                                    class="form-input"
+                                    step="0.1"
+                                    placeholder="VD: 55"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="dp-mca-pi" class="form-label"
+                                    >MCA-PI</label
+                                ><input
+                                    type="number"
+                                    id="dp-mca-pi"
+                                    class="form-input"
+                                    step="0.01"
+                                    placeholder="VD: 1.45"
+                                />
+                            </div>
                         </div>
                     </fieldset>
 
-                    <button type="submit" class="btn btn-accent btn-lg calc-submit">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    <!-- UtA -->
+                    <fieldset class="dp-fieldset dp-fieldset-uta">
+                        <legend class="dp-legend"
+                            >4. Động mạch tử cung (UtA)</legend
+                        >
+                        <div class="form-row form-row-3">
+                            <div class="form-group">
+                                <label for="dp-uta-left" class="form-label"
+                                    >UtA-PI trái</label
+                                ><input
+                                    type="number"
+                                    id="dp-uta-left"
+                                    class="form-input"
+                                    step="0.01"
+                                    placeholder="VD: 1.05"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="dp-uta-right" class="form-label"
+                                    >UtA-PI phải</label
+                                ><input
+                                    type="number"
+                                    id="dp-uta-right"
+                                    class="form-input"
+                                    step="0.01"
+                                    placeholder="VD: 1.15"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">UtA-PI TB</label><div
+                                    class="bmi-display"
+                                    id="dp-uta-mean"
+                                >
+                                    —
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Notching</label>
+                            <div class="dp-radio-row">
+                                <label class="dp-radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="dp-notch"
+                                        value="none"
+                                        checked
+                                    /><span>Không</span>
+                                </label>
+                                <label class="dp-radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="dp-notch"
+                                        value="unilateral"
+                                    /><span>Một bên</span>
+                                </label>
+                                <label class="dp-radio-card dp-radio-warn"
+                                    ><input
+                                        type="radio"
+                                        name="dp-notch"
+                                        value="bilateral"
+                                    /><span>Hai bên</span>
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Clinical scenario -->
+                    <fieldset class="dp-fieldset">
+                        <legend class="dp-legend">5. Tình huống lâm sàng</legend
+                        >
+                        <div class="dp-scenario-grid">
+                            <label class="dp-radio-card"
+                                ><input
+                                    type="radio"
+                                    name="dp-scenario"
+                                    value="routine"
+                                    checked
+                                /><span>Thường quy</span>
+                            </label>
+                            <label class="dp-radio-card"
+                                ><input
+                                    type="radio"
+                                    name="dp-scenario"
+                                    value="fgr"
+                                /><span>Nghi FGR</span>
+                            </label>
+                            <label class="dp-radio-card"
+                                ><input
+                                    type="radio"
+                                    name="dp-scenario"
+                                    value="rh"
+                                /><span>Bất đồng Rh</span>
+                            </label>
+                            <label class="dp-radio-card"
+                                ><input
+                                    type="radio"
+                                    name="dp-scenario"
+                                    value="preeclampsia"
+                                /><span>Tiền sản giật</span>
+                            </label>
+                            <label class="dp-radio-card"
+                                ><input
+                                    type="radio"
+                                    name="dp-scenario"
+                                    value="postterm"
+                                /><span>Thai quá ngày</span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <button
+                        type="button"
+                        class="btn btn-accent btn-lg dp-submit"
+                        id="dp-submit"
+                    >
+                        <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            aria-hidden="true"
+                            ><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
                         Phân Tích Doppler
                     </button>
-                    <div id="form-error" class="form-error" role="alert" hidden></div>
-                </form>
+                </div>
+
+                <!-- Results Panel -->
+                <div
+                    class="dp-results-panel"
+                    id="dp-results"
+                    style="display:none;"
+                >
+                    <!-- Severity Badge -->
+                    <div class="card dp-result-main">
+                        <h3 class="dp-result-title">Đánh giá tổng quan</h3>
+                        <div class="dp-severity-wrap">
+                            <span class="dp-severity-badge" id="dp-severity"
+                                >—</span>
+                        </div>
+                        <div
+                            id="dp-alerts-content"
+                            style="margin-top:var(--space-md);"
+                        >
+                        </div>
+                    </div>
+
+                    <!-- UA Results -->
+                    <div class="card" id="dp-ua-results" style="display:none;">
+                        <h3 class="dp-section-title">
+                            🔴 Động mạch rốn (UA) — INTERGROWTH-21st
+                        </h3>
+                        <div id="dp-ua-detail"></div>
+                    </div>
+
+                    <!-- MCA Results -->
+                    <div class="card" id="dp-mca-results" style="display:none;">
+                        <h3 class="dp-section-title">
+                            🔵 MCA-PSV — Mari et al. 2000
+                        </h3>
+                        <div id="dp-mca-detail"></div>
+                    </div>
+
+                    <!-- FMF Results -->
+                    <div class="card" id="dp-fmf-results" style="display:none;">
+                        <h3 class="dp-section-title">
+                            🟢 FMF Doppler — Ciobanu et al. 2019
+                        </h3>
+                        <div id="dp-fmf-detail"></div>
+                    </div>
+
+                    <!-- UtA Results -->
+                    <div class="card" id="dp-uta-results" style="display:none;">
+                        <h3 class="dp-section-title">
+                            🟡 Động mạch tử cung — Gómez 2008
+                        </h3>
+                        <div id="dp-uta-detail"></div>
+                    </div>
+
+                    <!-- FGR Staging -->
+                    <div class="card" id="dp-fgr-card" style="display:none;">
+                        <h3 class="dp-section-title">
+                            📊 Phân loại FGR (Delphi Consensus)
+                        </h3>
+                        <div id="dp-fgr-detail"></div>
+                    </div>
+
+                    <!-- Management -->
+                    <details class="dp-details card" open>
+                        <summary class="dp-summary">📋 Đề xuất quản lý</summary>
+                        <ul class="dp-list" id="dp-management-list"></ul>
+                    </details>
+
+                    <!-- References -->
+                    <details class="dp-details card">
+                        <summary class="dp-summary"
+                            >📚 Tài liệu tham khảo</summary
+                        >
+                        <div class="dp-citations">
+                            <p>
+                                1. Drukker L et al. INTERGROWTH-21st UA Doppler. <em
+                                    >Am J Obstet Gynecol</em
+                                > 2020;222(6):602.e1-15
+                            </p>
+                            <p>
+                                2. Mari G et al. MCA-PSV for fetal anemia. <em
+                                    >N Engl J Med</em
+                                > 2000;342:9-14
+                            </p>
+                            <p>
+                                3. Ciobanu A et al. FMF UA-PI, MCA-PI, CPR. <em
+                                    >Ultrasound Obstet Gynecol</em
+                                > 2019;53:465-472
+                            </p>
+                            <p>
+                                4. Gómez O et al. UtA-PI reference. <em
+                                    >Ultrasound Obstet Gynecol</em
+                                > 2008;32:128-132
+                            </p>
+                            <p>
+                                5. ISUOG Practice Guidelines: Doppler in
+                                obstetrics. <em>Ultrasound Obstet Gynecol</em> 2013;41:233-239
+                            </p>
+                            <p>
+                                6. SMFM Clinical Guideline #8: Fetal anemia. <em
+                                    >Am J Obstet Gynecol</em
+                                > 2015;212(6):697-710
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Copy Prompt -->
+                    <div class="dp-copy-section">
+                        <button
+                            type="button"
+                            class="btn dp-copy-btn"
+                            id="dp-copy-btn"
+                        >
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><rect
+                                    x="9"
+                                    y="9"
+                                    width="13"
+                                    height="13"
+                                    rx="2"
+                                    ry="2"></rect><path
+                                    d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                                ></path>
+                            </svg>
+                            <span id="dp-copy-text"
+                                >Sao Chép Prompt Để Hỏi AI</span
+                            >
+                        </button>
+                        <p class="dp-copy-hint">
+                            Paste vào ChatGPT / Claude / Gemini để nhận phân
+                            tích chi tiết
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn btn-outline dp-print-btn"
+                        id="dp-print-btn"
+                    >
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            aria-hidden="true"
+                            ><polyline points="6 9 6 2 18 2 18 9"
+                            ></polyline><path
+                                d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"
+                            ></path><rect x="6" y="14" width="12" height="8"
+                            ></rect>
+                        </svg>
+                        In kết quả
+                    </button>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="calc-results-panel" id="results-panel" hidden>
-            <!-- Overall Assessment -->
-            <div class="card severity-card">
-                <h3>Đánh giá tổng thể</h3>
-                <div class="severity-badge" id="severity-badge">—</div>
-                <p class="severity-desc" id="severity-desc"></p>
+    <!-- CTA -->
+    <section class="section cta-section" id="cta">
+        <div class="container">
+            <div class="cta-inner">
+                <h2>Cần tư vấn chuyên sâu?</h2>
+                <p>
+                    Bác sĩ chuyên khoa sản tại An Sinh sẵn sàng đồng hành cùng
+                    bạn trong thai kỳ.
+                </p>
+                <div class="cta-actions">
+                    <a
+                        href="https://phusanansinh.com/dat-lich-hen-kham.html"
+                        class="btn btn-accent btn-lg"
+                        id="cta-booking">Đặt Lịch Khám Ngay</a
+                    >
+                    <a
+                        href="tel:0899268299"
+                        class="btn btn-outline btn-lg"
+                        id="cta-call">Gọi: 0899 268 299</a
+                    >
+                </div>
             </div>
-
-            <!-- Individual Results -->
-            <div class="doppler-results" id="doppler-results"></div>
-
-            <!-- Warnings -->
-            <div id="doppler-warnings"></div>
         </div>
-    </div></div></section>
+    </section>
 
-    <section class="section section-alt"><div class="container">
-        <div class="section-header"><span class="section-label">Câu hỏi thường gặp</span><h2>Về Doppler thai nhi</h2></div>
-        <div class="faq-list">
-            <details class="faq-item"><summary class="faq-question">Khi nào cần Doppler thai nhi?</summary><div class="faq-answer"><p>Doppler được chỉ định khi: thai chậm tăng trưởng (FGR/IUGR), tiền sản giật, đa thai có biến chứng, nghi thiếu máu thai, bất thường nước ối, tiền sử thai lưu. Doppler thường quy ở thai kỳ bình thường không khuyến cáo.</p></div></details>
-            <details class="faq-item"><summary class="faq-question">MCA-PSV đánh giá thiếu máu thai như thế nào?</summary><div class="faq-answer"><p>MCA-PSV > 1.5 MoM (Multiple of Median) gợi ý thiếu máu thai trung bình-nặng với độ nhạy ~100%. Đây là phương pháp không xâm lấn thay thế chọc ối để chẩn đoán thiếu máu thai trong bất đồng Rh.</p></div></details>
+    <!-- Disclaimer -->
+    <section class="disclaimer-section">
+        <div class="container">
+            <p class="disclaimer-text">
+                <strong>Lưu ý y khoa:</strong> Công cụ này chỉ mang tính hỗ trợ lâm
+                sàng, KHÔNG thay thế đánh giá của bác sĩ chuyên khoa. Dựa trên: INTERGROWTH-21st
+                (Drukker 2020) · Mari et al. 2000 · Ciobanu/FMF 2019 · Gómez 2008.
+                Không lưu dữ liệu. Không gọi API.
+            </p>
         </div>
-    </div></section>
-
-    <section class="section cta-section"><div class="container"><div class="cta-content">
-        <h2>Cần tư vấn về Doppler thai nhi?</h2>
-        <div class="cta-actions">
-            <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-thai">Đặt Lịch Khám</button>
-            <a href="tel:0899268299" class="btn btn-outline btn-lg">Gọi: 0899 268 299</a>
-        </div>
-    </div></div></section>
-
-    <section class="disclaimer-section"><div class="container"><p class="disclaimer-text"><strong>Lưu ý y khoa:</strong> Kết quả theo INTERGROWTH-21st, Mari et al. (2000), FMF Ciobanu (2019). Không thay thế diễn giải bác sĩ chuyên khoa.</p></div></section>
+    </section>
 
     <style>
-        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
-        .tool-hero-content { max-width: 700px; margin: 0 auto; }
-        .tool-hero h1 { margin-bottom: var(--space-lg); }
-        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
-        .calc-layout { display: grid; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
-        .calc-card { position: static; }
-        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
-        .form-group { margin-bottom: var(--space-lg); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
-        .form-label { display: block; font-weight: 600; font-size: .9375rem; margin-bottom: var(--space-sm); }
-        .form-input { width: 100%; padding: .75rem 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; background: var(--bg-white); min-height: 44px; font-family: var(--font-body); box-sizing: border-box; }
-        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,122,109,.1); }
-        .form-help { display: block; font-size: .8125rem; color: var(--text-muted); margin-top: var(--space-xs); }
-        .calc-submit { width: 100%; }
-        .form-error { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; border-radius: var(--radius-md); color: var(--error); font-size: .875rem; }
-        .form-fieldset { border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: var(--space-lg); margin-bottom: var(--space-xl); }
-        .form-legend { font-weight: 600; font-size: 1rem; padding: 0 var(--space-sm); }
-        .method-chips { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
-        .method-chip { padding: .5rem .75rem; border-radius: var(--radius-full); border: 1.5px solid var(--border); background: var(--surface); font-size: .8125rem; font-weight: 500; cursor: pointer; transition: all var(--transition-fast); color: var(--text-secondary); font-family: var(--font-body); min-height: 40px; }
-        .method-chip:hover { border-color: var(--primary); }
-        .method-chip.is-active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-        .severity-card { text-align: center; }
-        .severity-badge { font-size: 1.5rem; font-weight: 700; padding: var(--space-md) var(--space-xl); border-radius: var(--radius-lg); display: inline-block; margin: var(--space-md) 0; }
-        .severity-badge.normal { background: #f0fdf4; color: var(--success); }
-        .severity-badge.mild { background: #fffbeb; color: #d97706; }
-        .severity-badge.moderate { background: #fff7ed; color: #ea580c; }
-        .severity-badge.severe { background: #fef2f2; color: var(--error); }
-        .severity-badge.critical { background: #7f1d1d; color: #fff; }
-        .severity-desc { font-size: .875rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto; line-height: 1.6; }
-
-        .doppler-results { display: grid; gap: var(--space-md); }
-        .doppler-result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: var(--space-lg); }
-        .doppler-result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md); }
-        .doppler-param-name { font-weight: 600; font-size: .9375rem; }
-        .doppler-status { font-size: .75rem; font-weight: 600; padding: 2px 10px; border-radius: var(--radius-full); }
-        .doppler-status.normal { background: #f0fdf4; color: var(--success); }
-        .doppler-status.abnormal { background: #fef2f2; color: var(--error); }
-        .doppler-status.warning { background: #fffbeb; color: #d97706; }
-        .doppler-detail { font-size: .8125rem; color: var(--text-secondary); line-height: 1.6; }
-        .doppler-detail strong { color: var(--text-primary); }
-
-        .doppler-warning { display: flex; gap: var(--space-sm); padding: var(--space-md); border-radius: var(--radius-md); margin-top: var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; align-items: flex-start; }
-        .doppler-warning p { font-size: .875rem; margin: 0; line-height: 1.6; }
-        @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+        .dp-hero {
+            background: linear-gradient(
+                135deg,
+                var(--primary-light) 0%,
+                var(--bg) 100%
+            );
+            padding: var(--space-4xl) 0 var(--space-3xl);
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-lg);
+            background: var(--surface);
+            border-radius: var(--radius-full);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+            border: 1px solid var(--border-light);
+        }
+        .hero-sub {
+            font-size: 1.0625rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .dp-section {
+            padding: var(--space-3xl) 0;
+        }
+        .dp-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-2xl);
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .dp-panel-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1.125rem;
+            margin-bottom: var(--space-lg);
+        }
+        .dp-fieldset {
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+        }
+        .dp-fieldset-ua {
+            border-color: #fee2e2;
+        }
+        .dp-fieldset-mca {
+            border-color: #dbeafe;
+        }
+        .dp-fieldset-uta {
+            border-color: #fef3c7;
+        }
+        .dp-legend {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-weight: 700;
+            font-size: 0.9375rem;
+            padding: 0 var(--space-xs);
+            color: var(--text-primary);
+        }
+        .form-row {
+            display: grid;
+            gap: var(--space-md);
+        }
+        .form-row-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        .form-row-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        .form-group {
+            margin-bottom: var(--space-md);
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: var(--space-xs);
+            color: var(--text-primary);
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 0.875rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            background: var(--bg-white);
+            transition: border-color var(--transition-fast);
+            min-height: 44px;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(27, 122, 109, 0.1);
+        }
+        .bmi-display {
+            padding: 0.75rem 0.875rem;
+            background: var(--surface-alt);
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--primary);
+            text-align: center;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dp-radio-row {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+        }
+        .dp-radio-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            min-height: 44px;
+            font-size: 0.9375rem;
+        }
+        .dp-radio-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .dp-radio-card:has(input:checked) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            font-weight: 600;
+        }
+        .dp-radio-warn:has(input:checked) {
+            border-color: #d97706;
+            background: #fef3c7;
+        }
+        .dp-radio-danger:has(input:checked) {
+            border-color: #dc2626;
+            background: #fee2e2;
+        }
+        .dp-radio-card input[type="radio"] {
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+        }
+        .dp-scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: var(--space-sm);
+        }
+        .dp-submit {
+            width: 100%;
+            margin-top: var(--space-sm);
+        }
+        .dp-results-panel {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+        .dp-result-title {
+            font-size: 1.125rem;
+            margin-bottom: var(--space-md);
+        }
+        .dp-severity-wrap {
+            text-align: center;
+        }
+        .dp-severity-badge {
+            display: inline-block;
+            padding: var(--space-sm) var(--space-2xl);
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1.125rem;
+            min-width: 160px;
+        }
+        .dp-sev-normal {
+            background: #059669;
+            color: #fff;
+        }
+        .dp-sev-abnormal {
+            background: #d97706;
+            color: #000;
+        }
+        .dp-sev-severe {
+            background: #dc2626;
+            color: #fff;
+        }
+        .dp-sev-critical {
+            background: #7f1d1d;
+            color: #fff;
+            animation: critPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes critPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(127, 29, 29, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(127, 29, 29, 0);
+            }
+        }
+        .dp-section-title {
+            font-size: 1rem;
+            margin-bottom: var(--space-md);
+        }
+        .dp-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-xs) 0;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9375rem;
+        }
+        .dp-detail-row:last-child {
+            border-bottom: none;
+        }
+        .dp-detail-label {
+            color: var(--text-secondary);
+        }
+        .dp-detail-value {
+            font-weight: 600;
+        }
+        .dp-detail-normal {
+            color: var(--success);
+        }
+        .dp-detail-abnormal {
+            color: var(--error);
+        }
+        .dp-alert-item {
+            padding: var(--space-sm) var(--space-md);
+            background: #fef2f2;
+            border-left: 3px solid var(--error);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin-bottom: var(--space-sm);
+            font-size: 0.9375rem;
+            color: #991b1b;
+        }
+        .dp-details {
+            overflow: hidden;
+        }
+        .dp-summary {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            list-style: none;
+            padding: var(--space-sm) 0;
+            min-height: 44px;
+        }
+        .dp-summary::-webkit-details-marker {
+            display: none;
+        }
+        .dp-list {
+            list-style: none;
+            padding: var(--space-md) 0 0;
+        }
+        .dp-list li {
+            padding: var(--space-xs) 0;
+            padding-left: var(--space-lg);
+            position: relative;
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+        .dp-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .dp-citations {
+            padding-top: var(--space-md);
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+        .dp-citations p {
+            margin-bottom: var(--space-xs);
+        }
+        .dp-copy-section {
+            text-align: center;
+            padding: var(--space-xl) 0;
+        }
+        .dp-copy-btn {
+            background: #4338ca;
+            color: #fff;
+            font-size: 1.125rem;
+            padding: 1rem 2.5rem;
+            border-radius: var(--radius-xl);
+            min-height: 56px;
+            width: 100%;
+            transition: all var(--transition-base);
+        }
+        .dp-copy-btn:hover {
+            background: #3730a3;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+            color: #fff;
+        }
+        .dp-copy-btn.copied {
+            background: var(--success);
+        }
+        .dp-copy-hint {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-top: var(--space-sm);
+        }
+        .dp-print-btn {
+            width: 100%;
+        }
+        .cta-section {
+            padding: var(--space-3xl) 0;
+        }
+        .cta-inner {
+            background: linear-gradient(
+                135deg,
+                var(--primary) 0%,
+                var(--primary-dark) 100%
+            );
+            border-radius: var(--radius-xl);
+            padding: var(--space-3xl);
+            text-align: center;
+            color: #fff;
+        }
+        .cta-inner h2 {
+            color: #fff;
+            margin-bottom: var(--space-md);
+        }
+        .cta-inner p {
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 500px;
+            margin: 0 auto var(--space-xl);
+        }
+        .cta-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .disclaimer-section {
+            padding: var(--space-xl) 0;
+            border-top: 1px solid var(--border-light);
+        }
+        .disclaimer-text {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        .dp-fgr-badge {
+            display: inline-block;
+            padding: var(--space-xs) var(--space-lg);
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.9375rem;
+            margin-bottom: var(--space-sm);
+        }
+        @media (max-width: 600px) {
+            .form-row-2,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            .dp-scenario-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media print {
+            .dp-hero,
+            .cta-section,
+            .dp-copy-section,
+            .dp-print-btn,
+            .dp-input-panel,
+            .site-header,
+            .site-footer,
+            .sticky-cta {
+                display: none !important;
+            }
+            .dp-results-panel {
+                display: flex !important;
+            }
+        }
     </style>
 
     <script>
-        // Reveal form, hide skeleton
-        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
-        document.getElementById('calc-form-panel')?.classList.remove('calc-form-hidden');
+        import {
+            analyzeDoppler,
+            validateDopplerInputs,
+        } from "../../utils/fetal-doppler-calc.js";
+        import { buildDopplerPrompt } from "../../utils/fetal-doppler-prompt.js";
 
-        const { calcIG21, calcMcaPsv, calcFmfDoppler, calcUtaPi, classifyDoppler } = await import('../../utils/fetal-doppler-calc.js');
+        const $ = (id: string) => document.getElementById(id)!;
+        const $i = (id: string) =>
+            document.getElementById(id) as HTMLInputElement;
+        const $r = (name: string) =>
+            (
+                document.querySelector(
+                    `input[name="${name}"]:checked`
+                ) as HTMLInputElement
+            )?.value || "";
 
-        let edfStatus = 'present';
-        document.getElementById('edf-chips')?.addEventListener('click', (e) => {
-            const chip = e.target.closest('.method-chip');
-            if (!chip) return;
-            document.querySelectorAll('#edf-chips .method-chip').forEach(c => c.classList.remove('is-active'));
-            chip.classList.add('is-active');
-            edfStatus = chip.dataset.value;
-        });
+        let lastInput: any = null;
+        let lastResult: any = null;
 
-        document.getElementById('doppler-form')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const errorEl = document.getElementById('form-error');
-            try {
-                const ga = parseInt(document.getElementById('dop-ga').value);
-                if (!ga || ga < 20 || ga > 42) throw new Error('Tuổi thai phải từ 20-42 tuần.');
-
-                const uaPi = parseFloat(document.getElementById('dop-ua-pi').value) || null;
-                const uaRi = parseFloat(document.getElementById('dop-ua-ri').value) || null;
-                const mcaPsvVal = parseFloat(document.getElementById('dop-mca-psv').value) || null;
-                const mcaPiVal = parseFloat(document.getElementById('dop-mca-pi').value) || null;
-                const utaLeft = parseFloat(document.getElementById('dop-uta-left').value) || null;
-                const utaRight = parseFloat(document.getElementById('dop-uta-right').value) || null;
-
-                if (!uaPi && !mcaPsvVal && !utaLeft) throw new Error('Vui lòng nhập ít nhất một chỉ số Doppler.');
-
-                // Map EDF chip values to engine constants
-                const edfMap = { present: 'PRESENT', absent: 'AEDF', reversed: 'REDF' };
-                const results = [];
-                const classifyInput = { gaWeeks: ga, endDiastolic: edfMap[edfStatus] || 'PRESENT' };
-
-                // UA assessment via INTERGROWTH-21st (index: 'PI' | 'RI' | 'SD')
-                if (uaPi) {
-                    const uaIG21 = calcIG21(uaPi, 'PI', ga);
-                    if (uaIG21) {
-                        classifyInput.uaIG21 = uaIG21;
-                        results.push({ name: '🔴 Động mạch rốn (UA PI)', status: uaIG21.z > 2 ? 'abnormal' : 'normal', detail: `Z-score: <strong>${uaIG21.z.toFixed(2)}</strong> | Centile: <strong>${uaIG21.centile.toFixed(1)}</strong>` });
-                    }
-                    if (uaRi) {
-                        const riIG21 = calcIG21(uaRi, 'RI', ga);
-                        if (riIG21) {
-                            results.push({ name: '🔴 UA RI', status: riIG21.z > 2 ? 'abnormal' : 'normal', detail: `Z-score: <strong>${riIG21.z.toFixed(2)}</strong> | Centile: <strong>${riIG21.centile.toFixed(1)}</strong>` });
-                        }
-                    }
-                }
-
-                // MCA-PSV (Anemia screening) — returns anemiaClass, not anemiaRisk
-                if (mcaPsvVal) {
-                    const mcaPsv = calcMcaPsv(mcaPsvVal, ga);
-                    classifyInput.mcaPsv = mcaPsv;
-                    const anemiaLabel = mcaPsv.anemiaClass !== 'NORMAL' ? ` | Thiếu máu: <strong>${mcaPsv.anemiaClass}</strong>` : '';
-                    results.push({ name: '🔵 MCA-PSV (Thiếu máu)', status: mcaPsv.anemiaClass !== 'NORMAL' ? 'abnormal' : 'normal', detail: `MoM: <strong>${mcaPsv.mom.toFixed(2)}</strong>${anemiaLabel}` });
-                }
-
-                // FMF Doppler (CPR) — returns cpr, cpr_status, cpr_5th
-                if (uaPi && mcaPiVal) {
-                    const fmf = calcFmfDoppler(uaPi, mcaPiVal, ga);
-                    classifyInput.fmf = fmf;
-                    results.push({ name: '📊 CPR (MCA/UA)', status: fmf.cpr_status === 'ABNORMAL' ? 'abnormal' : 'normal', detail: `CPR: <strong>${fmf.cpr.toFixed(2)}</strong> | 5th: <strong>${fmf.cpr_5th.toFixed(2)}</strong> | ${fmf.cpr_status === 'ABNORMAL' ? '⚠️ < P5' : '✅ Bình thường'}` });
-                }
-
-                // UtA-PI — returns piMean, mom, status, ref95th
-                if (utaLeft || utaRight) {
-                    const piL = utaLeft || utaRight;
-                    const piR = utaRight || utaLeft;
-                    const uta = calcUtaPi(piL, piR, ga);
-                    classifyInput.uta = uta;
-                    results.push({ name: '🟡 UtA-PI trung bình', status: uta.status === 'ABNORMAL' ? 'abnormal' : 'normal', detail: `Mean PI: <strong>${uta.piMean.toFixed(2)}</strong> | MoM: <strong>${uta.mom.toFixed(2)}</strong> | P95: <strong>${uta.ref95th.toFixed(2)}</strong>` });
-                }
-
-                // Overall classification
-                const overall = classifyDoppler(classifyInput);
-
-                displayResults(results, overall);
-                if (errorEl) errorEl.hidden = true;
-            } catch (err) {
-                if (errorEl) { errorEl.textContent = err.message; errorEl.hidden = false; }
-            }
-        });
-
-        function displayResults(results, overall) {
-            const panel = document.getElementById('results-panel');
-            if (panel) panel.hidden = false;
-
-            // Overall severity
-            const badge = document.getElementById('severity-badge');
-            const desc = document.getElementById('severity-desc');
-            if (badge && overall) {
-                const SEVERITY_LABELS = { NORMAL: 'Bình thường', ABNORMAL: 'Bất thường', SEVERE: 'Bất thường nặng', CRITICAL: 'Nguy kịch' };
-                const SEVERITY_CLASS = { NORMAL: 'normal', ABNORMAL: 'mild', SEVERE: 'severe', CRITICAL: 'critical' };
-                badge.textContent = SEVERITY_LABELS[overall.severity] || overall.severity;
-                badge.className = `severity-badge ${SEVERITY_CLASS[overall.severity] || 'normal'}`;
-            }
-            if (desc && overall && overall.alerts && overall.alerts.length) {
-                desc.textContent = overall.alerts[0];
-            }
-
-            // Individual results
-            const resultsEl = document.getElementById('doppler-results');
-            if (resultsEl) {
-                resultsEl.innerHTML = results.map(r => {
-                    const statusClass = r.status === 'normal' ? 'normal' : r.status === 'abnormal' ? 'abnormal' : 'warning';
-                    const statusLabel = r.status === 'normal' ? 'Bình thường' : r.status === 'abnormal' ? 'Bất thường' : 'Cần theo dõi';
-                    return `<div class="doppler-result-card">
-                        <div class="doppler-result-header">
-                            <span class="doppler-param-name">${r.name}</span>
-                            <span class="doppler-status ${statusClass}">${statusLabel}</span>
-                        </div>
-                        <div class="doppler-detail">${r.detail}</div>
-                    </div>`;
-                }).join('');
-            }
-
-            // Warnings (engine returns .alerts, not .warnings)
-            const warningsEl = document.getElementById('doppler-warnings');
-            if (warningsEl && overall?.alerts?.length) {
-                warningsEl.innerHTML = overall.alerts.map(w => `
-                    <div class="doppler-warning"><span>🚨</span><p>${w}</p></div>
-                `).join('');
-            } else if (warningsEl) {
-                warningsEl.innerHTML = '';
-            }
-
-            panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Auto-calculate UtA mean
+        function updateUtaMean() {
+            const l = parseFloat($i("dp-uta-left").value);
+            const r = parseFloat($i("dp-uta-right").value);
+            $("dp-uta-mean").textContent =
+                l > 0 && r > 0 ? ((l + r) / 2).toFixed(3) : "—";
         }
+        $i("dp-uta-left").addEventListener("input", updateUtaMean);
+        $i("dp-uta-right").addEventListener("input", updateUtaMean);
+
+        function collectInput() {
+            return {
+                gaWeeks: $i("dp-ga-weeks").value,
+                gaDays: $i("dp-ga-days").value || "0",
+                motherAge: $i("dp-mother-age").value,
+                bmi: $i("dp-bmi").value,
+                parity: ($i("dp-parity") as HTMLSelectElement).value,
+                history: $i("dp-history").value,
+                uaSd: $i("dp-ua-sd").value,
+                uaRi: $i("dp-ua-ri").value,
+                uaPi: $i("dp-ua-pi").value,
+                endDiastolic: $r("dp-edf"),
+                mcaPsv: $i("dp-mca-psv").value,
+                mcaPi: $i("dp-mca-pi").value,
+                utaPiLeft: $i("dp-uta-left").value,
+                utaPiRight: $i("dp-uta-right").value,
+                notching: $r("dp-notch"),
+                clinicalScenario: $r("dp-scenario"),
+            };
+        }
+
+        function detailRow(label: string, value: string, status?: string) {
+            const cls =
+                status === "ABNORMAL"
+                    ? "dp-detail-abnormal"
+                    : status === "NORMAL"
+                    ? "dp-detail-normal"
+                    : "";
+            return `<div class="dp-detail-row"><span class="dp-detail-label">${label}</span><span class="dp-detail-value ${cls}">${value}</span></div>`;
+        }
+
+        function renderResults(result: any) {
+            $("dp-results").style.display = "";
+
+            // Severity badge
+            const sevLabels: Record<string, string> = {
+                NORMAL: "BÌNH THƯỜNG",
+                ABNORMAL: "BẤT THƯỜNG",
+                SEVERE: "NẶNG",
+                CRITICAL: "NGUY KỊCH",
+            };
+            const sevClasses: Record<string, string> = {
+                NORMAL: "dp-sev-normal",
+                ABNORMAL: "dp-sev-abnormal",
+                SEVERE: "dp-sev-severe",
+                CRITICAL: "dp-sev-critical",
+            };
+            const sev = result.classification.severity;
+            const badge = $("dp-severity");
+            badge.textContent = sevLabels[sev] || sev;
+            badge.className = "dp-severity-badge " + (sevClasses[sev] || "");
+
+            // Alerts
+            const alertsEl = $("dp-alerts-content");
+            alertsEl.innerHTML =
+                result.classification.alerts.length > 0
+                    ? result.classification.alerts
+                          .map(
+                              (a: string) =>
+                                  `<div class="dp-alert-item">⚠ ${a}</div>`
+                          )
+                          .join("")
+                    : '<p style="color:var(--success);font-weight:600;">✓ Không có cảnh báo đặc biệt</p>';
+
+            // UA results
+            if (result.uaIG21_PI || result.uaIG21_RI || result.uaIG21_SD) {
+                $("dp-ua-results").style.display = "";
+                let html = "";
+                if (result.uaIG21_PI) {
+                    const r = result.uaIG21_PI;
+                    const st = r.centile > 95 ? "ABNORMAL" : "NORMAL";
+                    html += detailRow(
+                        "UA-PI",
+                        `${lastInput.uaPi} (Median: ${r.median})`,
+                        st
+                    );
+                    html += detailRow("MoM", r.mom.toString(), st);
+                    html += detailRow("Z-score", r.z.toString());
+                    html += detailRow("Centile", `${r.centile}th`, st);
+                }
+                if (result.uaIG21_RI) {
+                    const r = result.uaIG21_RI;
+                    html += detailRow(
+                        "UA-RI",
+                        `${lastInput.uaRi} (Median: ${r.median})`
+                    );
+                    html += detailRow("RI MoM", r.mom.toString());
+                }
+                if (result.uaIG21_SD) {
+                    const r = result.uaIG21_SD;
+                    html += detailRow(
+                        "UA S/D",
+                        `${lastInput.uaSd} (Median: ${r.median})`
+                    );
+                    html += detailRow("S/D MoM", r.mom.toString());
+                }
+                const edf = result.endDiastolic;
+                const edfText =
+                    edf === "present"
+                        ? "Có ✓"
+                        : edf === "AEDF"
+                        ? "⚠ VẮNG (AEDF)"
+                        : "🚨 ĐẢO NGƯỢC (REDF)";
+                const edfSt = edf === "present" ? "NORMAL" : "ABNORMAL";
+                html += detailRow("End-diastolic flow", edfText, edfSt);
+                $("dp-ua-detail").innerHTML = html;
+            } else {
+                $("dp-ua-results").style.display = "none";
+            }
+
+            // MCA results
+            if (result.mcaPsv) {
+                $("dp-mca-results").style.display = "";
+                const m = result.mcaPsv;
+                const st = m.anemiaClass === "NORMAL" ? "NORMAL" : "ABNORMAL";
+                let classText = "Bình thường";
+                if (m.anemiaClass === "SEVERE_MODERATE")
+                    classText = "⚠ Thiếu máu trung bình-nặng";
+                else if (m.anemiaClass === "MILD") classText = "Thiếu máu nhẹ";
+                let html = detailRow("PSV đo", `${lastInput.mcaPsv} cm/s`);
+                html += detailRow("Median PSV", `${m.median} cm/s`);
+                html += detailRow("MoM", m.mom.toString(), st);
+                html += detailRow(
+                    "Ngưỡng 1.29 MoM",
+                    `${m.threshold_1_29} cm/s`
+                );
+                html += detailRow("Ngưỡng 1.5 MoM", `${m.threshold_1_50} cm/s`);
+                html += detailRow("Đánh giá", classText, st);
+                $("dp-mca-detail").innerHTML = html;
+            } else {
+                $("dp-mca-results").style.display = "none";
+            }
+
+            // FMF results
+            if (result.fmf) {
+                $("dp-fmf-results").style.display = "";
+                const f = result.fmf;
+                let html =
+                    '<strong style="font-size:.8125rem;color:var(--text-muted);">UA-PI (FMF)</strong>';
+                html += detailRow(
+                    "Đo",
+                    f.uaPi_measured.toString(),
+                    f.uaPi_status
+                );
+                html += detailRow(
+                    "50th / 95th",
+                    `${f.uaPi_50th} / ${f.uaPi_95th}`
+                );
+                html +=
+                    '<strong style="font-size:.8125rem;color:var(--text-muted);display:block;margin-top:var(--space-sm);">MCA-PI</strong>';
+                html += detailRow(
+                    "Đo",
+                    f.mcaPi_measured.toString(),
+                    f.mcaPi_status
+                );
+                html += detailRow(
+                    "5th / 50th",
+                    `${f.mcaPi_5th} / ${f.mcaPi_50th}`
+                );
+                html +=
+                    '<strong style="font-size:.8125rem;color:var(--text-muted);display:block;margin-top:var(--space-sm);">CPR (MCA-PI / UA-PI)</strong>';
+                html += detailRow("CPR", f.cpr.toString(), f.cpr_status);
+                html += detailRow("5th / 50th", `${f.cpr_5th} / ${f.cpr_50th}`);
+                $("dp-fmf-detail").innerHTML = html;
+            } else {
+                $("dp-fmf-results").style.display = "none";
+            }
+
+            // UtA results
+            if (result.uta) {
+                $("dp-uta-results").style.display = "";
+                const u = result.uta;
+                let html = detailRow(
+                    "UtA-PI trung bình",
+                    u.piMean.toString(),
+                    u.status
+                );
+                html += detailRow(
+                    "Median / 95th",
+                    `${u.refMean} / ${u.ref95th}`
+                );
+                html += detailRow("MoM", u.mom.toString(), u.status);
+                html += detailRow(
+                    "Notching",
+                    u.notching === "none"
+                        ? "Không"
+                        : u.notching === "unilateral"
+                        ? "Một bên"
+                        : "Hai bên"
+                );
+                if (u.highRisk)
+                    html +=
+                        '<div class="dp-alert-item">⚠ UtA-PI bất thường + Notching hai bên → Nguy cơ cao</div>';
+                $("dp-uta-detail").innerHTML = html;
+            } else {
+                $("dp-uta-results").style.display = "none";
+            }
+
+            // FGR staging
+            if (result.classification.fgrStage) {
+                $("dp-fgr-card").style.display = "";
+                const stageLabels: Record<string, string> = {
+                    EARLY_ONSET_STAGE_I:
+                        "Early-onset FGR — Stage I (UA-PI > 95th)",
+                    EARLY_ONSET_STAGE_II: "Early-onset FGR — Stage II (AEDF)",
+                    EARLY_ONSET_STAGE_III: "Early-onset FGR — Stage III (REDF)",
+                    LATE_ONSET_STAGE_I:
+                        "Late-onset FGR — Stage I (UA-PI > 95th)",
+                    LATE_ONSET_STAGE_II: "Late-onset FGR — Stage II (AEDF)",
+                    LATE_ONSET_STAGE_III: "Late-onset FGR — Stage III (REDF)",
+                };
+                const colors: Record<string, string> = {
+                    EARLY_ONSET_STAGE_I: "background:#fef3c7;color:#92400e",
+                    EARLY_ONSET_STAGE_II: "background:#fee2e2;color:#991b1b",
+                    EARLY_ONSET_STAGE_III: "background:#7f1d1d;color:#fff",
+                    LATE_ONSET_STAGE_I: "background:#fef3c7;color:#92400e",
+                    LATE_ONSET_STAGE_II: "background:#fee2e2;color:#991b1b",
+                    LATE_ONSET_STAGE_III: "background:#7f1d1d;color:#fff",
+                };
+                const fs = result.classification.fgrStage;
+                $(
+                    "dp-fgr-detail"
+                ).innerHTML = `<span class="dp-fgr-badge" style="${
+                    colors[fs] || ""
+                }">${stageLabels[fs] || fs}</span>`;
+            } else {
+                $("dp-fgr-card").style.display = "none";
+            }
+
+            // Management
+            $("dp-management-list").innerHTML = result.management
+                .map((m: string) => `<li>${m}</li>`)
+                .join("");
+
+            $("dp-results").scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }
+
+        // Submit
+        $("dp-submit").addEventListener("click", () => {
+            const input = collectInput();
+            const validation = validateDopplerInputs(input);
+            if (!validation.valid) {
+                alert(validation.error);
+                return;
+            }
+            lastInput = input;
+            lastResult = analyzeDoppler(input);
+            renderResults(lastResult);
+        });
+
+        // Copy prompt
+        $("dp-copy-btn").addEventListener("click", async () => {
+            if (!lastInput || !lastResult) return;
+            const prompt = buildDopplerPrompt(lastInput, lastResult);
+            try {
+                await navigator.clipboard.writeText(prompt);
+                $("dp-copy-text").textContent = "✓ Đã sao chép!";
+                $("dp-copy-btn").classList.add("copied");
+                setTimeout(() => {
+                    $("dp-copy-text").textContent = "Sao Chép Prompt Để Hỏi AI";
+                    $("dp-copy-btn").classList.remove("copied");
+                }, 2000);
+            } catch {
+                const ta = document.createElement("textarea");
+                ta.value = prompt;
+                ta.style.position = "fixed";
+                ta.style.opacity = "0";
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand("copy");
+                document.body.removeChild(ta);
+                $("dp-copy-text").textContent = "✓ Đã sao chép!";
+                $("dp-copy-btn").classList.add("copied");
+                setTimeout(() => {
+                    $("dp-copy-text").textContent = "Sao Chép Prompt Để Hỏi AI";
+                    $("dp-copy-btn").classList.remove("copied");
+                }, 2000);
+            }
+        });
+
+        // Print
+        $("dp-print-btn").addEventListener("click", () => window.print());
     </script>
 </BaseLayout>

@@ -1,245 +1,1536 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
 import "../../styles/global.css";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+const title = "Bishop Score — Tư Vấn Khởi Phát Chuyển Dạ | An Sinh";
+const description =
+    "Công cụ tính Bishop Score đánh giá cổ tử cung trước khởi phát chuyển dạ. Phân loại theo ACOG, SOGC 2022. Gợi ý phương pháp IOL. Tạo prompt AI. Miễn phí, chạy offline.";
 ---
 
-<BaseLayout
-    title="Bishop Score — Đánh Giá Cổ Tử Cung | Phòng Khám An Sinh"
-    description="Công cụ tính Bishop Score đánh giá độ chín muồi cổ tử cung trước khởi phát chuyển dạ. Theo ACOG PB 107 & SOGC 432c. Miễn phí."
->
-    <section class="hero tool-hero"><div class="container"><div class="tool-hero-content">
-        <span class="section-label">Công cụ miễn phí</span>
-        <h1>Bishop <span class="text-accent-color">Score</span></h1>
-        <p class="hero-sub">Đánh giá độ chín muồi cổ tử cung trước khởi phát chuyển dạ. Theo tiêu chuẩn Bishop (1964), ACOG PB 107 & SOGC 432c.</p>
-    </div></div></section>
+<BaseLayout title={title} description={description}>
+    <script
+        type="application/ld+json"
+        set:html={JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+                {
+                    "@type": "Question",
+                    name: "Bishop Score là gì?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "Bishop Score (Edward Bishop, 1964) là hệ thống chấm điểm cổ tử cung 0–13 điểm để tiên lượng khả năng thành công của khởi phát chuyển dạ. Được ACOG, RCOG, SOGC, WHO khuyến cáo.",
+                    },
+                },
+                {
+                    "@type": "Question",
+                    name: "Bishop Score bao nhiêu thì thuận lợi?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "Con so (nulliparous) cần Bishop ≥ 8, con rạ (multiparous) cần ≥ 6. Score ≤ 5 là không thuận lợi, cần cervical ripening trước khởi phát.",
+                    },
+                },
+                {
+                    "@type": "Question",
+                    name: "Sẹo mổ cũ có ảnh hưởng gì?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "Tiền sử mổ lấy thai là chống chỉ định dùng Prostaglandin (Misoprostol, Dinoprostone) vì nguy cơ vỡ tử cung. Chỉ dùng Foley catheter hoặc Oxytocin liều thấp.",
+                    },
+                },
+            ],
+        })}
+    ></script>
 
-    <section class="section" id="calculator"><div class="container"><div class="calc-layout">
-        <div class="calc-form-panel">
-            <!-- Skeleton Loading -->
-            <div class="calc-skeleton" id="calc-skeleton">
-                <div class="skeleton skeleton-heading"></div>
-                <div class="skeleton skeleton-text" style="width:65%"></div>
-                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
-                <div class="skeleton skeleton-text" style="width:65%"></div>
-                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
-                <div class="skeleton skeleton-text" style="width:65%"></div>
-                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
-                <div class="skeleton skeleton-btn"></div>
+    <!-- Hero -->
+    <section class="bs-hero">
+        <div class="container">
+            <div class="hero-badge">
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    ><path d="M22 11.08V12a10 10 0 11-5.93-9.14"
+                    ></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                ACOG · SOGC 2022 · Miễn phí 100%
             </div>
-            <div class="card calc-card calc-form-hidden" id="calc-form-panel">
-                <h2 class="calc-title">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-                    Đánh giá 5 thông số cổ tử cung
-                </h2>
-                <form id="bishop-form" novalidate>
-                    <!-- Dilation -->
-                    <div class="form-group"><label class="form-label">1. Độ mở cổ tử cung (cm)</label>
-                        <div class="score-chips" data-param="dilation">
-                            <button type="button" class="score-chip is-active" data-score="0">0 cm <small>(đóng kín)</small></button>
-                            <button type="button" class="score-chip" data-score="1">1-2 cm</button>
-                            <button type="button" class="score-chip" data-score="2">3-4 cm</button>
-                            <button type="button" class="score-chip" data-score="3">≥ 5 cm</button>
-                        </div>
-                    </div>
-                    <!-- Effacement -->
-                    <div class="form-group"><label class="form-label">2. Độ xóa (Effacement %)</label>
-                        <div class="score-chips" data-param="effacement">
-                            <button type="button" class="score-chip is-active" data-score="0">0-30%</button>
-                            <button type="button" class="score-chip" data-score="1">40-50%</button>
-                            <button type="button" class="score-chip" data-score="2">60-70%</button>
-                            <button type="button" class="score-chip" data-score="3">≥ 80%</button>
-                        </div>
-                    </div>
-                    <!-- Station -->
-                    <div class="form-group"><label class="form-label">3. Độ lọt (Station)</label>
-                        <div class="score-chips" data-param="station">
-                            <button type="button" class="score-chip is-active" data-score="0">-3</button>
-                            <button type="button" class="score-chip" data-score="1">-2</button>
-                            <button type="button" class="score-chip" data-score="2">-1 / 0</button>
-                            <button type="button" class="score-chip" data-score="3">+1 / +2</button>
-                        </div>
-                    </div>
-                    <!-- Consistency -->
-                    <div class="form-group"><label class="form-label">4. Mật độ cổ tử cung</label>
-                        <div class="score-chips" data-param="consistency">
-                            <button type="button" class="score-chip is-active" data-score="0">Cứng (firm)</button>
-                            <button type="button" class="score-chip" data-score="1">Trung bình</button>
-                            <button type="button" class="score-chip" data-score="2">Mềm (soft)</button>
-                        </div>
-                    </div>
-                    <!-- Position -->
-                    <div class="form-group"><label class="form-label">5. Vị trí cổ tử cung</label>
-                        <div class="score-chips" data-param="position">
-                            <button type="button" class="score-chip is-active" data-score="0">Sau (posterior)</button>
-                            <button type="button" class="score-chip" data-score="1">Giữa (mid)</button>
-                            <button type="button" class="score-chip" data-score="2">Trước (anterior)</button>
-                        </div>
-                    </div>
+            <h1>
+                Bishop Score — <span class="text-accent-color"
+                    >Khởi Phát Chuyển Dạ</span>
+            </h1>
+            <p class="hero-sub">
+                Đánh giá cổ tử cung, phân loại theo ngưỡng con so / con rạ. Gợi
+                ý phương pháp khởi phát. Tạo prompt AI để tư vấn chi tiết. Toàn
+                bộ logic chạy trên trình duyệt — không lưu dữ liệu.
+            </p>
+        </div>
+    </section>
 
-                    <div class="form-group bishop-divider"><label class="form-label">Thông tin bổ sung (cho khuyến cáo)</label>
+    <!-- Tool -->
+    <section class="bs-section">
+        <div class="container">
+            <div class="bs-grid">
+                <!-- Input Panel -->
+                <div class="bs-input-panel card">
+                    <h2 class="bs-panel-title">
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--primary)"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                            ><path
+                                d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"
+                            ></path><rect
+                                x="8"
+                                y="2"
+                                width="8"
+                                height="4"
+                                rx="1"
+                                ry="1"></rect>
+                        </svg>
+                        Khám Cổ Tử Cung
+                    </h2>
+
+                    <form id="bs-form" novalidate>
+                        <!-- A. Cervical Parameters -->
+                        <div class="form-section-label">
+                            A. Thông số cổ tử cung (Bishop)
+                        </div>
+
+                        <!-- Dilation -->
+                        <div class="form-group">
+                            <label class="form-label"
+                                >Độ mở CTC (Dilation)</label
+                            >
+                            <div class="toggle-group">
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="dilation"
+                                        value="closed"
+                                    /><span>Đóng kín</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="dilation"
+                                        value="1-2"
+                                    /><span>1–2 cm</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="dilation"
+                                        value="3-4"
+                                    /><span>3–4 cm</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="dilation"
+                                        value=">=5"
+                                    /><span>≥ 5 cm</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Effacement -->
+                        <div class="form-group">
+                            <label class="form-label"
+                                >Độ xóa CTC (Effacement)</label
+                            >
+                            <div class="toggle-group">
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="effacement"
+                                        value="0-30"
+                                    /><span>0–30%</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="effacement"
+                                        value="40-50"
+                                    /><span>40–50%</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="effacement"
+                                        value="60-70"
+                                    /><span>60–70%</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="effacement"
+                                        value=">=80"
+                                    /><span>≥ 80%</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Station -->
+                        <div class="form-group">
+                            <label class="form-label"
+                                >Độ lọt ngôi (Station)</label
+                            >
+                            <div class="toggle-group">
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="station"
+                                        value="-3"
+                                    /><span>−3</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="station"
+                                        value="-2"
+                                    /><span>−2</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="station"
+                                        value="-1,0"
+                                    /><span>−1, 0</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="station"
+                                        value="+1,+2"
+                                    /><span>+1, +2</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Consistency -->
+                        <div class="form-group">
+                            <label class="form-label"
+                                >Mật độ CTC (Consistency)</label
+                            >
+                            <div class="toggle-group">
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="consistency"
+                                        value="firm"
+                                    /><span>Cứng</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="consistency"
+                                        value="medium"
+                                    /><span>Trung bình</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="consistency"
+                                        value="soft"
+                                    /><span>Mềm</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Position -->
+                        <div class="form-group">
+                            <label class="form-label"
+                                >Vị trí CTC (Position)</label
+                            >
+                            <div class="toggle-group">
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="position"
+                                        value="posterior"
+                                    /><span>Sau</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="position"
+                                        value="middle"
+                                    /><span>Trung gian</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="position"
+                                        value="anterior"
+                                    /><span>Trước</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr class="form-divider" />
+                        <!-- B. Clinical Context -->
+                        <div class="form-section-label">
+                            B. Ngữ cảnh lâm sàng
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tình trạng sản</label>
+                            <div class="toggle-group toggle-sm">
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="parity"
+                                        value="nulliparous"
+                                        checked
+                                    /><span>Con so</span>
+                                </label>
+                                <label class="radio-card"
+                                    ><input
+                                        type="radio"
+                                        name="parity"
+                                        value="multiparous"
+                                    /><span>Con rạ</span>
+                                </label>
+                            </div>
+                            <small class="form-help"
+                                >Con so cần Bishop ≥ 8, con rạ cần ≥ 6 để xem là
+                                thuận lợi (CMQCC).</small
+                            >
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bs-ga-weeks" class="form-label"
+                                    >Tuổi thai (tuần)</label
+                                >
+                                <input
+                                    type="number"
+                                    id="bs-ga-weeks"
+                                    class="form-input"
+                                    min="20"
+                                    max="42"
+                                    placeholder="VD: 39"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="bs-ga-days" class="form-label"
+                                    >Ngày</label
+                                >
+                                <input
+                                    type="number"
+                                    id="bs-ga-days"
+                                    class="form-input"
+                                    min="0"
+                                    max="6"
+                                    placeholder="0–6"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bs-efw" class="form-label"
+                                >EFW — Cân nặng thai ước lượng (g)</label
+                            >
+                            <input
+                                type="number"
+                                id="bs-efw"
+                                class="form-input"
+                                min="500"
+                                max="6000"
+                                placeholder="VD: 3200"
+                            />
+                        </div>
+
                         <div class="checkbox-grid">
-                            <label class="checkbox-item"><input type="checkbox" id="bishop-multipara" /><span>Con rạ (đã sinh ≥1 lần)</span></label>
-                            <label class="checkbox-item"><input type="checkbox" id="bishop-prev-cs" /><span>Tiền sử mổ lấy thai</span></label>
-                            <label class="checkbox-item"><input type="checkbox" id="bishop-rom" /><span>Ối đã vỡ (ROM)</span></label>
+                            <label class="checkbox-label"
+                                ><input type="checkbox" id="bs-prior-cs" /><span
+                                    >Tiền sử mổ lấy thai (sẹo mổ cũ)</span
+                                >
+                            </label>
+                            <label class="checkbox-label"
+                                ><input type="checkbox" id="bs-rom" /><span
+                                    >Ối đã vỡ (PROM)</span
+                                >
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bs-comorbidity" class="form-label"
+                                >Bệnh lý kèm theo</label
+                            >
+                            <select id="bs-comorbidity" class="form-input">
+                                <option value="none">Không</option>
+                                <option value="preeclampsia"
+                                    >Tiền sản giật</option
+                                >
+                                <option value="gdm"
+                                    >Đái tháo đường thai kỳ</option
+                                >
+                                <option value="postterm">Thai quá ngày</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bs-reason" class="form-label"
+                                >Lý do xem xét khởi phát</label
+                            >
+                            <select id="bs-reason" class="form-input">
+                                <option value="">Chọn...</option>
+                                <option value="postterm">Thai quá ngày</option>
+                                <option value="preeclampsia"
+                                    >Tiền sản giật</option
+                                >
+                                <option value="prom">Ối vỡ non</option>
+                                <option value="gdm"
+                                    >Đái tháo đường thai kỳ</option
+                                >
+                                <option value="elective">Chọn lựa</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+
+                        <!-- Validation Error -->
+                        <div
+                            id="bs-validation-error"
+                            class="validation-error"
+                            role="alert"
+                            aria-live="polite"
+                            hidden
+                        >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-accent btn-lg bs-submit"
+                            id="bs-submit-btn"
+                        >
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><path d="M22 11.08V12a10 10 0 11-5.93-9.14"
+                                ></path><polyline points="22 4 12 14.01 9 11.01"
+                                ></polyline>
+                            </svg>
+                            Tính Bishop Score
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="bs-results-panel" id="bs-results" hidden>
+                    <!-- Score Header -->
+                    <div
+                        class="result-card result-primary card"
+                        id="bs-risk-header"
+                    >
+                        <div class="result-icon-wrap">
+                            <span class="result-emoji" id="bs-emoji">—</span>
+                        </div>
+                        <div class="result-content">
+                            <span class="result-label">Bishop Score</span>
+                            <div
+                                class="result-risk-level"
+                                id="bs-score-display"
+                            >
+                                —/13
+                            </div>
+                            <div class="result-sub" id="bs-class-label"></div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-accent btn-lg calc-submit">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                        Tính Bishop Score
+                    <!-- Score Breakdown -->
+                    <div class="card result-card">
+                        <h3 class="card-title">
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--primary)"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><rect
+                                    x="3"
+                                    y="3"
+                                    width="18"
+                                    height="18"
+                                    rx="2"
+                                    ry="2"></rect><line
+                                    x1="3"
+                                    y1="9"
+                                    x2="21"
+                                    y2="9"></line><line
+                                    x1="9"
+                                    y1="21"
+                                    x2="9"
+                                    y2="9"></line>
+                            </svg>
+                            Chi tiết điểm số
+                        </h3>
+                        <div class="threshold-table-wrap">
+                            <table
+                                class="threshold-table"
+                                id="bs-breakdown-table"
+                            >
+                                <thead
+                                    ><tr
+                                        ><th>Thông số</th><th>Giá trị</th><th
+                                            >Điểm</th
+                                        >
+                                    </tr>
+                                </thead>
+                                <tbody id="bs-breakdown-body"></tbody>
+                                <tfoot
+                                    ><tr
+                                        style="font-weight:700;background:var(--surface-alt)"
+                                        ><td colspan="2">Tổng Bishop Score</td
+                                        ><td id="bs-total-cell">—</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Parity Assessment -->
+                    <div class="card result-card" id="bs-parity-card">
+                        <h3 class="card-title">
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--primary)"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><circle cx="12" cy="12" r="10"></circle><line
+                                    x1="12"
+                                    y1="8"
+                                    x2="12"
+                                    y2="12"></line><line
+                                    x1="12"
+                                    y1="16"
+                                    x2="12.01"
+                                    y2="16"></line>
+                            </svg>
+                            Đánh giá theo tình trạng sản
+                        </h3>
+                        <div id="bs-parity-content"></div>
+                    </div>
+
+                    <!-- Induction Methods -->
+                    <div class="card result-card">
+                        <h3 class="card-title">
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--primary)"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><path
+                                    d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"
+                                ></path><polyline points="14 2 14 8 20 8"
+                                ></polyline>
+                            </svg>
+                            Phương pháp khởi phát đề xuất
+                        </h3>
+                        <div id="bs-methods-list"></div>
+                        <div id="bs-warnings-list"></div>
+                    </div>
+
+                    <!-- Dosage Reference -->
+                    <details class="bs-details card">
+                        <summary class="bs-summary">
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><path d="M4 19.5A2.5 2.5 0 016.5 17H20"
+                                ></path><path
+                                    d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"
+                                ></path>
+                            </svg>
+                            Liều lượng tham chiếu
+                        </summary>
+                        <div id="bs-dosage-content"></div>
+                    </details>
+
+                    <!-- Citations -->
+                    <details class="bs-details card">
+                        <summary class="bs-summary">
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><path d="M4 19.5A2.5 2.5 0 016.5 17H20"
+                                ></path><path
+                                    d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"
+                                ></path>
+                            </svg>
+                            Trích dẫn y khoa
+                        </summary>
+                        <div class="bs-citations">
+                            <p>
+                                1. Bishop EH. Pelvic Scoring for Elective
+                                Induction. <em>Obstet Gynecol.</em> 1964;24:266-268.
+                            </p>
+                            <p>
+                                2. SOGC Guideline No. 432c: Induction of Labour. <em
+                                    >J Obstet Gynaecol Can.</em
+                                > 2022.
+                            </p>
+                            <p>
+                                3. Wheeler V, et al. Cervical Ripening and
+                                Induction of Labor. <em>Am Fam Physician.</em> 2022;105(2):177-186.
+                            </p>
+                            <p>
+                                4. Wormer KC, et al. Bishop Score. <em
+                                    >StatPearls.</em
+                                > Updated Jul 17, 2024.
+                            </p>
+                            <p>
+                                5. ACOG Practice Bulletin No. 107: Induction of
+                                Labor. 2009.
+                            </p>
+                            <p>
+                                6. Grobman WA et al. (ARRIVE Trial) <em
+                                    >N Engl J Med.</em
+                                > 2018;379(6):513-523.
+                            </p>
+                            <p>7. CMQCC Induction of Labor Toolkit.</p>
+                        </div>
+                    </details>
+
+                    <!-- Prompt Section -->
+                    <div class="card result-card prompt-card">
+                        <h3 class="card-title">
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--accent)"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><path
+                                    d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"
+                                ></path>
+                            </svg>
+                            Prompt cho AI — Gợi ý lâm sàng
+                        </h3>
+                        <p class="prompt-desc">
+                            Copy prompt bên dưới → Paste vào ChatGPT, Claude,
+                            hoặc Gemini để nhận phân tích lâm sàng chi tiết.
+                        </p>
+                        <div class="prompt-output" id="bs-prompt-output"></div>
+                        <button
+                            class="btn btn-accent btn-lg bs-submit"
+                            id="bs-copy-btn"
+                            type="button"
+                        >
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><rect
+                                    x="9"
+                                    y="9"
+                                    width="13"
+                                    height="13"
+                                    rx="2"
+                                    ry="2"></rect><path
+                                    d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                                ></path>
+                            </svg>
+                            <span id="bs-copy-text">Copy Prompt</span>
+                        </button>
+                    </div>
+
+                    <!-- Print -->
+                    <button
+                        type="button"
+                        class="btn btn-outline bs-print-btn"
+                        id="bs-print-btn"
+                    >
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            aria-hidden="true"
+                            ><polyline points="6 9 6 2 18 2 18 9"
+                            ></polyline><path
+                                d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"
+                            ></path><rect x="6" y="14" width="12" height="8"
+                            ></rect>
+                        </svg>
+                        In kết quả
                     </button>
-                </form>
-            </div>
-        </div>
-
-        <div class="calc-results-panel" id="results-panel" hidden>
-            <div class="card bishop-score-card">
-                <div class="bishop-score-display">
-                    <div class="bishop-total" id="bishop-total">0</div>
-                    <div class="bishop-max">/ 13</div>
                 </div>
-                <div class="bishop-classification" id="bishop-class">—</div>
-                <div class="bishop-breakdown" id="bishop-breakdown"></div>
-            </div>
-            <div class="card" id="induction-card" hidden>
-                <h3>💊 Khuyến cáo phương pháp khởi phát</h3>
-                <div id="induction-recs"></div>
             </div>
         </div>
-    </div></div></section>
+    </section>
 
-    <section class="section section-alt"><div class="container">
-        <div class="section-header"><span class="section-label">Câu hỏi thường gặp</span><h2>Bishop Score là gì?</h2></div>
-        <div class="faq-list">
-            <details class="faq-item"><summary class="faq-question">Bishop Score dùng để làm gì?</summary><div class="faq-answer"><p>Bishop Score đánh giá mức độ "sẵn sàng" của cổ tử cung cho khởi phát chuyển dạ. Điểm ≥ 6 = cổ tử cung thuận lợi (favorable), có thể khởi phát bằng bấm ối + oxytocin. Điểm < 6 = cần làm chín muồi cổ tử cung trước.</p></div></details>
-            <details class="faq-item"><summary class="faq-question">Các phương pháp khởi phát chuyển dạ?</summary><div class="faq-answer"><p>Bishop thuận lợi (≥6): Bấm ối + Oxytocin. Bishop không thuận lợi (<6): Dinoprostone (Cervidil/Prepidil), Misoprostol, hoặc bóng Foley. Lựa chọn phụ thuộc tiền sử sản khoa, tình trạng ối, và chống chỉ định.</p></div></details>
+    <!-- Reference Table -->
+    <section class="section section-alt" id="bang-tham-chieu">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Tham khảo</span>
+                <h2>Bảng Chấm Điểm Bishop Gốc</h2>
+                <p>
+                    Hệ thống chấm điểm cổ tử cung 5 thông số (Edward Bishop,
+                    1964). Tổng điểm tối đa: 13.
+                </p>
+            </div>
+            <div class="card ref-card" style="max-width:720px;margin:0 auto">
+                <table class="ref-table">
+                    <thead
+                        ><tr
+                            ><th>Thông số</th><th>0 điểm</th><th>1 điểm</th><th
+                                >2 điểm</th
+                            ><th>3 điểm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            ><td><strong>Độ mở</strong></td><td>Đóng kín</td><td
+                                >1–2 cm</td
+                            ><td>3–4 cm</td><td>≥ 5 cm</td>
+                        </tr>
+                        <tr
+                            ><td><strong>Độ xóa</strong></td><td>0–30%</td><td
+                                >40–50%</td
+                            ><td>60–70%</td><td>≥ 80%</td>
+                        </tr>
+                        <tr
+                            ><td><strong>Độ lọt ngôi</strong></td><td>−3</td><td
+                                >−2</td
+                            ><td>−1, 0</td><td>+1, +2</td>
+                        </tr>
+                        <tr
+                            ><td><strong>Mật độ</strong></td><td>Cứng</td><td
+                                >Trung bình</td
+                            ><td>Mềm</td><td>—</td>
+                        </tr>
+                        <tr
+                            ><td><strong>Vị trí</strong></td><td>Sau</td><td
+                                >Trung gian</td
+                            ><td>Trước</td><td>—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div></section>
+    </section>
 
-    <section class="section cta-section"><div class="container"><div class="cta-content">
-        <h2>Cần tư vấn về khởi phát chuyển dạ?</h2>
-        <div class="cta-actions">
-            <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-thai">Đặt Lịch Khám</button>
-            <a href="tel:0899268299" class="btn btn-outline btn-lg">Gọi: 0899 268 299</a>
+    <!-- CTA -->
+    <section class="section cta-section" id="cta">
+        <div class="container">
+            <div class="cta-inner">
+                <h2>Cần tư vấn chuyên sâu?</h2>
+                <p>
+                    Bác sĩ chuyên khoa sản tại An Sinh sẵn sàng đồng hành cùng
+                    bạn trong thai kỳ.
+                </p>
+                <div class="cta-actions">
+                    <a
+                        href="https://phusanansinh.com/dat-lich-hen-kham.html"
+                        class="btn btn-accent btn-lg"
+                        id="cta-booking">Đặt Lịch Khám Ngay</a
+                    >
+                    <a
+                        href="tel:0899268299"
+                        class="btn btn-outline btn-lg"
+                        id="cta-call">Gọi: 0899 268 299</a
+                    >
+                </div>
+            </div>
         </div>
-    </div></div></section>
+    </section>
 
-    <section class="disclaimer-section"><div class="container"><p class="disclaimer-text"><strong>Lưu ý y khoa:</strong> Bishop Score theo Bishop (1964), ACOG PB 107, SOGC 432c. Không thay thế đánh giá lâm sàng của bác sĩ sản khoa.</p></div></section>
+    <!-- Disclaimer -->
+    <section class="disclaimer-section">
+        <div class="container">
+            <p class="disclaimer-text">
+                <strong>Lưu ý y khoa:</strong> Công cụ này chỉ mang tính hỗ trợ lâm
+                sàng, KHÔNG thay thế đánh giá của bác sĩ chuyên khoa. Dựa trên: Bishop
+                (1964), ACOG PB 107, SOGC 432c (2022), AAFP 2022, CMQCC IOL Toolkit,
+                ARRIVE Trial (NEJM 2018). Không lưu dữ liệu. Không gọi API.
+            </p>
+        </div>
+    </section>
 
     <style>
-        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
-        .tool-hero-content { max-width: 700px; margin: 0 auto; }
-        .tool-hero h1 { margin-bottom: var(--space-lg); }
-        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
-        .calc-layout { display: grid; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
-        .calc-card { position: static; }
-        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
-        .form-group { margin-bottom: var(--space-xl); }
-        .form-label { display: block; font-weight: 600; font-size: .9375rem; margin-bottom: var(--space-sm); }
-        .calc-submit { width: 100%; }
-        .score-chips { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
-        .score-chip { padding: .625rem .875rem; border-radius: var(--radius-md); border: 1.5px solid var(--border); background: var(--surface); font-size: .8125rem; font-weight: 500; cursor: pointer; transition: all var(--transition-fast); color: var(--text-secondary); font-family: var(--font-body); flex: 1; text-align: center; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .score-chip:hover { border-color: var(--primary); color: var(--primary); }
-        .score-chip.is-active { background: var(--primary); color: #fff; border-color: var(--primary); }
-        .score-chip small { font-size: .6875rem; opacity: .8; display: block; }
-        .checkbox-grid { display: grid; gap: var(--space-sm); }
-        .checkbox-item { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; font-size: .875rem; min-height: 44px; }
-        .checkbox-item:hover { border-color: var(--primary); }
-        .checkbox-item input { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
-        .bishop-divider { border-top: 1px solid var(--border); padding-top: var(--space-xl); margin-top: var(--space-lg); }
-
-        .bishop-score-card { text-align: center; padding: var(--space-2xl); }
-        .bishop-score-display { display: flex; align-items: baseline; justify-content: center; gap: var(--space-xs); }
-        .bishop-total { font-size: 4rem; font-weight: 800; line-height: 1; }
-        .bishop-max { font-size: 1.5rem; color: var(--text-muted); font-weight: 400; }
-        .bishop-classification { font-size: 1.125rem; font-weight: 600; padding: var(--space-sm) var(--space-xl); border-radius: var(--radius-full); display: inline-block; margin: var(--space-lg) 0; }
-        .bishop-classification.favorable { background: #f0fdf4; color: var(--success); }
-        .bishop-classification.unfavorable { background: #fef2f2; color: var(--error); }
-        .bishop-breakdown { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-sm); margin-top: var(--space-xl); }
-        .bishop-param { text-align: center; padding: var(--space-sm); border-radius: var(--radius-md); background: var(--surface-alt); }
-        .bishop-param-label { font-size: .6875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; display: block; }
-        .bishop-param-score { font-size: 1.25rem; font-weight: 700; margin-top: 2px; }
-        #induction-recs { font-size: .875rem; line-height: 1.7; }
-        .induction-method { padding: var(--space-md); border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: var(--space-sm); }
-        .induction-method-name { font-weight: 600; margin-bottom: 4px; }
-        .induction-method-dosage { font-size: .8125rem; color: var(--text-secondary); }
-        @media (max-width: 640px) { .score-chips { flex-wrap: wrap; } .bishop-breakdown { grid-template-columns: repeat(3, 1fr); } }
+        /* ── Hero ── */
+        .bs-hero {
+            background: linear-gradient(
+                135deg,
+                var(--primary-light) 0%,
+                var(--bg) 100%
+            );
+            padding: var(--space-4xl) 0 var(--space-3xl);
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-lg);
+            background: var(--surface);
+            border-radius: var(--radius-full);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+            border: 1px solid var(--border-light);
+        }
+        .hero-sub {
+            font-size: 1.0625rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        /* ── Layout ── */
+        .bs-section {
+            padding: var(--space-3xl) 0;
+        }
+        .bs-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-2xl);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .bs-input-panel {
+            position: static;
+        }
+        .bs-panel-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1.125rem;
+            margin-bottom: var(--space-lg);
+        }
+        /* ── Form ── */
+        .form-section-label {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-xs);
+            border-bottom: 2px solid var(--primary-light);
+        }
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--text-primary);
+            background: var(--bg-white);
+            transition: border-color var(--transition-fast);
+            min-height: 44px;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(27, 122, 109, 0.1);
+        }
+        select.form-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234A5568' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+        .form-help {
+            display: block;
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-top: var(--space-xs);
+        }
+        .form-divider {
+            border: 0;
+            border-top: 1px solid var(--border-light);
+            margin: var(--space-lg) 0;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+        .bs-submit {
+            width: 100%;
+        }
+        /* ── Toggle / Radio Cards ── */
+        .toggle-group {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+        }
+        .toggle-sm .radio-card {
+            font-size: 0.8125rem;
+            padding: var(--space-sm) var(--space-md);
+        }
+        .radio-card {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-md);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-weight: 600;
+            font-size: 0.875rem;
+            min-height: 44px;
+            text-align: center;
+            min-width: 0;
+        }
+        .radio-card:has(input:checked) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .radio-card input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* ── Checkboxes ── */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 0.9375rem;
+            cursor: pointer;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            transition: background var(--transition-fast);
+        }
+        .checkbox-label:hover {
+            background: var(--surface-alt);
+        }
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        /* ── Validation ── */
+        .validation-error {
+            margin: var(--space-md) 0;
+            padding: var(--space-sm) var(--space-md);
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: var(--radius-md);
+            color: var(--error);
+            font-size: 0.875rem;
+        }
+        /* ── Results ── */
+        .bs-results-panel:not([hidden]) {
+            animation: fadeInUp 0.4s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .result-card {
+            margin-bottom: var(--space-md);
+        }
+        .result-primary {
+            text-align: center;
+            padding: var(--space-xl);
+        }
+        .result-primary.risk-green {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: #fff;
+        }
+        .result-primary.risk-yellow {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            color: #fff;
+        }
+        .result-primary.risk-red {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: #fff;
+        }
+        .result-icon-wrap {
+            margin-bottom: var(--space-sm);
+        }
+        .result-emoji {
+            font-size: 2.5rem;
+        }
+        .result-label {
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.85;
+        }
+        .result-risk-level {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: var(--space-xs) 0;
+        }
+        .result-sub {
+            font-size: 0.9375rem;
+            opacity: 0.9;
+        }
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1rem;
+            margin-bottom: var(--space-lg);
+        }
+        /* ── Tables ── */
+        .threshold-table-wrap {
+            overflow-x: auto;
+        }
+        .threshold-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8125rem;
+        }
+        .threshold-table th,
+        .threshold-table td {
+            padding: var(--space-sm) var(--space-md);
+            border-bottom: 1px solid var(--border-light);
+            text-align: left;
+        }
+        .threshold-table th {
+            background: var(--surface-alt);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        /* ── Methods ── */
+        .method-item {
+            padding: var(--space-md);
+            background: var(--surface-alt);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+            border-left: 3px solid var(--primary);
+        }
+        .method-name {
+            font-weight: 700;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .method-detail {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .method-priority {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.6875rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            margin-bottom: 4px;
+        }
+        .warning-item {
+            padding: var(--space-md);
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+            font-size: 0.875rem;
+            color: #991b1b;
+            font-weight: 500;
+        }
+        .parity-box {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .parity-box.meets {
+            background: #ecfdf5;
+            color: #059669;
+            border: 2px solid #a7f3d0;
+        }
+        .parity-box.not-meets {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #fde68a;
+        }
+        /* ── Dosage ── */
+        .dosage-group {
+            margin-bottom: var(--space-lg);
+        }
+        .dosage-title {
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: var(--primary);
+            margin-bottom: var(--space-sm);
+        }
+        .dosage-item {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            padding-left: var(--space-md);
+            position: relative;
+        }
+        .dosage-item::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+        /* ── Details ── */
+        .bs-details {
+            margin-bottom: var(--space-md);
+        }
+        .bs-summary {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-weight: 600;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            padding: var(--space-md) 0;
+            user-select: none;
+            list-style: none;
+        }
+        .bs-summary::-webkit-details-marker {
+            display: none;
+        }
+        .bs-summary::after {
+            content: "▶";
+            font-size: 0.625rem;
+            margin-left: auto;
+            transition: transform 0.2s;
+        }
+        .bs-details[open] .bs-summary::after {
+            transform: rotate(90deg);
+        }
+        .bs-citations {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        .bs-citations p {
+            margin-bottom: var(--space-xs);
+        }
+        /* ── Prompt Card ── */
+        .prompt-card {
+            border: 2px solid var(--accent-light);
+        }
+        .prompt-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-lg);
+        }
+        .prompt-output {
+            background: var(--text-primary);
+            color: #e5e7eb;
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            font-family: "Menlo", "Monaco", "Courier New", monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: var(--space-lg);
+        }
+        /* ── Print ── */
+        .bs-print-btn {
+            width: 100%;
+            margin-top: var(--space-sm);
+        }
+        /* ── Ref ── */
+        .ref-card:hover {
+            transform: none;
+        }
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8125rem;
+        }
+        .ref-table th,
+        .ref-table td {
+            padding: var(--space-sm) var(--space-md);
+            border-bottom: 1px solid var(--border-light);
+            text-align: left;
+        }
+        .ref-table th {
+            background: var(--surface-alt);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        /* ── CTA ── */
+        .cta-section {
+            background: linear-gradient(
+                135deg,
+                var(--primary) 0%,
+                var(--primary-dark) 100%
+            );
+            color: #fff;
+            text-align: center;
+        }
+        .cta-inner {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .cta-inner h2 {
+            color: #fff;
+            margin-bottom: var(--space-md);
+        }
+        .cta-inner p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-xl);
+        }
+        .cta-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .cta-section .btn-outline {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .cta-section .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-color: #fff;
+        }
+        /* ── Disclaimer ── */
+        .disclaimer-section {
+            padding: var(--space-xl) 0;
+            background: var(--surface-alt);
+        }
+        .disclaimer-text {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .bs-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .toggle-group {
+                flex-wrap: wrap;
+            }
+            .radio-card {
+                min-width: calc(50% - 0.5rem);
+            }
+            .cta-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
     </style>
 
     <script>
-        // Reveal form, hide skeleton
-        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
-        document.getElementById('calc-form-panel')?.classList.remove('calc-form-hidden');
+        import {
+            calcBishopScore,
+            classifyBishop,
+            getInductionMethods,
+            buildBishopPrompt,
+            validateBishopInputs,
+        } from "../../utils/bishop-score-calc.js";
 
-        const { classifyBishop, getInductionMethods } = await import('../../utils/bishop-score-calc.js');
+        const form = document.getElementById("bs-form");
+        const resultsPanel = document.getElementById("bs-results");
+        const errorEl = document.getElementById("bs-validation-error");
 
-        const scores = { dilation: 0, effacement: 0, station: 0, consistency: 0, position: 0 };
+        const PARAM_LABELS = {
+            dilation: "Độ mở CTC",
+            effacement: "Độ xóa CTC",
+            station: "Độ lọt ngôi",
+            consistency: "Mật độ CTC",
+            position: "Vị trí CTC",
+        };
+        const VALUE_LABELS = {
+            dilation: {
+                closed: "Đóng kín",
+                "1-2": "1–2 cm",
+                "3-4": "3–4 cm",
+                ">=5": "≥ 5 cm",
+            },
+            effacement: {
+                "0-30": "0–30%",
+                "40-50": "40–50%",
+                "60-70": "60–70%",
+                ">=80": "≥ 80%",
+            },
+            station: {
+                "-3": "−3",
+                "-2": "−2",
+                "-1,0": "−1, 0",
+                "+1,+2": "+1, +2",
+            },
+            consistency: { firm: "Cứng", medium: "Trung bình", soft: "Mềm" },
+            position: {
+                posterior: "Sau",
+                middle: "Trung gian",
+                anterior: "Trước",
+            },
+        };
 
-        document.querySelectorAll('.score-chips').forEach(group => {
-            group.addEventListener('click', (e) => {
-                const chip = e.target.closest('.score-chip');
-                if (!chip) return;
-                group.querySelectorAll('.score-chip').forEach(c => c.classList.remove('is-active'));
-                chip.classList.add('is-active');
-                const param = group.dataset.param;
-                scores[param] = parseInt(chip.dataset.score);
-            });
-        });
-
-        document.getElementById('bishop-form')?.addEventListener('submit', (e) => {
+        form.addEventListener("submit", (e) => {
             e.preventDefault();
-            // Sum numeric scores directly (chip data-score values are the Bishop points)
-            const total = scores.dilation + scores.effacement + scores.station
-                + scores.consistency + scores.position;
-            const multipara = document.getElementById('bishop-multipara').checked;
-            const parity = multipara ? 'multiparous' : 'nulliparous';
-            const classification = classifyBishop(total, parity);
-            const prevCs = document.getElementById('bishop-prev-cs').checked;
-            const rom = document.getElementById('bishop-rom').checked;
-            const recs = getInductionMethods({ score: total, parity, hasPriorCS: prevCs, hasROM: rom });
+            hideError();
 
-            displayResults(total, classification, recs, scores);
+            const fd = collectFormData();
+            const validation = validateBishopInputs(fd);
+            if (!validation.valid) return showError(validation.error);
+
+            const score = calcBishopScore(fd);
+            const classification = classifyBishop(score.total, fd.parity);
+            const methods = getInductionMethods({
+                score: score.total,
+                parity: fd.parity,
+                hasPriorCS: fd.hasPriorCS,
+                hasROM: fd.hasROM,
+            });
+            const result = { score, classification, methods };
+
+            displayResults(fd, result);
+
+            const prompt = buildBishopPrompt(fd, result);
+            document.getElementById("bs-prompt-output").textContent = prompt;
+
+            resultsPanel.hidden = false;
+            resultsPanel.scrollIntoView({ behavior: "smooth", block: "start" });
         });
 
-        function displayResults(total, classification, recs, params) {
-            const panel = document.getElementById('results-panel');
-            if (panel) panel.hidden = false;
+        function collectFormData() {
+            const getRadio = (name) =>
+                document.querySelector(`input[name="${name}"]:checked`)
+                    ?.value || "";
+            return {
+                dilation: getRadio("dilation"),
+                effacement: getRadio("effacement"),
+                station: getRadio("station"),
+                consistency: getRadio("consistency"),
+                position: getRadio("position"),
+                parity: getRadio("parity"),
+                gaWeeks: document.getElementById("bs-ga-weeks").value
+                    ? parseInt(document.getElementById("bs-ga-weeks").value, 10)
+                    : null,
+                gaDays: document.getElementById("bs-ga-days").value
+                    ? parseInt(document.getElementById("bs-ga-days").value, 10)
+                    : null,
+                efw: document.getElementById("bs-efw").value
+                    ? parseInt(document.getElementById("bs-efw").value, 10)
+                    : null,
+                hasPriorCS: document.getElementById("bs-prior-cs").checked,
+                hasROM: document.getElementById("bs-rom").checked,
+                comorbidity: document.getElementById("bs-comorbidity").value,
+                inductionReason: document.getElementById("bs-reason").value,
+            };
+        }
 
-            const totalEl = document.getElementById('bishop-total');
-            if (totalEl) {
-                totalEl.textContent = total;
-                totalEl.style.color = classification.meetsThreshold ? 'var(--success)' : 'var(--error)';
-            }
+        function displayResults(fd, result) {
+            const { score, classification, methods } = result;
 
-            const classEl = document.getElementById('bishop-class');
-            if (classEl) {
-                classEl.textContent = `${classification.emoji} ${classification.label}`;
-                classEl.className = `bishop-classification ${classification.meetsThreshold ? 'favorable' : 'unfavorable'}`;
-            }
+            // Header
+            const header = document.getElementById("bs-risk-header");
+            header.className = `result-card result-primary card risk-${classification.color}`;
+            document.getElementById("bs-emoji").textContent =
+                classification.emoji;
+            document.getElementById(
+                "bs-score-display"
+            ).textContent = `${score.total}/13`;
+            document.getElementById("bs-class-label").textContent =
+                classification.label;
 
-            const PARAM_LABELS = { dilation: 'Độ mở', effacement: 'Xóa', station: 'Lọt', consistency: 'Mật độ', position: 'Vị trí' };
-            const breakdownEl = document.getElementById('bishop-breakdown');
-            if (breakdownEl) {
-                breakdownEl.innerHTML = Object.entries(params).map(([key, val]) =>
-                    `<div class="bishop-param"><span class="bishop-param-label">${PARAM_LABELS[key]}</span><span class="bishop-param-score">${val}</span></div>`
-                ).join('');
-            }
+            // Breakdown table
+            const tbody = document.getElementById("bs-breakdown-body");
+            tbody.innerHTML = [
+                "dilation",
+                "effacement",
+                "station",
+                "consistency",
+                "position",
+            ]
+                .map(
+                    (key) =>
+                        `<tr><td>${PARAM_LABELS[key]}</td><td>${
+                            VALUE_LABELS[key][fd[key]] || fd[key]
+                        }</td><td style="font-weight:700">${
+                            score.breakdown[key]
+                        }</td></tr>`
+                )
+                .join("");
+            document.getElementById("bs-total-cell").textContent = score.total;
 
-            const inductionCard = document.getElementById('induction-card');
-            const inductionRecs = document.getElementById('induction-recs');
-            if (inductionCard && recs) {
-                inductionCard.hidden = false;
-                let html = '';
-                if (recs.warnings && recs.warnings.length) {
-                    html += recs.warnings.map(w => `<div style="padding:8px 12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;margin-bottom:8px;font-size:.875rem">${w}</div>`).join('');
+            // Parity assessment
+            const parityBox = document.getElementById("bs-parity-content");
+            const parityName =
+                fd.parity === "nulliparous" ? "Con so" : "Con rạ";
+            parityBox.innerHTML = `<div class="parity-box ${
+                classification.meetsThreshold ? "meets" : "not-meets"
+            }">
+    ${parityName} — ngưỡng cần ≥ ${classification.threshold} → Bishop ${
+                score.total
+            } → <strong>${
+                classification.meetsThreshold ? "✅ ĐẠT" : "⚠️ CHƯA ĐẠT"
+            }</strong>
+  </div>`;
+
+            // Methods
+            const methodsDiv = document.getElementById("bs-methods-list");
+            methodsDiv.innerHTML = methods.methods
+                .map(
+                    (m, i) =>
+                        `<div class="method-item">
+      <span class="method-priority">Ưu tiên ${m.priority}</span>
+      <div class="method-name">${m.name}</div>
+      <div class="method-detail">${m.detail}</div>
+    </div>`
+                )
+                .join("");
+
+            // Warnings
+            const warningsDiv = document.getElementById("bs-warnings-list");
+            warningsDiv.innerHTML = methods.warnings
+                .map((w) => `<div class="warning-item">${w}</div>`)
+                .join("");
+
+            // Dosage
+            const dosageDiv = document.getElementById("bs-dosage-content");
+            const d = methods.dosageInfo;
+            dosageDiv.innerHTML = `
+    <div class="dosage-group"><div class="dosage-title">Oxytocin (Pitocin)</div>
+      <div class="dosage-item">Low-dose: ${d.oxytocin.lowDose}</div>
+      <div class="dosage-item">High-dose: ${d.oxytocin.highDose}</div>
+    </div>
+    <div class="dosage-group"><div class="dosage-title">Misoprostol</div>
+      <div class="dosage-item">Đặt âm đạo: ${d.misoprostol.vaginal}</div>
+      <div class="dosage-item">Uống: ${d.misoprostol.oral}</div>
+    </div>
+    <div class="dosage-group"><div class="dosage-title">Dinoprostone</div>
+      <div class="dosage-item">Gel: ${d.dinoprostone.gel}</div>
+      <div class="dosage-item">Insert: ${d.dinoprostone.insert}</div>
+    </div>
+    <div class="dosage-group"><div class="dosage-title">Khoảng cách an toàn trước Oxytocin</div>
+      <div class="dosage-item">Sau rút Dinoprostone insert: ${d.safeIntervals.afterDinoprostoneInsert}</div>
+      <div class="dosage-item">Sau Dinoprostone gel: ${d.safeIntervals.afterDinoprostoneGel}</div>
+      <div class="dosage-item">Sau Misoprostol uống: ${d.safeIntervals.afterMisoprostolOral}</div>
+      <div class="dosage-item">Sau Misoprostol đặt âm đạo: ${d.safeIntervals.afterMisoprostolVaginal}</div>
+    </div>`;
+        }
+
+        // Copy Prompt
+        document
+            .getElementById("bs-copy-btn")
+            .addEventListener("click", async () => {
+                const text =
+                    document.getElementById("bs-prompt-output").textContent;
+                try {
+                    await navigator.clipboard.writeText(text);
+                    const btn = document.getElementById("bs-copy-text");
+                    btn.textContent = "✅ Đã Copy!";
+                    setTimeout(() => {
+                        btn.textContent = "Copy Prompt";
+                    }, 2000);
+                } catch {
+                    const ta = document.createElement("textarea");
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(ta);
+                    const btn = document.getElementById("bs-copy-text");
+                    btn.textContent = "✅ Đã Copy!";
+                    setTimeout(() => {
+                        btn.textContent = "Copy Prompt";
+                    }, 2000);
                 }
-                if (recs.methods && recs.methods.length) {
-                    html += recs.methods.map(m => `<div class="induction-method"><div class="induction-method-name">${m.name}</div><div class="induction-method-dosage">${m.detail || ''}</div></div>`).join('');
-                }
-                if (inductionRecs) inductionRecs.innerHTML = html;
-            }
+            });
 
-            panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Print
+        document
+            .getElementById("bs-print-btn")
+            .addEventListener("click", () => window.print());
+
+        function showError(msg) {
+            errorEl.textContent = msg;
+            errorEl.hidden = false;
+        }
+        function hideError() {
+            errorEl.hidden = true;
         }
     </script>
 </BaseLayout>

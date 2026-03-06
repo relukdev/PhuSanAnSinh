@@ -1,227 +1,1485 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
 import "../../styles/global.css";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+const title =
+    "Đánh Giá Nguy Cơ Ác Tính Khối U Buồng Trứng — RMI & ROMA | An Sinh";
+const description =
+    "Công cụ tính RMI (Risk of Malignancy Index) 4 phiên bản và ROMA (Risk of Ovarian Malignancy Algorithm). Hỗ trợ bác sĩ phân tầng nguy cơ, tạo prompt AI. Miễn phí, chạy offline.";
 ---
 
-<BaseLayout
-    title="Đánh Giá Khối U Buồng Trứng — RMI & ROMA | An Sinh"
-    description="Công cụ đánh giá nguy cơ ác tính khối u buồng trứng theo RMI (Risk of Malignancy Index) và ROMA (Risk of Ovarian Malignancy Algorithm). Miễn phí."
->
-    <section class="hero tool-hero"><div class="container"><div class="tool-hero-content">
-        <span class="section-label">Công cụ miễn phí</span>
-        <h1>Đánh Giá <span class="text-accent-color">Khối U Buồng Trứng</span></h1>
-        <p class="hero-sub">Đánh giá nguy cơ ác tính theo RMI (Jacobs 1990) và ROMA (Moore 2009). Kết hợp CA-125, HE4, siêu âm và tình trạng mãn kinh.</p>
-    </div></div></section>
+<BaseLayout title={title} description={description}>
+    <!-- Schema.org FAQ -->
+    <script
+        type="application/ld+json"
+        set:html={JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+                {
+                    "@type": "Question",
+                    name: "RMI là gì?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "RMI (Risk of Malignancy Index) là chỉ số đánh giá nguy cơ ác tính khối u buồng trứng, kết hợp điểm siêu âm, tình trạng mãn kinh và nồng độ CA-125. Có 4 phiên bản (RMI 1–4), ngưỡng ≥200 (RMI 1–3) hoặc ≥450 (RMI 4) là nguy cơ cao.",
+                    },
+                },
+                {
+                    "@type": "Question",
+                    name: "ROMA score tính như thế nào?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "ROMA (Risk of Ovarian Malignancy Algorithm) sử dụng CA-125 và HE4 để tính Predictive Index, sau đó chuyển đổi thành xác suất %. Ngưỡng cắt: tiền mãn kinh ≥11.4%, hậu mãn kinh ≥29.9% (Roche Elecsys).",
+                    },
+                },
+                {
+                    "@type": "Question",
+                    name: "Khi nào CA-125 tăng giả?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "CA-125 có thể tăng giả trong lạc nội mạc tử cung, u xơ tử cung, viêm vùng chậu, xơ gan, suy tim, lao phúc mạc, thai kỳ (đặc biệt tam cá nguyệt 1), và kinh nguyệt.",
+                    },
+                },
+            ],
+        })}
+    ></script>
 
-    <section class="section" id="calculator"><div class="container"><div class="calc-layout">
-        <div class="calc-form-panel">
-            <!-- Skeleton Loading -->
-            <div class="calc-skeleton" id="calc-skeleton">
-                <div class="skeleton skeleton-heading"></div>
-                <div class="skeleton skeleton-text" style="width:55%"></div>
-                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
-                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
-                <div class="skeleton skeleton-text" style="width:50%"></div>
-                <div class="skeleton skeleton-input"></div>
-                <div class="skeleton skeleton-text" style="width:65%"></div>
-                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
-                <div class="skeleton skeleton-btn"></div>
+    <!-- Hero -->
+    <section class="ov-hero">
+        <div class="container">
+            <div class="hero-badge">
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    ><path d="M22 11.08V12a10 10 0 11-5.93-9.14"
+                    ></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                NICE CG122 · RCOG GTG 62 · Jacobs 1990 · Miễn phí 100%
             </div>
-            <div class="card calc-card calc-form-hidden" id="calc-form-panel">
-                <h2 class="calc-title">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-                    Nhập dữ liệu lâm sàng
-                </h2>
-                <form id="ovarian-form" novalidate>
-                    <div class="form-group"><label class="form-label">Tình trạng mãn kinh</label>
-                        <div class="method-chips" id="meno-chips">
-                            <button type="button" class="method-chip is-active" data-value="pre">Chưa mãn kinh</button>
-                            <button type="button" class="method-chip" data-value="post">Đã mãn kinh</button>
+            <h1>
+                Đánh Giá Nguy Cơ <span class="text-accent-color"
+                    >Ác Tính Khối U Buồng Trứng</span
+                >
+            </h1>
+            <p class="hero-sub">
+                Tính toán RMI (4 phiên bản) và ROMA. Phân tầng nguy cơ tự động.
+                Tạo prompt AI để tư vấn chi tiết. Toàn bộ logic chạy trên trình
+                duyệt — không lưu dữ liệu.
+            </p>
+        </div>
+    </section>
+
+    <!-- Tool -->
+    <section class="ov-section">
+        <div class="container">
+            <div class="ov-grid">
+                <!-- Input Panel -->
+                <div class="ov-input-panel card">
+                    <h2 class="ov-panel-title">
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--primary)"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                            ><path
+                                d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"
+                            ></path><rect
+                                x="8"
+                                y="2"
+                                width="8"
+                                height="4"
+                                rx="1"
+                                ry="1"></rect>
+                        </svg>
+                        Nhập thông tin bệnh nhân
+                    </h2>
+
+                    <!-- Patient Info -->
+                    <fieldset class="ov-fieldset">
+                        <legend class="ov-legend">📋 Thông tin bệnh nhân</legend
+                        >
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ov-age" class="form-label"
+                                    >Tuổi</label
+                                >
+                                <input
+                                    type="number"
+                                    id="ov-age"
+                                    class="form-input"
+                                    min="15"
+                                    max="100"
+                                    placeholder="VD: 55"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tình trạng kinh</label
+                                >
+                                <div class="ov-radio-group">
+                                    <label class="ov-radio-card">
+                                        <input
+                                            type="radio"
+                                            name="menopause"
+                                            value="pre"
+                                            checked
+                                        />
+                                        <span>Tiền mãn kinh</span>
+                                    </label>
+                                    <label class="ov-radio-card">
+                                        <input
+                                            type="radio"
+                                            name="menopause"
+                                            value="post"
+                                        />
+                                        <span>Hậu mãn kinh</span>
+                                    </label>
+                                </div>
+                                <small class="form-help"
+                                    >Hậu mãn kinh = mất kinh ≥12 tháng, hoặc
+                                    &gt;50 tuổi đã cắt TC</small
+                                >
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label for="ov-ca125" class="form-label">CA-125 (U/mL)</label><input type="number" id="ov-ca125" class="form-input" placeholder="vd: 45" min="0" max="10000" step="0.1" inputmode="decimal" required /></div>
-                        <div class="form-group"><label for="ov-he4" class="form-label">HE4 (pmol/L)</label><input type="number" id="ov-he4" class="form-input" placeholder="vd: 70" min="0" max="10000" step="0.1" inputmode="decimal" /><small class="form-help">Để trống nếu không có</small></div>
-                    </div>
-                    <div class="form-group"><label for="ov-size" class="form-label">Kích thước u (cm)</label><input type="number" id="ov-size" class="form-input" placeholder="vd: 5" min="0" max="50" step="0.1" inputmode="decimal" /></div>
-                    <div class="form-group"><label class="form-label">Đặc điểm siêu âm <small>(chọn các dấu hiệu có)</small></label>
-                        <div class="checkbox-grid">
-                            <label class="checkbox-item"><input type="checkbox" id="ov-multilocular" /><span>Đa thùy (multilocular / thành dày)</span></label>
-                            <label class="checkbox-item"><input type="checkbox" id="ov-solid" /><span>Thành phần đặc (solid areas)</span></label>
-                            <label class="checkbox-item"><input type="checkbox" id="ov-bilateral" /><span>Hai bên (bilateral)</span></label>
-                            <label class="checkbox-item"><input type="checkbox" id="ov-ascites" /><span>Dịch ổ bụng (ascites)</span></label>
-                            <label class="checkbox-item"><input type="checkbox" id="ov-mets" /><span>Nghi di căn (metastasis)</span></label>
+                    </fieldset>
+
+                    <!-- Blood Tests -->
+                    <fieldset class="ov-fieldset ov-fieldset-lab">
+                        <legend class="ov-legend">🔬 Xét nghiệm máu</legend>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ov-ca125" class="form-label"
+                                    >CA-125 (U/mL)</label
+                                >
+                                <input
+                                    type="number"
+                                    id="ov-ca125"
+                                    class="form-input"
+                                    min="0"
+                                    step="0.1"
+                                    placeholder="VD: 350"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="ov-he4" class="form-label"
+                                    >HE4 (pmol/L)</label
+                                >
+                                <input
+                                    type="number"
+                                    id="ov-he4"
+                                    class="form-input"
+                                    min="0"
+                                    step="0.1"
+                                    placeholder="Để trống nếu không có"
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <button type="submit" class="btn btn-accent btn-lg calc-submit">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                        Phân Tích Nguy Cơ
+                        <div class="form-group">
+                            <label class="form-label">Hệ thống XN HE4</label>
+                            <div class="ov-radio-group">
+                                <label class="ov-radio-card ov-radio-sm">
+                                    <input
+                                        type="radio"
+                                        name="he4system"
+                                        value="roche"
+                                        checked
+                                    />
+                                    <span>Roche Elecsys</span>
+                                </label>
+                                <label class="ov-radio-card ov-radio-sm">
+                                    <input
+                                        type="radio"
+                                        name="he4system"
+                                        value="abbott"
+                                    />
+                                    <span>Abbott Architect</span>
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Ultrasound -->
+                    <fieldset class="ov-fieldset ov-fieldset-us">
+                        <legend class="ov-legend">
+                            📐 Siêu âm — Đặc điểm khối u
+                            <span class="ov-count-badge" id="us-count">0</span
+                            >/5
+                        </legend>
+                        <div class="form-group">
+                            <label for="ov-size" class="form-label"
+                                >Kích thước lớn nhất (cm)</label
+                            >
+                            <input
+                                type="number"
+                                id="ov-size"
+                                class="form-input"
+                                min="0"
+                                step="0.1"
+                                placeholder="VD: 9"
+                            />
+                            <small class="form-help"
+                                >Dùng cho RMI 4: &lt;7cm → S=1, ≥7cm → S=2</small
+                            >
+                        </div>
+
+                        <label class="ov-checkbox-card">
+                            <input
+                                type="checkbox"
+                                id="us-multilocular"
+                                data-us="true"
+                            />
+                            <span class="ov-checkbox-label"
+                                >Nang đa thùy (multilocular cyst)</span
+                            >
+                        </label>
+                        <label class="ov-checkbox-card">
+                            <input
+                                type="checkbox"
+                                id="us-solid"
+                                data-us="true"
+                            />
+                            <span class="ov-checkbox-label"
+                                >Thành phần đặc (solid areas)</span
+                            >
+                        </label>
+                        <label class="ov-checkbox-card">
+                            <input
+                                type="checkbox"
+                                id="us-metastases"
+                                data-us="true"
+                            />
+                            <span class="ov-checkbox-label"
+                                >Di căn ổ bụng (metastases)</span
+                            >
+                        </label>
+                        <label class="ov-checkbox-card">
+                            <input
+                                type="checkbox"
+                                id="us-ascites"
+                                data-us="true"
+                            />
+                            <span class="ov-checkbox-label"
+                                >Dịch ổ bụng / báng bụng (ascites)</span
+                            >
+                        </label>
+                        <label class="ov-checkbox-card">
+                            <input
+                                type="checkbox"
+                                id="us-bilateral"
+                                data-us="true"
+                            />
+                            <span class="ov-checkbox-label"
+                                >Tổn thương hai bên (bilateral lesions)</span
+                            >
+                        </label>
+                    </fieldset>
+
+                    <!-- Clinical Notes -->
+                    <fieldset class="ov-fieldset">
+                        <legend class="ov-legend"
+                            >📝 Ghi chú lâm sàng (tùy chọn)</legend
+                        >
+                        <div class="form-group">
+                            <label for="ov-symptoms" class="form-label"
+                                >Triệu chứng</label
+                            >
+                            <input
+                                type="text"
+                                id="ov-symptoms"
+                                class="form-input"
+                                placeholder="VD: đau bụng dưới, bụng to dần..."
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="ov-family" class="form-label"
+                                >Tiền sử gia đình</label
+                            >
+                            <input
+                                type="text"
+                                id="ov-family"
+                                class="form-input"
+                                placeholder="VD: mẹ mắc ung thư vú..."
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="ov-notes" class="form-label"
+                                >Ghi chú khác</label
+                            >
+                            <input
+                                type="text"
+                                id="ov-notes"
+                                class="form-input"
+                                placeholder="VD: đang mang thai 6 tuần..."
+                            />
+                        </div>
+                    </fieldset>
+
+                    <!-- Submit -->
+                    <button
+                        type="button"
+                        class="btn btn-accent btn-lg ov-submit"
+                        id="ov-submit"
+                    >
+                        <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            aria-hidden="true"
+                            ><circle cx="11" cy="11" r="8"></circle><line
+                                x1="21"
+                                y1="21"
+                                x2="16.65"
+                                y2="16.65"></line>
+                        </svg>
+                        Tính Toán & Phân Tầng
                     </button>
-                    <div id="form-error" class="form-error" role="alert" hidden></div>
-                </form>
+                </div>
+
+                <!-- Results Panel -->
+                <div
+                    class="ov-results-panel"
+                    id="ov-results"
+                    style="display:none;"
+                >
+                    <!-- Overall Risk -->
+                    <div class="card ov-result-main">
+                        <h3 class="ov-result-title">Kết quả tổng hợp</h3>
+                        <div class="ov-overall-block" id="ov-overall-block">
+                            <span class="ov-overall-badge" id="ov-overall-badge"
+                                >—</span
+                            >
+                        </div>
+                        <div
+                            class="ov-warning-box"
+                            id="ov-rmi1-warning"
+                            style="display:none;"
+                        >
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                                ></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <span
+                                >RMI 1 = 0 do U=0 (không có đặc điểm siêu âm).
+                                Điều này KHÔNG có nghĩa an toàn. Tham khảo RMI
+                                2/3/4 hoặc ROMA.</span
+                            >
+                        </div>
+                        <div
+                            class="ov-discordance"
+                            id="ov-discordance"
+                            style="display:none;"
+                        >
+                        </div>
+                    </div>
+
+                    <!-- RMI Results -->
+                    <div class="card">
+                        <h3 class="ov-section-title">
+                            RMI — Risk of Malignancy Index
+                        </h3>
+                        <div class="ov-rmi-grid" id="ov-rmi-grid"></div>
+                    </div>
+
+                    <!-- ROMA Results -->
+                    <div class="card" id="ov-roma-card" style="display:none;">
+                        <h3 class="ov-section-title">
+                            ROMA — Risk of Ovarian Malignancy Algorithm
+                        </h3>
+                        <div id="ov-roma-content"></div>
+                    </div>
+
+                    <!-- Action Plan -->
+                    <div class="card ov-action-box" id="ov-action-box">
+                        <h3 class="ov-action-title">
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><circle cx="12" cy="12" r="10"></circle><line
+                                    x1="12"
+                                    y1="8"
+                                    x2="12"
+                                    y2="12"></line><line
+                                    x1="12"
+                                    y1="16"
+                                    x2="12.01"
+                                    y2="16"></line>
+                            </svg>
+                            Hướng xử trí đề xuất
+                        </h3>
+                        <ul class="ov-action-list" id="ov-action-list"></ul>
+                    </div>
+
+                    <!-- Collapsibles -->
+                    <details class="ov-details card">
+                        <summary class="ov-summary">
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><path
+                                    d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                                ></path><line x1="12" y1="9" x2="12" y2="13"
+                                ></line><line x1="12" y1="17" x2="12.01" y2="17"
+                                ></line>
+                            </svg>
+                            Hạn chế & lưu ý quan trọng
+                        </summary>
+                        <div class="ov-limitations" id="ov-limitations">
+                            <div class="ov-limit-group">
+                                <strong
+                                    >CA-125 tăng giả (False positive):</strong
+                                >
+                                <p>
+                                    Lạc nội mạc tử cung, u xơ tử cung, viêm vùng
+                                    chậu, xơ gan/báng bụng, suy tim sung huyết,
+                                    lao phúc mạc, thai kỳ (tam cá nguyệt 1),
+                                    kinh nguyệt.
+                                </p>
+                            </div>
+                            <div class="ov-limit-group">
+                                <strong
+                                    >CA-125 âm tính giả (False negative):</strong
+                                >
+                                <p>
+                                    U nhầy (mucinous), u tế bào sáng giai đoạn
+                                    sớm, u tế bào mầm, u mô đệm — có thể không
+                                    tiết CA-125.
+                                </p>
+                            </div>
+                            <div class="ov-limit-group">
+                                <strong>ROMA không áp dụng cho:</strong>
+                                <p>
+                                    Phụ nữ &lt; 18 tuổi, đang điều trị ung thư,
+                                    đã chẩn đoán ung thư trước đó.
+                                </p>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="ov-details card">
+                        <summary class="ov-summary">
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><path d="M4 19.5A2.5 2.5 0 016.5 17H20"
+                                ></path><path
+                                    d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"
+                                ></path>
+                            </svg>
+                            Trích dẫn y khoa
+                        </summary>
+                        <div class="ov-citations">
+                            <p>
+                                1. Jacobs I et al. <em>Br J Obstet Gynaecol</em>
+                                1990;97:922-929 (RMI 1)
+                            </p>
+                            <p>
+                                2. Tingulstad S et al. <em>Obstet Gynecol</em> 1996;88:372-376
+                                (RMI 2)
+                            </p>
+                            <p>
+                                3. Tingulstad S et al. <em>Obstet Gynecol</em> 1999;93:20-26
+                                (RMI 3)
+                            </p>
+                            <p>
+                                4. Yamamoto Y et al. <em
+                                    >Eur J Obstet Gynecol</em
+                                > 2009;145:104-108 (RMI 4)
+                            </p>
+                            <p>
+                                5. Moore RG et al. <em>Gynecol Oncol</em> 2009;112:40-46
+                                (ROMA validation)
+                            </p>
+                            <p>
+                                6. FDA 510(k) K110433 — HE4/ROMA approval 2011
+                            </p>
+                            <p>
+                                7. NICE CG122 — Ovarian cancer (2011, updated
+                                2023)
+                            </p>
+                            <p>8. RCOG Green-top Guideline No. 62 (2011)</p>
+                        </div>
+                    </details>
+
+                    <!-- Copy Prompt CTA -->
+                    <div class="ov-copy-section">
+                        <button
+                            type="button"
+                            class="btn ov-copy-btn"
+                            id="ov-copy-btn"
+                        >
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><rect
+                                    x="9"
+                                    y="9"
+                                    width="13"
+                                    height="13"
+                                    rx="2"
+                                    ry="2"></rect><path
+                                    d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                                ></path>
+                            </svg>
+                            <span id="ov-copy-text"
+                                >Sao Chép Prompt Để Hỏi AI</span
+                            >
+                        </button>
+                        <p class="ov-copy-hint">
+                            Paste vào ChatGPT / Claude / Gemini để nhận phân
+                            tích chi tiết + tư vấn
+                        </p>
+                    </div>
+
+                    <!-- Print -->
+                    <button
+                        type="button"
+                        class="btn btn-outline ov-print-btn"
+                        id="ov-print-btn"
+                    >
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            aria-hidden="true"
+                            ><polyline points="6 9 6 2 18 2 18 9"
+                            ></polyline><path
+                                d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"
+                            ></path><rect x="6" y="14" width="12" height="8"
+                            ></rect>
+                        </svg>
+                        In kết quả
+                    </button>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="calc-results-panel" id="results-panel" hidden>
-            <div class="ov-results-grid" id="results-grid"></div>
-            <div class="card" id="action-card" hidden><h3>📋 Khuyến cáo hành động</h3><ul id="action-list"></ul></div>
+    <!-- CTA -->
+    <section class="section cta-section" id="cta">
+        <div class="container">
+            <div class="cta-inner">
+                <h2>Cần tư vấn chuyên sâu?</h2>
+                <p>
+                    Bác sĩ chuyên khoa phụ khoa tại An Sinh sẵn sàng hỗ trợ bạn
+                    đánh giá và xử trí khối u buồng trứng.
+                </p>
+                <div class="cta-actions">
+                    <a
+                        href="https://phusanansinh.com/dat-lich-hen-kham.html"
+                        class="btn btn-accent btn-lg"
+                        id="cta-booking">Đặt Lịch Khám Ngay</a
+                    >
+                    <a
+                        href="tel:0899268299"
+                        class="btn btn-outline btn-lg"
+                        id="cta-call">Gọi: 0899 268 299</a
+                    >
+                </div>
+            </div>
         </div>
-    </div></div></section>
+    </section>
 
-    <section class="section section-alt"><div class="container">
-        <div class="section-header"><span class="section-label">Câu hỏi thường gặp</span><h2>Về đánh giá u buồng trứng</h2></div>
-        <div class="faq-list">
-            <details class="faq-item"><summary class="faq-question">RMI là gì?</summary><div class="faq-answer"><p>Risk of Malignancy Index (RMI) kết hợp: Điểm siêu âm × Điểm mãn kinh × CA-125. RMI ≥ 200 gợi ý ác tính, cần chuyển đến trung tâm ung bướu phụ khoa. Độ nhạy 78%, độ đặc hiệu 87% (Jacobs 1990).</p></div></details>
-            <details class="faq-item"><summary class="faq-question">ROMA khác gì RMI?</summary><div class="faq-answer"><p>ROMA (Risk of Ovarian Malignancy Algorithm) sử dụng CA-125 + HE4 + tình trạng mãn kinh. ROMA có ưu điểm phân biệt tốt hơn ở giai đoạn sớm và không phụ thuộc siêu âm. Ngưỡng: tiền mãn kinh ≥ 11.4%, hậu mãn kinh ≥ 29.9%.</p></div></details>
+    <!-- Disclaimer -->
+    <section class="disclaimer-section">
+        <div class="container">
+            <p class="disclaimer-text">
+                <strong>Lưu ý y khoa:</strong> Công cụ này chỉ mang tính hỗ trợ lâm
+                sàng, KHÔNG thay thế đánh giá của bác sĩ chuyên khoa và KHÔNG thay
+                thế kết quả mô bệnh học. Dựa trên: NICE CG122 · RCOG GTG 62 · Jacobs
+                1990 · Tingulstad 1996/1999 · Yamamoto 2009 · Moore 2009 (ROMA).
+                Không lưu dữ liệu.
+            </p>
         </div>
-    </div></section>
-
-    <section class="section cta-section"><div class="container"><div class="cta-content">
-        <h2>Cần tư vấn chuyên gia?</h2>
-        <div class="cta-actions">
-            <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-phu-khoa">Đặt Lịch Khám</button>
-            <a href="tel:0899268299" class="btn btn-outline btn-lg">Gọi: 0899 268 299</a>
-        </div>
-    </div></div></section>
-
-    <section class="disclaimer-section"><div class="container"><p class="disclaimer-text"><strong>Lưu ý y khoa:</strong> Kết quả ước tính theo RMI (Jacobs 1990) và ROMA (Moore 2009). Không thay thế chẩn đoán mô bệnh học.</p></div></section>
+    </section>
 
     <style>
-        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
-        .tool-hero-content { max-width: 700px; margin: 0 auto; }
-        .tool-hero h1 { margin-bottom: var(--space-lg); }
-        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
-        .calc-layout { display: grid; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
-        .calc-card { position: static; }
-        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
-        .form-group { margin-bottom: var(--space-lg); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
-        .form-label { display: block; font-weight: 600; font-size: .9375rem; margin-bottom: var(--space-sm); }
-        .form-input { width: 100%; padding: .75rem 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; background: var(--bg-white); min-height: 44px; font-family: var(--font-body); box-sizing: border-box; }
-        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,122,109,.1); }
-        .form-help { display: block; font-size: .8125rem; color: var(--text-muted); margin-top: var(--space-xs); }
-        .calc-submit { width: 100%; }
-        .form-error { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; border-radius: var(--radius-md); color: var(--error); font-size: .875rem; }
-        .method-chips { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
-        .method-chip { padding: .625rem 1rem; border-radius: var(--radius-full); border: 1.5px solid var(--border); background: var(--surface); font-size: .875rem; font-weight: 500; cursor: pointer; transition: all var(--transition-fast); color: var(--text-secondary); font-family: var(--font-body); min-height: 44px; }
-        .method-chip:hover { border-color: var(--primary); color: var(--primary); }
-        .method-chip.is-active { background: var(--primary); color: #fff; border-color: var(--primary); }
-        .checkbox-grid { display: grid; gap: var(--space-sm); }
-        .checkbox-item { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; font-size: .875rem; min-height: 44px; }
-        .checkbox-item:hover { border-color: var(--primary); }
-        .checkbox-item input { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
-        .ov-results-grid { display: grid; gap: var(--space-md); margin-bottom: var(--space-lg); }
-        .ov-result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: var(--space-xl); text-align: center; }
-        .ov-model-name { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; padding: 2px 10px; border-radius: var(--radius-full); display: inline-block; margin-bottom: var(--space-md); background: var(--primary-light); color: var(--primary); }
-        .ov-score { font-size: 2rem; font-weight: 700; margin-bottom: var(--space-sm); }
-        .ov-risk { font-size: .9375rem; font-weight: 600; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-md); display: inline-block; }
-        .ov-risk.risk-low { background: #f0fdf4; color: var(--success); }
-        .ov-risk.risk-moderate { background: #fffbeb; color: #d97706; }
-        .ov-risk.risk-high { background: #fef2f2; color: var(--error); }
-        #action-list { padding-left: var(--space-xl); }
-        #action-list li { margin-bottom: var(--space-sm); font-size: .875rem; line-height: 1.6; }
-        @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+        /* ── Hero ── */
+        .ov-hero {
+            background: linear-gradient(
+                135deg,
+                var(--primary-light) 0%,
+                var(--bg) 100%
+            );
+            padding: var(--space-4xl) 0 var(--space-3xl);
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-lg);
+            background: var(--surface);
+            border-radius: var(--radius-full);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+            border: 1px solid var(--border-light);
+        }
+        .hero-sub {
+            font-size: 1.0625rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ── Layout ── */
+        .ov-section {
+            padding: var(--space-3xl) 0;
+        }
+        .ov-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-2xl);
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .ov-input-panel {
+            position: static;
+        }
+        .ov-panel-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1.125rem;
+            margin-bottom: var(--space-lg);
+        }
+
+        /* ── Fieldsets ── */
+        .ov-fieldset {
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+        }
+        .ov-fieldset-lab {
+            border-color: #dbeafe;
+        }
+        .ov-fieldset-us {
+            border-color: #fef3c7;
+        }
+        .ov-legend {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-weight: 700;
+            font-size: 0.9375rem;
+            padding: 0 var(--space-xs);
+            color: var(--text-primary);
+        }
+        .ov-count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 24px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            background: #d97706;
+            margin-left: var(--space-xs);
+        }
+
+        /* ── Form ── */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+        .form-group {
+            margin-bottom: var(--space-md);
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: var(--space-xs);
+            color: var(--text-primary);
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 0.875rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            background: var(--bg-white);
+            transition: border-color var(--transition-fast);
+            min-height: 44px;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(27, 122, 109, 0.1);
+        }
+        .form-help {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ── Radio Cards ── */
+        .ov-radio-group {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+        }
+        .ov-radio-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-size: 0.9375rem;
+            min-height: 44px;
+        }
+        .ov-radio-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .ov-radio-card:has(input:checked) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .ov-radio-card input[type="radio"] {
+            accent-color: var(--primary);
+        }
+        .ov-radio-sm {
+            font-size: 0.8125rem;
+            padding: var(--space-xs) var(--space-sm);
+            min-height: 36px;
+        }
+
+        /* ── Checkbox Cards ── */
+        .ov-checkbox-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-xs);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            min-height: 44px;
+            font-size: 0.9375rem;
+        }
+        .ov-checkbox-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .ov-checkbox-card:has(input:checked) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .ov-checkbox-card input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            flex-shrink: 0;
+        }
+        .ov-checkbox-label {
+            flex: 1;
+        }
+        .ov-submit {
+            width: 100%;
+            margin-top: var(--space-sm);
+        }
+
+        /* ── Results ── */
+        .ov-results-panel {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+        .ov-result-title {
+            font-size: 1.125rem;
+            margin-bottom: var(--space-lg);
+        }
+        .ov-section-title {
+            font-size: 1rem;
+            margin-bottom: var(--space-md);
+        }
+
+        /* Overall Risk */
+        .ov-overall-block {
+            text-align: center;
+            padding: var(--space-md) 0;
+        }
+        .ov-overall-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-md) var(--space-2xl);
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1.25rem;
+            min-width: 200px;
+        }
+        .ov-risk-high {
+            background: #dc2626;
+            color: #fff;
+        }
+        .ov-risk-moderate {
+            background: #d97706;
+            color: #000;
+        }
+        .ov-risk-low {
+            background: #059669;
+            color: #fff;
+        }
+
+        /* Warning */
+        .ov-warning-box {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+            padding: var(--space-md);
+            border-radius: var(--radius-sm);
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #fed7aa;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        .ov-warning-box svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Discordance */
+        .ov-discordance {
+            margin-top: var(--space-md);
+            padding: var(--space-md);
+            border-radius: var(--radius-sm);
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #fed7aa;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        /* RMI Grid */
+        .ov-rmi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+        .ov-rmi-card {
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: var(--space-md);
+            text-align: center;
+        }
+        .ov-rmi-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-xs);
+        }
+        .ov-rmi-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        .ov-rmi-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .ov-rmi-detail {
+            font-size: 0.6875rem;
+            color: var(--text-muted);
+            margin-top: var(--space-xs);
+        }
+
+        /* ROMA */
+        .ov-roma-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9375rem;
+        }
+        .ov-roma-row:last-child {
+            border-bottom: none;
+        }
+        .ov-roma-label {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .ov-roma-val {
+            font-weight: 700;
+        }
+
+        /* Action Plan */
+        .ov-action-box {
+            border-left: 4px solid var(--info);
+        }
+        .ov-action-box.ov-action-urgent {
+            border-left-color: #dc2626;
+        }
+        .ov-action-box.ov-action-semi {
+            border-left-color: #d97706;
+        }
+        .ov-action-box.ov-action-low {
+            border-left-color: #059669;
+        }
+        .ov-action-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1rem;
+            margin-bottom: var(--space-md);
+        }
+        .ov-action-list {
+            list-style: none;
+            padding: 0;
+        }
+        .ov-action-list li {
+            padding: var(--space-xs) 0;
+            padding-left: var(--space-lg);
+            position: relative;
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+        }
+        .ov-action-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Collapsibles */
+        .ov-details {
+            overflow: hidden;
+        }
+        .ov-summary {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            list-style: none;
+            padding: var(--space-sm) 0;
+            min-height: 44px;
+        }
+        .ov-summary::-webkit-details-marker {
+            display: none;
+        }
+        .ov-limitations {
+            padding-top: var(--space-md);
+        }
+        .ov-limit-group {
+            margin-bottom: var(--space-md);
+            font-size: 0.875rem;
+            line-height: 1.7;
+        }
+        .ov-limit-group strong {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .ov-limit-group p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        .ov-citations {
+            padding-top: var(--space-md);
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+        .ov-citations p {
+            margin-bottom: var(--space-xs);
+        }
+
+        /* Copy Button */
+        .ov-copy-section {
+            text-align: center;
+            padding: var(--space-xl) 0;
+        }
+        .ov-copy-btn {
+            background: #4338ca;
+            color: #fff;
+            font-size: 1.125rem;
+            padding: 1rem 2.5rem;
+            border-radius: var(--radius-xl);
+            min-height: 56px;
+            width: 100%;
+            transition: all var(--transition-base);
+        }
+        .ov-copy-btn:hover {
+            background: #3730a3;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+            color: #fff;
+        }
+        .ov-copy-btn:focus-visible {
+            outline: 2px solid #4338ca;
+            outline-offset: 2px;
+        }
+        .ov-copy-btn.copied {
+            background: var(--success);
+        }
+        .ov-copy-hint {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-top: var(--space-sm);
+        }
+        .ov-print-btn {
+            width: 100%;
+        }
+
+        /* ── CTA Section ── */
+        .cta-section {
+            padding: var(--space-3xl) 0;
+        }
+        .cta-inner {
+            background: linear-gradient(
+                135deg,
+                var(--primary) 0%,
+                var(--primary-dark) 100%
+            );
+            border-radius: var(--radius-xl);
+            padding: var(--space-3xl);
+            text-align: center;
+            color: #fff;
+        }
+        .cta-inner h2 {
+            color: #fff;
+            margin-bottom: var(--space-md);
+        }
+        .cta-inner p {
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 500px;
+            margin: 0 auto var(--space-xl);
+        }
+        .cta-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ── Disclaimer ── */
+        .disclaimer-section {
+            padding: var(--space-xl) 0;
+            border-top: 1px solid var(--border-light);
+        }
+        .disclaimer-text {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .ov-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .ov-rmi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Print ── */
+        @media print {
+            .ov-hero,
+            .cta-section,
+            .ov-copy-section,
+            .ov-print-btn,
+            .ov-input-panel,
+            .site-header,
+            .site-footer,
+            .sticky-cta {
+                display: none !important;
+            }
+            .ov-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .ov-results-panel {
+                display: flex !important;
+            }
+            .ov-details {
+                break-inside: avoid;
+            }
+            .ov-details[open] summary ~ * {
+                display: block !important;
+            }
+        }
     </style>
 
     <script>
-        // Reveal form, hide skeleton
-        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
-        document.getElementById('calc-form-panel')?.classList.remove('calc-form-hidden');
+        import {
+            createEmptyPatient,
+            screenPatient,
+            getActionPlan,
+            countUSFeatures,
+        } from "../../utils/ovarian-risk-engine.js";
+        import { buildPrompt } from "../../utils/ovarian-risk-prompt.js";
 
-        const { screenPatient, getActionPlan } = await import('../../utils/ovarian-risk-engine.js');
+        // ── DOM refs ──
+        const ageInput = document.getElementById("ov-age") as HTMLInputElement;
+        const ca125Input = document.getElementById(
+            "ov-ca125"
+        ) as HTMLInputElement;
+        const he4Input = document.getElementById("ov-he4") as HTMLInputElement;
+        const sizeInput = document.getElementById(
+            "ov-size"
+        ) as HTMLInputElement;
+        const symptomsInput = document.getElementById(
+            "ov-symptoms"
+        ) as HTMLInputElement;
+        const familyInput = document.getElementById(
+            "ov-family"
+        ) as HTMLInputElement;
+        const notesInput = document.getElementById(
+            "ov-notes"
+        ) as HTMLInputElement;
 
-        let menoStatus = 'pre';
-        document.getElementById('meno-chips')?.addEventListener('click', (e) => {
-            const chip = e.target.closest('.method-chip');
-            if (!chip) return;
-            document.querySelectorAll('#meno-chips .method-chip').forEach(c => c.classList.remove('is-active'));
-            chip.classList.add('is-active');
-            menoStatus = chip.dataset.value;
-        });
+        const usCountEl = document.getElementById("us-count")!;
+        const submitBtn = document.getElementById("ov-submit")!;
+        const resultsPanel = document.getElementById("ov-results")!;
+        const overallBadge = document.getElementById("ov-overall-badge")!;
+        const rmi1Warning = document.getElementById("ov-rmi1-warning")!;
+        const discordanceEl = document.getElementById("ov-discordance")!;
+        const rmiGrid = document.getElementById("ov-rmi-grid")!;
+        const romaCard = document.getElementById("ov-roma-card") as HTMLElement;
+        const romaContent = document.getElementById("ov-roma-content")!;
+        const actionBox = document.getElementById(
+            "ov-action-box"
+        ) as HTMLElement;
+        const actionList = document.getElementById("ov-action-list")!;
+        const copyBtn = document.getElementById("ov-copy-btn")!;
+        const copyText = document.getElementById("ov-copy-text")!;
+        const printBtn = document.getElementById("ov-print-btn")!;
 
-        document.getElementById('ovarian-form')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const errorEl = document.getElementById('form-error');
-            try {
-                const ca125 = parseFloat(document.getElementById('ov-ca125').value);
-                const he4Raw = document.getElementById('ov-he4').value;
-                const he4 = he4Raw ? parseFloat(he4Raw) : null;
-                const size = parseFloat(document.getElementById('ov-size').value) || null;
+        let lastData: any = null;
+        let lastResult: any = null;
 
-                if (isNaN(ca125) || ca125 < 0) throw new Error('Vui lòng nhập CA-125.');
-
-                const ultrasound = {
-                    multilocular: document.getElementById('ov-multilocular').checked,
-                    solid: document.getElementById('ov-solid').checked,
-                    bilateral: document.getElementById('ov-bilateral').checked,
-                    ascites: document.getElementById('ov-ascites').checked,
-                    metastases: document.getElementById('ov-mets').checked,
-                };
-
-                const postmenopausal = menoStatus === 'post';
-                const result = screenPatient({ ca125, he4, postmenopausal, ultrasound, tumorSizeCm: size });
-                const actionPlan = getActionPlan(result.overallRisk);
-                displayResults(result, actionPlan.actions);
-                if (errorEl) errorEl.hidden = true;
-            } catch (err) {
-                if (errorEl) { errorEl.textContent = err.message; errorEl.hidden = false; }
-            }
-        });
-
-        function displayResults(result, actions) {
-            const panel = document.getElementById('results-panel');
-            if (panel) panel.hidden = false;
-
-            const grid = document.getElementById('results-grid');
-            if (grid) {
-                const cards = [];
-                const RISK_CLASS = { HIGH: 'risk-high', MODERATE: 'risk-moderate', LOW: 'risk-low' };
-                const RISK_LABEL = { HIGH: 'Nguy cơ CAO', MODERATE: 'Nguy cơ TRUNG BÌNH', LOW: 'Nguy cơ THẤP' };
-
-                // RMI cards
-                const rmiVersions = [
-                    { name: 'RMI-1 (Jacobs)', score: result.rmi1, cat: result.rmi1Cat },
-                    { name: 'RMI-2 (Tingulstad)', score: result.rmi2, cat: result.rmi2Cat },
-                    { name: 'RMI-3 (Tingulstad 2)', score: result.rmi3, cat: result.rmi3Cat },
-                    { name: 'RMI-4 (Yamamoto)', score: result.rmi4, cat: result.rmi4Cat },
-                ];
-                rmiVersions.forEach(v => {
-                    cards.push(`<div class="ov-result-card">
-                        <span class="ov-model-name">${v.name}</span>
-                        <div class="ov-score">${Math.round(v.score)}</div>
-                        <span class="ov-risk ${RISK_CLASS[v.cat] || 'risk-low'}">${RISK_LABEL[v.cat] || v.cat}</span>
-                    </div>`);
-                });
-
-                // ROMA card
-                if (result.hasHE4 && result.roma !== null) {
-                    cards.push(`<div class="ov-result-card">
-                        <span class="ov-model-name" style="background:#eff6ff;color:#2563eb">ROMA</span>
-                        <div class="ov-score">${result.roma.toFixed(1)}%</div>
-                        <span class="ov-risk ${RISK_CLASS[result.romaCat] || 'risk-low'}">${RISK_LABEL[result.romaCat] || result.romaCat}</span>
-                    </div>`);
-                }
-
-                // Overall risk
-                cards.push(`<div class="ov-result-card" style="border-color:var(--primary)">
-                    <span class="ov-model-name">TỔNG THỂ</span>
-                    <div class="ov-score" style="color:${result.overallRisk === 'HIGH' ? 'var(--error)' : result.overallRisk === 'MODERATE' ? '#d97706' : 'var(--success)'}">${RISK_LABEL[result.overallRisk]}</div>
-                </div>`);
-
-                grid.innerHTML = cards.join('');
-            }
-
-            // Action plan
-            const actionCard = document.getElementById('action-card');
-            const actionList = document.getElementById('action-list');
-            if (actionCard && actions && actions.length) {
-                actionCard.hidden = false;
-                actionList.innerHTML = actions.map(a => `<li>${a}</li>`).join('');
-            } else if (actionCard) {
-                actionCard.hidden = true;
-            }
-
-            panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // ── US Feature Count ──
+        function updateUSCount() {
+            const checks = document.querySelectorAll(
+                '[data-us="true"]:checked'
+            );
+            usCountEl.textContent = String(checks.length);
         }
+        document.querySelectorAll('[data-us="true"]').forEach((cb) => {
+            cb.addEventListener("change", updateUSCount);
+        });
+
+        // ── Build patient data from form ──
+        function buildPatientData() {
+            const d = createEmptyPatient();
+            d.age = ageInput.value ? parseInt(ageInput.value) : null;
+
+            const menoRadio = document.querySelector(
+                'input[name="menopause"]:checked'
+            ) as HTMLInputElement;
+            d.postmenopausal = menoRadio?.value === "post";
+
+            d.ca125 = ca125Input.value ? parseFloat(ca125Input.value) : null;
+            d.he4 = he4Input.value ? parseFloat(he4Input.value) : null;
+            d.hasHE4 = d.he4 != null && d.he4 > 0;
+
+            const sysRadio = document.querySelector(
+                'input[name="he4system"]:checked'
+            ) as HTMLInputElement;
+            d.he4System = sysRadio?.value || "roche";
+
+            d.tumorSizeCm = sizeInput.value
+                ? parseFloat(sizeInput.value)
+                : null;
+
+            d.ultrasound.multilocular = (
+                document.getElementById("us-multilocular") as HTMLInputElement
+            ).checked;
+            d.ultrasound.solid = (
+                document.getElementById("us-solid") as HTMLInputElement
+            ).checked;
+            d.ultrasound.metastases = (
+                document.getElementById("us-metastases") as HTMLInputElement
+            ).checked;
+            d.ultrasound.ascites = (
+                document.getElementById("us-ascites") as HTMLInputElement
+            ).checked;
+            d.ultrasound.bilateral = (
+                document.getElementById("us-bilateral") as HTMLInputElement
+            ).checked;
+
+            d.symptoms = symptomsInput.value.trim();
+            d.familyHistory = familyInput.value.trim();
+            d.otherNotes = notesInput.value.trim();
+
+            return d;
+        }
+
+        // ── Render results ──
+        function renderResults(data: any, result: any) {
+            resultsPanel.style.display = "";
+
+            // Overall risk badge
+            const riskLabels: Record<string, string> = {
+                HIGH: "NGUY CƠ CAO",
+                MODERATE: "NGUY CƠ TRUNG BÌNH",
+                LOW: "NGUY CƠ THẤP",
+            };
+            const riskClasses: Record<string, string> = {
+                HIGH: "ov-risk-high",
+                MODERATE: "ov-risk-moderate",
+                LOW: "ov-risk-low",
+            };
+            overallBadge.textContent = riskLabels[result.overallRisk] || "—";
+            overallBadge.className =
+                "ov-overall-badge " + (riskClasses[result.overallRisk] || "");
+
+            // RMI 1 zero warning
+            rmi1Warning.style.display = result.rmi1ZeroWarning ? "" : "none";
+
+            // Discordance
+            if (result.discordance) {
+                discordanceEl.style.display = "";
+                const catLabels: Record<string, string> = {
+                    HIGH: "CAO",
+                    MODERATE: "TRUNG BÌNH",
+                    LOW: "THẤP",
+                };
+                discordanceEl.innerHTML = `⚠ <strong>Bất đồng RMI/ROMA:</strong> RMI 1 = ${
+                    catLabels[result.discordance.rmi1]
+                }, ROMA = ${catLabels[result.discordance.roma]}.<br>${
+                    result.discordance.action
+                }`;
+            } else {
+                discordanceEl.style.display = "none";
+            }
+
+            // RMI Grid
+            const catLabels: Record<string, string> = {
+                HIGH: "CAO",
+                MODERATE: "TRUNG BÌNH",
+                LOW: "THẤP",
+            };
+            const catBg: Record<string, string> = {
+                HIGH: "background:#fee2e2;color:#991b1b;",
+                MODERATE: "background:#fef3c7;color:#92400e;",
+                LOW: "background:#ecfdf5;color:#065f46;",
+            };
+            const versions = [
+                {
+                    key: "rmi1",
+                    cat: result.rmi1Cat,
+                    val: result.rmi1,
+                    label: "RMI 1",
+                    sub: "Jacobs 1990",
+                },
+                {
+                    key: "rmi2",
+                    cat: result.rmi2Cat,
+                    val: result.rmi2,
+                    label: "RMI 2",
+                    sub: "Tingulstad 1996",
+                },
+                {
+                    key: "rmi3",
+                    cat: result.rmi3Cat,
+                    val: result.rmi3,
+                    label: "RMI 3",
+                    sub: "Tingulstad 1999",
+                },
+                {
+                    key: "rmi4",
+                    cat: result.rmi4Cat,
+                    val: result.rmi4,
+                    label: "RMI 4",
+                    sub: "Yamamoto 2009",
+                },
+            ];
+
+            rmiGrid.innerHTML = versions
+                .map((v) => {
+                    const d = result.rmiDetails[v.key];
+                    const formula =
+                        v.key === "rmi4"
+                            ? `U=${d.U} × M=${d.M} × S=${d.S} × CA125=${data.ca125}`
+                            : `U=${d.U} × M=${d.M} × CA125=${data.ca125}`;
+                    return `<div class="ov-rmi-card">
+                    <div class="ov-rmi-label">${v.label}<br><small>${
+                        v.sub
+                    }</small></div>
+                    <div class="ov-rmi-value">${v.val.toLocaleString()}</div>
+                    <span class="ov-rmi-badge" style="${catBg[v.cat]}">${
+                        catLabels[v.cat]
+                    }</span>
+                    <div class="ov-rmi-detail">${formula}</div>
+                </div>`;
+                })
+                .join("");
+
+            // ROMA
+            if (result.hasHE4) {
+                romaCard.style.display = "";
+                let html = `
+                <div class="ov-roma-row">
+                    <span class="ov-roma-label">Predictive Index (PI)</span>
+                    <span class="ov-roma-val">${result.pi}</span>
+                </div>
+                <div class="ov-roma-row">
+                    <span class="ov-roma-label">ROMA (%)</span>
+                    <span class="ov-roma-val" style="font-size:1.25rem;">${
+                        result.roma
+                    }%</span>
+                </div>
+                <div class="ov-roma-row">
+                    <span class="ov-roma-label">Phân loại</span>
+                    <span class="ov-rmi-badge" style="${
+                        catBg[result.romaCat]
+                    }">${catLabels[result.romaCat]}</span>
+                </div>
+                <div class="ov-roma-row">
+                    <span class="ov-roma-label">Ngưỡng cắt</span>
+                    <span>≥ ${result.romaCutoff}%</span>
+                </div>`;
+                romaContent.innerHTML = html;
+            } else {
+                romaCard.style.display = "none";
+            }
+
+            // Action Plan
+            const plan = getActionPlan(result.overallRisk);
+            const urgencyClasses: Record<string, string> = {
+                URGENT: "ov-action-urgent",
+                SEMI_URGENT: "ov-action-semi",
+                LOW: "ov-action-low",
+            };
+            actionBox.className =
+                "card ov-action-box " + (urgencyClasses[plan.urgency] || "");
+            actionList.innerHTML = plan.actions
+                .map((a: string) => `<li>${a}</li>`)
+                .join("");
+
+            // Scroll to results
+            resultsPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        // ── Submit ──
+        submitBtn.addEventListener("click", () => {
+            // Validate CA-125
+            if (!ca125Input.value) {
+                ca125Input.focus();
+                ca125Input.style.borderColor = "#dc2626";
+                setTimeout(() => (ca125Input.style.borderColor = ""), 2000);
+                return;
+            }
+
+            const data = buildPatientData();
+            lastData = data;
+            lastResult = screenPatient(data);
+            renderResults(data, lastResult);
+        });
+
+        // ── Copy Prompt ──
+        copyBtn.addEventListener("click", async () => {
+            if (!lastData || !lastResult) return;
+            const prompt = buildPrompt(lastData, lastResult);
+            try {
+                await navigator.clipboard.writeText(prompt);
+                copyText.textContent = "✓ Đã sao chép!";
+                copyBtn.classList.add("copied");
+                setTimeout(() => {
+                    copyText.textContent = "Sao Chép Prompt Để Hỏi AI";
+                    copyBtn.classList.remove("copied");
+                }, 2000);
+            } catch {
+                const ta = document.createElement("textarea");
+                ta.value = prompt;
+                ta.style.position = "fixed";
+                ta.style.opacity = "0";
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand("copy");
+                document.body.removeChild(ta);
+                copyText.textContent = "✓ Đã sao chép!";
+                copyBtn.classList.add("copied");
+                setTimeout(() => {
+                    copyText.textContent = "Sao Chép Prompt Để Hỏi AI";
+                    copyBtn.classList.remove("copied");
+                }, 2000);
+            }
+        });
+
+        // ── Print ──
+        printBtn.addEventListener("click", () => window.print());
     </script>
 </BaseLayout>

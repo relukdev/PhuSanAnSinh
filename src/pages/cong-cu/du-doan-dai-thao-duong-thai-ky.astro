@@ -1,197 +1,1663 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
 import "../../styles/global.css";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+const title =
+    "Dự Đoán Nguy Cơ Đái Tháo Đường Thai Kỳ (GDM) — FMF + PersonalGDM + Iowa | An Sinh";
+const description =
+    "Công cụ tính nguy cơ đái tháo đường thai kỳ dựa trên 3 mô hình: FMF (Syngelaki 2014), PersonalGDM Outcomes (Monash 2022), Iowa Nulliparous (Donovan 2019). Tạo prompt AI cho gợi ý lâm sàng.";
 ---
 
-<BaseLayout
-    title="Dự Đoán Đái Tháo Đường Thai Kỳ — FMF & Iowa | An Sinh"
-    description="Công cụ đánh giá nguy cơ đái tháo đường thai kỳ (GDM) theo mô hình FMF (Syngelaki 2014), PersonalGDM (Monash 2022) và Iowa (Donovan 2019). Miễn phí."
->
-    <section class="hero tool-hero"><div class="container"><div class="tool-hero-content">
-        <span class="section-label">Công cụ miễn phí</span>
-        <h1>Dự Đoán <span class="text-accent-color">ĐTĐ Thai Kỳ</span></h1>
-        <p class="hero-sub">Đánh giá nguy cơ đái tháo đường thai kỳ (GDM) theo 3 mô hình quốc tế: FMF, PersonalGDM Outcomes, và Iowa Nulliparous.</p>
-    </div></div></section>
+<BaseLayout title={title} description={description}>
+    <script
+        type="application/ld+json"
+        set:html={JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+                {
+                    "@type": "Question",
+                    name: "Công cụ dự đoán GDM hoạt động như thế nào?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "Công cụ sử dụng 3 mô hình y khoa: FMF (Syngelaki/Nicolaides 2014), PersonalGDM Outcomes (Monash University 2022), và Iowa Nulliparous (Donovan/Ryckman 2019) để ước tính nguy cơ đái tháo đường thai kỳ.",
+                    },
+                },
+                {
+                    "@type": "Question",
+                    name: "Ai nên sử dụng công cụ này?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "Bác sĩ sản khoa sử dụng để hỗ trợ đánh giá nguy cơ GDM cho thai phụ. FMF dùng cho tất cả thai phụ tại tam cá nguyệt I, Iowa chỉ dành cho con so, PersonalGDM Outcomes cho thai phụ đã chẩn đoán GDM.",
+                    },
+                },
+                {
+                    "@type": "Question",
+                    name: "Đái tháo đường thai kỳ là gì?",
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: "GDM là tình trạng rối loạn dung nạp glucose xuất hiện lần đầu trong thai kỳ. Tỷ lệ mắc khoảng 2-10% tùy dân số. Phụ nữ Đông Á có nguy cơ cao hơn (OR ≈ 2.9).",
+                    },
+                },
+            ],
+        })}
+    ></script>
 
-    <section class="section" id="calculator"><div class="container"><div class="calc-layout">
-        <div class="calc-form-panel">
-            <!-- Skeleton Loading -->
-            <div class="calc-skeleton" id="calc-skeleton">
-                <div class="skeleton skeleton-heading"></div>
-                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
-                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
-                <div class="skeleton skeleton-text" style="width:60%"></div>
-                <div class="skeleton-chips"><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div><div class="skeleton skeleton-chip"></div></div>
-                <div class="skeleton skeleton-btn"></div>
+    <!-- Hero -->
+    <section class="calc-hero">
+        <div class="container">
+            <div class="hero-badge">
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    ><path d="M22 11.08V12a10 10 0 11-5.93-9.14"
+                    ></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg> FMF + PersonalGDM + Iowa · Miễn phí 100%
             </div>
-            <div class="card calc-card calc-form-hidden" id="calc-form-panel">
-                <h2 class="calc-title">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    Nhập thông tin
-                </h2>
-                <form id="gdm-form" novalidate>
-                    <div class="form-row">
-                        <div class="form-group"><label for="gdm-age" class="form-label">Tuổi mẹ</label><input type="number" id="gdm-age" class="form-input" placeholder="vd: 30" min="14" max="55" required inputmode="numeric" /></div>
-                        <div class="form-group"><label for="gdm-height" class="form-label">Chiều cao (cm)</label><input type="number" id="gdm-height" class="form-input" placeholder="vd: 160" min="120" max="210" inputmode="numeric" /></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label for="gdm-weight" class="form-label">Cân nặng (kg)</label><input type="number" id="gdm-weight" class="form-input" placeholder="vd: 65" min="30" max="200" step="0.1" required inputmode="decimal" /></div>
-                        <div class="form-group"><label for="gdm-ethnicity" class="form-label">Chủng tộc</label>
-                            <select id="gdm-ethnicity" class="form-input"><option value="east_asian">Đông Á / Việt Nam</option><option value="south_central_asian">Trung/Nam Á</option><option value="caucasian">Caucasian</option><option value="african_caribbean">African-Caribbean</option><option value="hispanic">Hispanic</option><option value="other">Khác</option></select>
-                        </div>
-                    </div>
-                    <div class="form-group"><label class="form-label">Tiền sử & Yếu tố nguy cơ</label>
-                        <div class="checkbox-grid">
-                            <label class="checkbox-item"><input type="checkbox" id="gdm-prev-gdm" /><span>Tiền sử ĐTĐ thai kỳ</span></label>
-                            <label class="checkbox-item"><input type="checkbox" id="gdm-family-dm" /><span>Gia đình có người ĐTĐ type 2</span></label>
-                            <label class="checkbox-item"><input type="checkbox" id="gdm-pcos" /><span>Hội chứng buồng trứng đa nang (PCOS)</span></label>
-                            <label class="checkbox-item"><input type="checkbox" id="gdm-macrosomia" /><span>Tiền sử sinh con ≥ 4kg</span></label>
-                            <label class="checkbox-item"><input type="checkbox" id="gdm-nulliparous" /><span>Con so (chưa sinh lần nào)</span></label>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-accent btn-lg calc-submit">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                        Đánh Giá Nguy Cơ GDM
+            <h1>
+                Dự Đoán Nguy Cơ <span class="text-accent-color"
+                    >Đái Tháo Đường Thai Kỳ</span>
+            </h1>
+            <p class="hero-sub">
+                Phân tích nguy cơ GDM dựa trên 3 mô hình y khoa quốc tế. Tính
+                toán tự động và tạo prompt AI cho gợi ý lâm sàng chi tiết.
+            </p>
+        </div>
+    </section>
+
+    <!-- Calculator -->
+    <section class="calc-section">
+        <div class="container">
+            <div class="calc-grid">
+                <!-- Tab Selector -->
+                <div class="model-tabs" role="tablist">
+                    <button
+                        class="model-tab active"
+                        role="tab"
+                        aria-selected="true"
+                        data-tab="fmf"
+                        >A. FMF GDM<span class="tab-sub">Tam cá nguyệt I</span>
                     </button>
-                    <div id="form-error" class="form-error" role="alert" hidden></div>
-                </form>
+                    <button
+                        class="model-tab"
+                        role="tab"
+                        aria-selected="false"
+                        data-tab="outcomes"
+                        >B. PersonalGDM<span class="tab-sub">Đã có GDM</span>
+                    </button>
+                    <button
+                        class="model-tab"
+                        role="tab"
+                        aria-selected="false"
+                        data-tab="iowa"
+                        >C. Iowa<span class="tab-sub">Con so</span>
+                    </button>
+                </div>
+
+                <!-- ═══ TAB A: FMF ═══ -->
+                <div class="tab-panel active" id="panel-fmf" role="tabpanel">
+                    <div class="calc-input-panel card">
+                        <h2 class="calc-panel-title">
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--primary)"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                                ><path
+                                    d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"
+                                ></path><polyline points="14 2 14 8 20 8"
+                                ></polyline><line x1="16" y1="13" x2="8" y2="13"
+                                ></line><line x1="16" y1="17" x2="8" y2="17"
+                                ></line>
+                            </svg> FMF GDM Risk Calculator
+                        </h2>
+                        <form id="fmf-form" novalidate>
+                            <div class="form-section-label">Thông tin mẹ</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fmf-age" class="form-label"
+                                        >Tuổi mẹ</label
+                                    ><input
+                                        type="number"
+                                        id="fmf-age"
+                                        class="form-input"
+                                        min="14"
+                                        max="60"
+                                        placeholder="VD: 30"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <label for="fmf-weight" class="form-label"
+                                        >Cân nặng (kg)</label
+                                    ><input
+                                        type="number"
+                                        id="fmf-weight"
+                                        class="form-input"
+                                        min="30"
+                                        max="200"
+                                        step="0.1"
+                                        placeholder="Đo tại 11-13 tuần"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fmf-height" class="form-label"
+                                        >Chiều cao (cm)</label
+                                    ><input
+                                        type="number"
+                                        id="fmf-height"
+                                        class="form-input"
+                                        min="120"
+                                        max="220"
+                                        step="0.1"
+                                        placeholder="VD: 158"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        >BMI (tự tính)</label
+                                    ><div
+                                        class="bmi-display"
+                                        id="fmf-bmi-display"
+                                    >
+                                        --
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="fmf-ethnicity" class="form-label"
+                                    >Chủng tộc</label
+                                >
+                                <select id="fmf-ethnicity" class="form-input">
+                                    <option value="caucasian"
+                                        >Da trắng (Caucasian)</option
+                                    >
+                                    <option value="afro_caribbean"
+                                        >Châu Phi/Afro-Caribbean</option
+                                    >
+                                    <option value="south_asian"
+                                        >Nam Á (South Asian)</option
+                                    >
+                                    <option value="east_asian" selected
+                                        >Đông Á (bao gồm Việt Nam)</option
+                                    >
+                                    <option value="mixed"
+                                        >Hỗn hợp (Mixed)</option
+                                    >
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="fmf-conception" class="form-label"
+                                    >Phương pháp thụ thai</label
+                                >
+                                <select id="fmf-conception" class="form-input">
+                                    <option value="natural">Tự nhiên</option>
+                                    <option value="ovulation_drugs"
+                                        >Thuốc kích trứng</option
+                                    >
+                                    <option value="ivf">IVF</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="fmf-family-dm" class="form-label"
+                                    >Tiền sử gia đình ĐTĐ</label
+                                >
+                                <select id="fmf-family-dm" class="form-input">
+                                    <option value="none">Không</option>
+                                    <option value="degree1"
+                                        >Có — Bậc 1 (bố/mẹ/anh chị em)</option
+                                    >
+                                    <option value="degree2"
+                                        >Có — Bậc 2 (ông bà/cô chú)</option
+                                    >
+                                </select>
+                            </div>
+                            <hr class="form-divider" />
+                            <div class="form-section-label">
+                                Tiền sử sản khoa
+                            </div>
+                            <div class="form-group">
+                                <label for="fmf-obs-history" class="form-label"
+                                    >Tiền sử sản khoa</label
+                                >
+                                <select id="fmf-obs-history" class="form-input">
+                                    <option value="nulliparous"
+                                        >Con so (chưa sinh lần nào ≥24 tuần)</option
+                                    >
+                                    <option value="parous_no_gdm"
+                                        >Con rạ — KHÔNG có tiền sử GDM</option
+                                    >
+                                    <option value="parous_prev_gdm"
+                                        >Con rạ — CÓ tiền sử GDM</option
+                                    >
+                                </select>
+                                <small class="form-help"
+                                    >Nếu CÓ tiền sử GDM: nguy cơ rất cao, chỉ
+                                    cần cân nặng mẹ.</small>
+                            </div>
+                            <div class="form-group" id="fmf-bw-group" hidden>
+                                <label for="fmf-bw-zscore" class="form-label"
+                                    >Z-score cân nặng con lần trước</label
+                                ><input
+                                    type="number"
+                                    id="fmf-bw-zscore"
+                                    class="form-input"
+                                    step="0.1"
+                                    placeholder="VD: 0.5"
+                                /><small class="form-help"
+                                    >Nếu không biết, để trống (mặc định = 0).</small>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hút thuốc?</label>
+                                <div class="toggle-group toggle-sm">
+                                    <label class="radio-card"
+                                        ><input
+                                            type="radio"
+                                            name="fmf-smoking"
+                                            value="no"
+                                            checked
+                                        /><span>Không</span>
+                                    </label>
+                                    <label class="radio-card"
+                                        ><input
+                                            type="radio"
+                                            name="fmf-smoking"
+                                            value="yes"
+                                        /><span>Có</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div
+                                id="fmf-error"
+                                class="validation-error"
+                                role="alert"
+                                aria-live="polite"
+                                hidden
+                            >
+                            </div>
+                            <button
+                                type="submit"
+                                class="btn btn-accent btn-lg calc-submit"
+                                id="fmf-submit">Phân Tích Nguy Cơ FMF</button
+                            >
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ═══ TAB B: PersonalGDM Outcomes ═══ -->
+                <div
+                    class="tab-panel"
+                    id="panel-outcomes"
+                    role="tabpanel"
+                    hidden
+                >
+                    <div class="calc-input-panel card">
+                        <h2 class="calc-panel-title">
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--primary)"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                                ><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg> PersonalGDM Outcomes — Đã chẩn đoán GDM
+                        </h2>
+                        <form id="outcomes-form" novalidate>
+                            <div class="form-section-label">
+                                Thông tin cơ bản
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="out-age" class="form-label"
+                                        >Tuổi mẹ</label
+                                    ><input
+                                        type="number"
+                                        id="out-age"
+                                        class="form-input"
+                                        min="14"
+                                        max="60"
+                                        placeholder="VD: 30"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <label for="out-bmi" class="form-label"
+                                        >BMI trước thai (kg/m²)</label
+                                    ><input
+                                        type="number"
+                                        id="out-bmi"
+                                        class="form-input"
+                                        min="12"
+                                        max="70"
+                                        step="0.1"
+                                        placeholder="VD: 24"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="out-ethnicity" class="form-label"
+                                    >Dân tộc</label
+                                >
+                                <select id="out-ethnicity" class="form-input">
+                                    <option value="caucasian_eu"
+                                        >Caucasian / Châu Âu</option
+                                    >
+                                    <option value="south_central_asian"
+                                        >Trung/Nam Á</option
+                                    >
+                                    <option value="east_asian" selected
+                                        >Đông Á (Việt Nam)</option
+                                    >
+                                    <option value="african">Châu Phi</option>
+                                    <option value="oceanian"
+                                        >Châu Đại Dương</option
+                                    >
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                            <hr class="form-divider" />
+                            <div class="form-section-label">
+                                Kết quả OGTT 75g
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="out-fasting" class="form-label"
+                                        >Glucose đói (mmol/L)</label
+                                    ><input
+                                        type="number"
+                                        id="out-fasting"
+                                        class="form-input"
+                                        min="0"
+                                        max="20"
+                                        step="0.1"
+                                        placeholder="VD: 5.1"
+                                        required
+                                    /><small class="form-help"
+                                        >mg/dL → mmol/L: nhân × 0.0555</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="out-1h" class="form-label"
+                                        >Glucose 1 giờ (mmol/L)</label
+                                    ><input
+                                        type="number"
+                                        id="out-1h"
+                                        class="form-input"
+                                        min="0"
+                                        max="30"
+                                        step="0.1"
+                                        placeholder="VD: 10.0"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="out-ga-diag" class="form-label"
+                                        >Tuổi thai chẩn đoán (tuần)</label
+                                    ><input
+                                        type="number"
+                                        id="out-ga-diag"
+                                        class="form-input"
+                                        min="10"
+                                        max="40"
+                                        placeholder="VD: 26"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <label
+                                        for="out-weight-gain"
+                                        class="form-label"
+                                        >Tổng tăng cân (kg)</label
+                                    ><input
+                                        type="number"
+                                        id="out-weight-gain"
+                                        class="form-input"
+                                        min="0"
+                                        max="40"
+                                        step="0.1"
+                                        placeholder="VD: 8"
+                                        required
+                                    /><small class="form-help"
+                                        >Từ đầu thai kỳ → chẩn đoán GDM</small>
+                                </div>
+                            </div>
+                            <hr class="form-divider" />
+                            <div class="form-section-label">Tiền sử</div>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-label"
+                                    ><input
+                                        type="checkbox"
+                                        id="out-nulliparous"
+                                    /><span>Con so (chưa sinh lần nào)</span>
+                                </label>
+                                <label class="checkbox-label"
+                                    ><input
+                                        type="checkbox"
+                                        id="out-prev-lga"
+                                    /><span
+                                        >Tiền sử sinh con to (LGA &gt;90th
+                                        percentile)</span
+                                    >
+                                </label>
+                                <label class="checkbox-label"
+                                    ><input
+                                        type="checkbox"
+                                        id="out-prev-pe"
+                                    /><span>Tiền sử tiền sản giật/sản giật</span
+                                    >
+                                </label>
+                                <label class="checkbox-label"
+                                    ><input
+                                        type="checkbox"
+                                        id="out-family-dm"
+                                    /><span>Tiền sử gia đình ĐTĐ</span>
+                                </label>
+                            </div>
+                            <div
+                                id="out-error"
+                                class="validation-error"
+                                role="alert"
+                                aria-live="polite"
+                                hidden
+                            >
+                            </div>
+                            <button
+                                type="submit"
+                                class="btn btn-accent btn-lg calc-submit"
+                                >Phân Tích Nguy Cơ Biến Cố</button
+                            >
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ═══ TAB C: Iowa Nulliparous ═══ -->
+                <div class="tab-panel" id="panel-iowa" role="tabpanel" hidden>
+                    <div class="calc-input-panel card">
+                        <h2 class="calc-panel-title">
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--primary)"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                                ><circle cx="12" cy="12" r="10"></circle><path
+                                    d="M12 6v6l4 2"></path>
+                            </svg> Iowa GDM Risk — Phụ nữ con so
+                        </h2>
+                        <form id="iowa-form" novalidate>
+                            <div class="form-section-label">
+                                Thông tin bệnh nhân
+                            </div>
+                            <div class="form-group">
+                                <label for="iowa-ethnicity" class="form-label"
+                                    >Chủng tộc</label
+                                >
+                                <select id="iowa-ethnicity" class="form-input">
+                                    <option value="white"
+                                        >White, not Hispanic</option
+                                    >
+                                    <option value="hispanic">Hispanic</option>
+                                    <option value="black">Black</option>
+                                    <option value="asian" selected
+                                        >Asian (bao gồm Việt Nam)</option
+                                    >
+                                    <option value="ai_an"
+                                        >American Indian/Alaska Native</option
+                                    >
+                                    <option value="hawaiian_pi"
+                                        >Hawaiian/Pacific Islander</option
+                                    >
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="iowa-age" class="form-label"
+                                        >Tuổi mẹ</label
+                                    ><input
+                                        type="number"
+                                        id="iowa-age"
+                                        class="form-input"
+                                        min="14"
+                                        max="60"
+                                        placeholder="VD: 30"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <label for="iowa-bmi" class="form-label"
+                                        >BMI trước thai</label
+                                    ><input
+                                        type="number"
+                                        id="iowa-bmi"
+                                        class="form-input"
+                                        min="12"
+                                        max="70"
+                                        step="0.1"
+                                        placeholder="VD: 24"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        >Tiền sử gia đình ĐTĐ?</label
+                                    >
+                                    <div class="toggle-group toggle-sm">
+                                        <label class="radio-card"
+                                            ><input
+                                                type="radio"
+                                                name="iowa-family-dm"
+                                                value="no"
+                                                checked
+                                            /><span>Không</span>
+                                        </label><label class="radio-card"
+                                            ><input
+                                                type="radio"
+                                                name="iowa-family-dm"
+                                                value="yes"
+                                            /><span>Có</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label"
+                                        >Tăng HA có từ trước?</label
+                                    >
+                                    <div class="toggle-group toggle-sm">
+                                        <label class="radio-card"
+                                            ><input
+                                                type="radio"
+                                                name="iowa-htn"
+                                                value="no"
+                                                checked
+                                            /><span>Không</span>
+                                        </label><label class="radio-card"
+                                            ><input
+                                                type="radio"
+                                                name="iowa-htn"
+                                                value="yes"
+                                            /><span>Có</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                id="iowa-error"
+                                class="validation-error"
+                                role="alert"
+                                aria-live="polite"
+                                hidden
+                            >
+                            </div>
+                            <button
+                                type="submit"
+                                class="btn btn-accent btn-lg calc-submit"
+                                >Phân Tích Nguy Cơ Iowa</button
+                            >
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ═══ RESULTS PANEL ═══ -->
+                <div class="calc-results-panel" id="results-panel" hidden>
+                    <div
+                        class="result-card result-primary card"
+                        id="risk-header"
+                    >
+                        <div class="result-icon-wrap">
+                            <span class="result-emoji" id="risk-emoji">⚠️</span>
+                        </div>
+                        <div class="result-content">
+                            <span class="result-label" id="result-model-label"
+                                >Phân tầng nguy cơ</span
+                            >
+                            <div class="result-risk-level" id="risk-level">
+                                --
+                            </div>
+                            <div class="result-sub" id="risk-action"></div>
+                        </div>
+                    </div>
+
+                    <!-- Risk Value Card -->
+                    <div class="card result-card">
+                        <h3 class="card-title">
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--primary)"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><polyline
+                                    points="22 12 18 12 15 21 9 3 6 12 2 12"
+                                ></polyline>
+                            </svg> Chi tiết kết quả
+                        </h3>
+                        <div id="risk-detail-content"></div>
+                    </div>
+
+                    <!-- Threshold Table -->
+                    <div class="card result-card" id="threshold-card">
+                        <h3 class="card-title">
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--primary)"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><rect
+                                    x="3"
+                                    y="3"
+                                    width="18"
+                                    height="18"
+                                    rx="2"
+                                    ry="2"></rect><line
+                                    x1="3"
+                                    y1="9"
+                                    x2="21"
+                                    y2="9"></line><line
+                                    x1="9"
+                                    y1="21"
+                                    x2="9"
+                                    y2="9"></line>
+                            </svg> Bảng phân tầng nguy cơ
+                        </h3>
+                        <div
+                            class="threshold-table-wrap"
+                            id="threshold-table-wrap"
+                        >
+                        </div>
+                    </div>
+
+                    <!-- Prompt -->
+                    <div class="card result-card prompt-card">
+                        <h3 class="card-title">
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--accent)"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><path
+                                    d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"
+                                ></path>
+                            </svg> Prompt cho AI — Gợi ý lâm sàng
+                        </h3>
+                        <p class="prompt-desc">
+                            Copy prompt bên dưới → Paste vào ChatGPT, Claude,
+                            hoặc Gemini để nhận phân tích lâm sàng chi tiết.
+                        </p>
+                        <div class="prompt-output" id="prompt-output"></div>
+                        <button
+                            class="btn btn-accent btn-lg calc-submit"
+                            id="copy-prompt-btn"
+                            type="button"
+                            ><svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><rect
+                                    x="9"
+                                    y="9"
+                                    width="13"
+                                    height="13"
+                                    rx="2"
+                                    ry="2"></rect><path
+                                    d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                                ></path>
+                            </svg>
+                            <span id="copy-btn-text">Copy Prompt</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="calc-results-panel" id="results-panel" hidden>
-            <div class="gdm-results-grid" id="gdm-results"></div>
-            <div class="card" id="bmi-card"><h3>Chỉ số BMI</h3><p id="bmi-text"></p></div>
+    <!-- Comparison Table -->
+    <section class="section section-alt" id="so-sanh">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">So sánh</span><h2>
+                    Bảng Tổng Hợp 3 Mô Hình
+                </h2><p>
+                    So sánh đặc điểm, ưu nhược điểm của từng công cụ dự đoán
+                    GDM.
+                </p>
+            </div>
+            <div class="card ref-card" style="overflow-x:auto">
+                <table class="ref-table comparison-table">
+                    <thead
+                        ><tr
+                            ><th>Tiêu chí</th><th>FMF (Syngelaki 2014)</th><th
+                                >PersonalGDM Outcomes</th
+                            ><th>Iowa Nulliparous</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            ><td><strong>Nguồn gốc</strong></td><td
+                                >King's College London</td
+                            ><td>Monash University</td><td
+                                >University of Iowa</td
+                            >
+                        </tr>
+                        <tr
+                            ><td><strong>Dân số</strong></td><td>75.161 (UK)</td
+                            ><td>~2.700 (Melbourne)</td><td
+                                >1.156.708 (CA + Iowa)</td
+                            >
+                        </tr>
+                        <tr
+                            ><td><strong>Đối tượng</strong></td><td
+                                >Tất cả thai phụ</td
+                            ><td>Đã có GDM</td><td>Chỉ con so</td>
+                        </tr>
+                        <tr
+                            ><td><strong>Thời điểm</strong></td><td
+                                >11-13 tuần</td
+                            ><td>Sau chẩn đoán GDM</td><td>Trước/đầu thai kỳ</td
+                            >
+                        </tr>
+                        <tr
+                            ><td><strong>AUROC</strong></td><td
+                                ><strong>0.823</strong>
+                            </td><td>0.68</td><td>0.732 (CA)</td>
+                        </tr>
+                        <tr
+                            ><td><strong>Ưu điểm</strong></td><td
+                                >Chính xác nhất</td
+                            ><td>Dự đoán kết cục</td><td
+                                >Đơn giản, dành riêng con so</td
+                            >
+                        </tr>
+                        <tr
+                            ><td><strong>Phù hợp VN</strong></td><td
+                                >Tốt (East Asian OR=2.92)</td
+                            ><td>Tốt (có hệ số Đông Á)</td><td
+                                >Chấp nhận (AUC thấp cho Asian)</td
+                            >
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div></div></section>
+    </section>
 
-    <section class="section section-alt"><div class="container">
-        <div class="section-header"><span class="section-label">Câu hỏi thường gặp</span><h2>Đái tháo đường thai kỳ</h2></div>
-        <div class="faq-list">
-            <details class="faq-item"><summary class="faq-question">ĐTĐ thai kỳ ảnh hưởng gì đến mẹ và bé?</summary><div class="faq-answer"><p>GDM tăng nguy cơ: thai to (macrosomia), sinh khó, tiền sản giật, hạ đường huyết sơ sinh, và mẹ có nguy cơ ĐTĐ type 2 sau sinh tăng 7 lần. Kiểm soát tốt giúp giảm đáng kể biến chứng.</p></div></details>
-            <details class="faq-item"><summary class="faq-question">Khi nào cần tầm soát GDM?</summary><div class="faq-answer"><p>Theo IADPSG/WHO: tất cả thai phụ nên được tầm soát ở tuần 24-28 bằng nghiệm pháp dung nạp glucose 75g. Phụ nữ nguy cơ cao nên tầm soát sớm ngay lần khám đầu tiên.</p></div></details>
+    <!-- CTA -->
+    <section class="section cta-section" id="cta">
+        <div class="container">
+            <div class="cta-inner">
+                <h2>Cần tư vấn chuyên sâu?</h2>
+                <p>
+                    Bác sĩ chuyên khoa sản tại An Sinh sẵn sàng đồng hành quản
+                    lý thai kỳ nguy cơ cao và đái tháo đường thai kỳ.
+                </p>
+                <div class="cta-actions">
+                    <a
+                        href="https://phusanansinh.com/dat-lich-hen-kham.html"
+                        class="btn btn-accent btn-lg"
+                        id="cta-booking">Đặt Lịch Khám Ngay</a
+                    >
+                    <a
+                        href="tel:0899268299"
+                        class="btn btn-outline btn-lg"
+                        id="cta-call">Gọi: 0899 268 299</a
+                    >
+                </div>
+            </div>
         </div>
-    </div></section>
+    </section>
 
-    <section class="section cta-section"><div class="container"><div class="cta-content">
-        <h2>Cần tư vấn về ĐTĐ thai kỳ?</h2>
-        <div class="cta-actions">
-            <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-thai">Đặt Lịch Khám</button>
-            <a href="tel:0899268299" class="btn btn-outline btn-lg">Gọi: 0899 268 299</a>
+    <!-- Disclaimer -->
+    <section class="disclaimer-section">
+        <div class="container">
+            <p class="disclaimer-text">
+                <strong>Lưu ý y khoa:</strong> Công cụ này chỉ mang tính hỗ trợ tham
+                khảo lâm sàng, KHÔNG thay thế đánh giá của bác sĩ chuyên khoa. Dựa
+                trên: FMF Model (Syngelaki et al. 2014, n=75,161), PersonalGDM (Monash/MCHRI
+                2022, PMC9596305), Iowa Nulliparous (Donovan et al. 2019, n=1,156,708).
+                Các ước tính mang tính tham khảo.
+            </p>
         </div>
-    </div></div></section>
-
-    <section class="disclaimer-section"><div class="container"><p class="disclaimer-text"><strong>Lưu ý y khoa:</strong> Kết quả ước tính theo mô hình FMF, PersonalGDM, Iowa. Không thay thế xét nghiệm dung nạp glucose.</p></div></section>
+    </section>
 
     <style>
-        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
-        .tool-hero-content { max-width: 700px; margin: 0 auto; }
-        .tool-hero h1 { margin-bottom: var(--space-lg); }
-        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
-        .calc-layout { display: grid; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
-        .calc-card { position: static; }
-        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
-        .form-group { margin-bottom: var(--space-lg); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
-        .form-label { display: block; font-weight: 600; font-size: .9375rem; margin-bottom: var(--space-sm); }
-        .form-input { width: 100%; padding: .75rem 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; background: var(--bg-white); min-height: 44px; font-family: var(--font-body); box-sizing: border-box; }
-        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,122,109,.1); }
-        .calc-submit { width: 100%; }
-        .form-error { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; border-radius: var(--radius-md); color: var(--error); font-size: .875rem; }
-        .checkbox-grid { display: grid; gap: var(--space-sm); }
-        .checkbox-item { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-light); border-radius: var(--radius-md); cursor: pointer; font-size: .875rem; min-height: 44px; }
-        .checkbox-item:hover { border-color: var(--primary); }
-        .checkbox-item input { width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; }
-        .gdm-results-grid { display: grid; gap: var(--space-md); margin-bottom: var(--space-lg); }
-        .gdm-model-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: var(--space-xl); }
-        .gdm-model-badge { font-size: .75rem; font-weight: 600; padding: 2px 10px; border-radius: var(--radius-full); display: inline-block; margin-bottom: var(--space-md); text-transform: uppercase; }
-        .gdm-risk-value { font-size: 2rem; font-weight: 700; margin-bottom: var(--space-sm); }
-        .gdm-risk-value.risk-low { color: var(--success); }
-        .gdm-risk-value.risk-moderate { color: #d97706; }
-        .gdm-risk-value.risk-high { color: var(--error); }
-        .gdm-risk-label { font-size: .875rem; font-weight: 600; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-md); display: inline-block; }
-        @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+        .calc-hero {
+            background: linear-gradient(
+                135deg,
+                var(--primary-light) 0%,
+                var(--bg) 100%
+            );
+            padding: var(--space-4xl) 0 var(--space-3xl);
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-lg);
+            background: var(--surface);
+            border-radius: var(--radius-full);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+            border: 1px solid var(--border-light);
+        }
+        .hero-sub {
+            font-size: 1.0625rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .calc-section {
+            padding: var(--space-3xl) 0;
+        }
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-2xl);
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .calc-panel-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1.125rem;
+            margin-bottom: var(--space-lg);
+        }
+        /* Tabs */
+        .model-tabs {
+            display: flex;
+            gap: var(--space-xs);
+            background: var(--surface-alt);
+            padding: var(--space-xs);
+            border-radius: var(--radius-lg);
+            overflow-x: auto;
+        }
+        .model-tab {
+            flex: 1;
+            padding: var(--space-md) var(--space-sm);
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-align: center;
+            transition: all var(--transition-fast);
+            min-height: 44px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .model-tab .tab-sub {
+            font-size: 0.6875rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            display: block;
+        }
+        .model-tab.active {
+            border-color: var(--primary);
+            background: var(--bg-white);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .model-tab:hover:not(.active) {
+            background: var(--bg-white);
+        }
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+        /* Form */
+        .form-section-label {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-xs);
+            border-bottom: 2px solid var(--primary-light);
+        }
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--text-primary);
+            background: var(--bg-white);
+            transition: border-color var(--transition-fast);
+            min-height: 44px;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(27, 122, 109, 0.1);
+        }
+        select.form-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234A5568' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+        .form-help {
+            display: block;
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-top: var(--space-xs);
+        }
+        .form-divider {
+            border: 0;
+            border-top: 1px solid var(--border-light);
+            margin: var(--space-lg) 0;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+        .calc-submit {
+            width: 100%;
+        }
+        .bmi-display {
+            padding: 0.875rem 1rem;
+            background: var(--surface-alt);
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.125rem;
+            text-align: center;
+        }
+        /* Toggle/Radio */
+        .toggle-group {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        .toggle-sm .radio-card {
+            font-size: 0.8125rem;
+            padding: var(--space-sm) var(--space-md);
+        }
+        .radio-card {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-md);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-weight: 600;
+            font-size: 0.875rem;
+            min-height: 44px;
+            text-align: center;
+        }
+        .radio-card:has(input:checked) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .radio-card input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* Checkbox */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 0.9375rem;
+            cursor: pointer;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            transition: background var(--transition-fast);
+        }
+        .checkbox-label:hover {
+            background: var(--surface-alt);
+        }
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        /* Validation */
+        .validation-error {
+            margin: var(--space-md) 0;
+            padding: var(--space-sm) var(--space-md);
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: var(--radius-md);
+            color: var(--error);
+            font-size: 0.875rem;
+        }
+        /* Results */
+        .calc-results-panel:not([hidden]) {
+            animation: fadeInUp 0.4s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .result-card {
+            margin-bottom: var(--space-md);
+        }
+        .result-primary {
+            text-align: center;
+            padding: var(--space-xl);
+        }
+        .result-primary.risk-green {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: #fff;
+        }
+        .result-primary.risk-yellow {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            color: #fff;
+        }
+        .result-primary.risk-orange {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            color: #fff;
+        }
+        .result-primary.risk-red {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: #fff;
+        }
+        .result-primary.risk-red-urgent {
+            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+            color: #fff;
+        }
+        .result-icon-wrap {
+            margin-bottom: var(--space-sm);
+        }
+        .result-emoji {
+            font-size: 2.5rem;
+        }
+        .result-label {
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.85;
+        }
+        .result-risk-level {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: var(--space-xs) 0;
+        }
+        .result-sub {
+            font-size: 0.9375rem;
+            opacity: 0.9;
+        }
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1rem;
+            margin-bottom: var(--space-lg);
+        }
+        /* Risk Detail */
+        .risk-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--space-md);
+        }
+        .risk-stat {
+            text-align: center;
+            padding: var(--space-md);
+            background: var(--surface-alt);
+            border-radius: var(--radius-md);
+        }
+        .risk-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .risk-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-top: 4px;
+        }
+        .risk-stat-value.val-risk {
+            color: var(--error);
+        }
+        .risk-stat-value.val-ok {
+            color: #059669;
+        }
+        /* Tables */
+        .threshold-table-wrap {
+            overflow-x: auto;
+        }
+        .threshold-table,
+        .ref-table,
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8125rem;
+        }
+        .threshold-table th,
+        .threshold-table td,
+        .ref-table th,
+        .ref-table td,
+        .comparison-table th,
+        .comparison-table td {
+            padding: var(--space-sm) var(--space-md);
+            border-bottom: 1px solid var(--border-light);
+            text-align: left;
+        }
+        .threshold-table th,
+        .ref-table th,
+        .comparison-table th {
+            background: var(--surface-alt);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .threshold-table tr.active-row {
+            background: #fef3c7;
+            font-weight: 600;
+        }
+        .risk-vlow {
+            color: #059669;
+            font-weight: 600;
+        }
+        .risk-low {
+            color: #d97706;
+            font-weight: 600;
+        }
+        .risk-mod {
+            color: #ea580c;
+            font-weight: 600;
+        }
+        .risk-high {
+            color: #dc2626;
+            font-weight: 600;
+        }
+        .risk-vhigh {
+            color: #991b1b;
+            font-weight: 600;
+        }
+        /* Prompt */
+        .prompt-card {
+            border: 2px solid var(--accent-light);
+        }
+        .prompt-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-lg);
+        }
+        .prompt-output {
+            background: var(--text-primary);
+            color: #e5e7eb;
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            font-family: "Menlo", "Monaco", "Courier New", monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: var(--space-lg);
+        }
+        /* CTA */
+        .cta-section {
+            background: linear-gradient(
+                135deg,
+                var(--primary) 0%,
+                var(--primary-dark) 100%
+            );
+            color: #fff;
+            text-align: center;
+        }
+        .cta-inner {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .cta-inner h2 {
+            color: #fff;
+            margin-bottom: var(--space-md);
+        }
+        .cta-inner p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-xl);
+        }
+        .cta-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .cta-section .btn-outline {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .cta-section .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-color: #fff;
+        }
+        .disclaimer-section {
+            padding: var(--space-xl) 0;
+            background: var(--surface-alt);
+        }
+        .disclaimer-text {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        .ref-card:hover {
+            transform: none;
+        }
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .cta-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toggle-group {
+                flex-direction: column;
+            }
+            .model-tabs {
+                flex-direction: column;
+            }
+            .risk-detail-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
     </style>
 
     <script>
-        // Reveal form, hide skeleton
-        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
-        document.getElementById('calc-form-panel')?.classList.remove('calc-form-hidden');
+        import {
+            calcFmfGDMRisk,
+            calcFmfPrevGDM,
+            stratifyFmfRisk,
+            calcPersonalGDMOutcomes,
+            stratifyOutcomesRisk,
+            calcIowaGDMRisk,
+            stratifyIowaRisk,
+            validateFmfInputs,
+            validateOutcomesInputs,
+            validateIowaInputs,
+            buildFmfPrompt,
+            buildOutcomesPrompt,
+            buildIowaPrompt,
+            calcBMI,
+        } from "../../utils/gdm-calc.js";
 
-        const { calcFmfGDMRisk, stratifyFmfRisk, calcFmfPrevGDM, calcIowaGDMRisk, stratifyIowaRisk, calcBMI } = await import('../../utils/gdm-calc.js');
-
-        document.getElementById('gdm-form')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const errorEl = document.getElementById('form-error');
-            try {
-                const age = parseInt(document.getElementById('gdm-age').value);
-                const weight = parseFloat(document.getElementById('gdm-weight').value);
-                const height = parseFloat(document.getElementById('gdm-height').value);
-                const ethnicity = document.getElementById('gdm-ethnicity').value;
-                const prevGdm = document.getElementById('gdm-prev-gdm').checked;
-                const familyDm = document.getElementById('gdm-family-dm').checked;
-                const pcos = document.getElementById('gdm-pcos').checked;
-                const macrosomia = document.getElementById('gdm-macrosomia').checked;
-                const nulliparous = document.getElementById('gdm-nulliparous').checked;
-
-                if (!age) throw new Error('Vui lòng nhập tuổi mẹ.');
-                if (!weight) throw new Error('Vui lòng nhập cân nặng.');
-
-                const bmi = height ? calcBMI(weight, height) : null;
-                const results = [];
-
-                // FMF Model
-                if (prevGdm) {
-                    const risk = calcFmfPrevGDM(weight) * 100;
-                    const strat = stratifyFmfRisk(risk);
-                    results.push({ model: 'FMF (Tiền sử GDM)', risk, strat, badge: 'var(--primary-light)', badgeColor: 'var(--primary)' });
-                } else {
-                    const fmfResult = calcFmfGDMRisk({
-                        age, weight, height: height || 160, parity: nulliparous ? 0 : 1,
-                        ethnicity, familyDM: familyDm, pcos,
-                        priorMacrosomia: macrosomia, priorGDM: false
-                    });
-                    const strat = stratifyFmfRisk(fmfResult.risk * 100);
-                    results.push({ model: 'FMF (Syngelaki 2014)', risk: fmfResult.risk * 100, strat, badge: 'var(--primary-light)', badgeColor: 'var(--primary)' });
-                }
-
-                // Iowa Model (nulliparous only)
-                if (nulliparous && bmi) {
-                    const iowaResult = calcIowaGDMRisk({ age, bmi, ethnicity, familyDM: familyDm, pcos });
-                    const strat = stratifyIowaRisk(iowaResult.risk * 100);
-                    results.push({ model: 'Iowa (Donovan 2019)', risk: iowaResult.risk * 100, strat, badge: '#eff6ff', badgeColor: '#2563eb' });
-                }
-
-                displayResults(results, bmi);
-                if (errorEl) errorEl.hidden = true;
-            } catch (err) {
-                if (errorEl) { errorEl.textContent = err.message; errorEl.hidden = false; }
-            }
+        // ── Tab switching ──
+        const tabs = document.querySelectorAll(".model-tab");
+        const panels = document.querySelectorAll(".tab-panel");
+        tabs.forEach((tab) => {
+            tab.addEventListener("click", () => {
+                tabs.forEach((t) => {
+                    t.classList.remove("active");
+                    t.setAttribute("aria-selected", "false");
+                });
+                panels.forEach((p) => {
+                    p.classList.remove("active");
+                    p.hidden = true;
+                });
+                tab.classList.add("active");
+                tab.setAttribute("aria-selected", "true");
+                const panel = document.getElementById(
+                    "panel-" + tab.dataset.tab
+                );
+                panel.classList.add("active");
+                panel.hidden = false;
+                document.getElementById("results-panel").hidden = true;
+            });
         });
 
-        function displayResults(results, bmi) {
-            const panel = document.getElementById('results-panel');
-            if (panel) panel.hidden = false;
-
-            const grid = document.getElementById('gdm-results');
-            if (grid) {
-                grid.innerHTML = results.map(r => {
-                    const riskClass = r.risk > 20 ? 'risk-high' : r.risk > 8 ? 'risk-moderate' : 'risk-low';
-                    const labelBg = r.strat.color || (r.risk > 20 ? '#fef2f2' : r.risk > 8 ? '#fffbeb' : '#f0fdf4');
-                    return `<div class="gdm-model-card">
-                        <span class="gdm-model-badge" style="background:${r.badge};color:${r.badgeColor}">${r.model}</span>
-                        <div class="gdm-risk-value ${riskClass}">${r.risk.toFixed(1)}%</div>
-                        <span class="gdm-risk-label" style="background:${labelBg}">${r.strat.label}</span>
-                    </div>`;
-                }).join('');
+        // ── BMI auto-calc for FMF ──
+        const fmfWeight = document.getElementById("fmf-weight");
+        const fmfHeight = document.getElementById("fmf-height");
+        const fmfBmiDisplay = document.getElementById("fmf-bmi-display");
+        function updateFmfBmi() {
+            const w = parseFloat(fmfWeight.value),
+                h = parseFloat(fmfHeight.value);
+            if (w > 0 && h > 0) {
+                fmfBmiDisplay.textContent = calcBMI(w, h).toFixed(1) + " kg/m²";
+            } else {
+                fmfBmiDisplay.textContent = "--";
             }
-
-            const bmiText = document.getElementById('bmi-text');
-            if (bmiText && bmi) {
-                const bmiCat = bmi < 18.5 ? 'Nhẹ cân' : bmi < 25 ? 'Bình thường' : bmi < 30 ? 'Thừa cân' : 'Béo phì';
-                bmiText.innerHTML = `BMI = <strong>${bmi.toFixed(1)}</strong> kg/m² — ${bmiCat}`;
-            }
-
-            panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+        fmfWeight.addEventListener("input", updateFmfBmi);
+        fmfHeight.addEventListener("input", updateFmfBmi);
+
+        // ── Show/hide birth weight z-score ──
+        const fmfObsHistory = document.getElementById("fmf-obs-history");
+        fmfObsHistory.addEventListener("change", () => {
+            document.getElementById("fmf-bw-group").hidden =
+                fmfObsHistory.value !== "parous_no_gdm";
+        });
+
+        // ── Threshold tables ──
+        const FMF_THRESHOLD = `<table class="threshold-table"><thead><tr><th>Nguy cơ</th><th>Phân loại</th><th>Hành động</th></tr></thead><tbody>
+<tr><td>&lt; 5%</td><td class="risk-vlow">Thấp</td><td>Sàng lọc thường quy 24-28 tuần</td></tr>
+<tr><td>5–15%</td><td class="risk-low">Trung bình</td><td>Cân nhắc sàng lọc sớm + tư vấn lối sống</td></tr>
+<tr><td>15–30%</td><td class="risk-high">Cao</td><td>OGTT sớm (16-18 tuần) + can thiệp tích cực</td></tr>
+<tr><td>&gt; 30%</td><td class="risk-vhigh">Rất cao</td><td>OGTT sớm + theo dõi sát + metformin</td></tr></tbody></table>`;
+
+        const OUTCOMES_THRESHOLD = `<table class="threshold-table"><thead><tr><th>Nguy cơ</th><th>Phân loại</th><th>Khuyến cáo</th></tr></thead><tbody>
+<tr><td>&lt; 15%</td><td class="risk-vlow">Thấp</td><td>Quản lý thường quy, theo dõi cộng đồng</td></tr>
+<tr><td>15–30%</td><td class="risk-low">Trung bình</td><td>Theo dõi tiêu chuẩn GDM tại bệnh viện</td></tr>
+<tr><td>30–50%</td><td class="risk-high">Cao</td><td>Siêu âm tăng trưởng, khám đa chuyên khoa</td></tr>
+<tr><td>&gt; 50%</td><td class="risk-vhigh">Rất cao</td><td>Insulin sớm, NST hàng tuần từ 32 tuần</td></tr></tbody></table>`;
+
+        const IOWA_THRESHOLD = `<table class="threshold-table"><thead><tr><th>Nguy cơ</th><th>Phân loại</th><th>Hành động</th></tr></thead><tbody>
+<tr><td>&lt; 6%</td><td class="risk-vlow">Dưới ngưỡng</td><td>Sàng lọc thường quy 24-28 tuần</td></tr>
+<tr><td>6–10%</td><td class="risk-low">Trên ngưỡng</td><td>Cân nhắc sàng lọc sớm + lối sống</td></tr>
+<tr><td>10–20%</td><td class="risk-high">Cao</td><td>OGTT sớm + tư vấn dinh dưỡng chuyên biệt</td></tr>
+<tr><td>&gt; 20%</td><td class="risk-vhigh">Rất cao</td><td>OGTT sớm, can thiệp lối sống tích cực</td></tr></tbody></table>`;
+
+        // ── Display helpers ──
+        function showResults(
+            strat,
+            riskPercent,
+            modelLabel,
+            detailHtml,
+            thresholdHtml,
+            promptText
+        ) {
+            const panel = document.getElementById("results-panel");
+            const header = document.getElementById("risk-header");
+            header.className = `result-card result-primary card risk-${strat.color}`;
+            document.getElementById("risk-emoji").textContent =
+                strat.level === "LOW"
+                    ? "✅"
+                    : strat.level === "MODERATE"
+                    ? "🟠"
+                    : strat.level === "HIGH"
+                    ? "🔴"
+                    : strat.level === "VERY_HIGH"
+                    ? "🚨"
+                    : "✅";
+            document.getElementById("result-model-label").textContent =
+                modelLabel;
+            document.getElementById("risk-level").textContent = strat.label;
+            document.getElementById("risk-action").textContent = strat.action;
+            document.getElementById("risk-detail-content").innerHTML =
+                detailHtml;
+            document.getElementById("threshold-table-wrap").innerHTML =
+                thresholdHtml;
+            document.getElementById("prompt-output").textContent = promptText;
+            panel.hidden = false;
+            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function statBox(label, value, cls = "") {
+            return `<div class="risk-stat"><div class="risk-stat-label">${label}</div><div class="risk-stat-value ${cls}">${value}</div></div>`;
+        }
+
+        function showError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.hidden = false;
+        }
+        function hideError(id) {
+            document.getElementById(id).hidden = true;
+        }
+
+        // ── A: FMF Form ──
+        document.getElementById("fmf-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            hideError("fmf-error");
+            const fd = {
+                age: parseFloat(document.getElementById("fmf-age").value),
+                weight: parseFloat(document.getElementById("fmf-weight").value),
+                height: parseFloat(document.getElementById("fmf-height").value),
+                ethnicity: document.getElementById("fmf-ethnicity").value,
+                conception: document.getElementById("fmf-conception").value,
+                familyDM: document.getElementById("fmf-family-dm").value,
+                obsHistory: fmfObsHistory.value,
+                birthWeightZscore:
+                    parseFloat(
+                        document.getElementById("fmf-bw-zscore").value
+                    ) || 0,
+                smoking:
+                    document.querySelector('input[name="fmf-smoking"]:checked')
+                        ?.value === "yes",
+            };
+            const v = validateFmfInputs(fd);
+            if (!v.valid) return showError("fmf-error", v.error);
+
+            let result, riskPct;
+            if (fd.obsHistory === "parous_prev_gdm") {
+                const risk = calcFmfPrevGDM(fd.weight);
+                result = {
+                    logOdds: -4.005 + 0.0206 * (fd.weight - 69),
+                    risk,
+                    contributions: {},
+                };
+                riskPct = risk * 100;
+            } else {
+                result = calcFmfGDMRisk(fd);
+                riskPct = result.risk * 100;
+            }
+            const bmi = calcBMI(fd.weight, fd.height);
+            fd.bmi = bmi.toFixed(1);
+            const strat = stratifyFmfRisk(riskPct);
+            const detail = `<div class="risk-detail-grid">${statBox(
+                "Log-odds",
+                result.logOdds.toFixed(4)
+            )}${statBox(
+                "Nguy cơ GDM",
+                riskPct.toFixed(1) + "%",
+                riskPct >= 15 ? "val-risk" : "val-ok"
+            )}${statBox("BMI", bmi.toFixed(1))}${statBox(
+                "AUROC mô hình",
+                "0.823"
+            )}</div>`;
+            showResults(
+                strat,
+                riskPct,
+                "FMF GDM Risk (Syngelaki 2014)",
+                detail,
+                FMF_THRESHOLD,
+                buildFmfPrompt(fd, result)
+            );
+        });
+
+        // ── B: Outcomes Form ──
+        document
+            .getElementById("outcomes-form")
+            .addEventListener("submit", (e) => {
+                e.preventDefault();
+                hideError("out-error");
+                const gaAtDiag = parseFloat(
+                    document.getElementById("out-ga-diag").value
+                );
+                const totalGain = parseFloat(
+                    document.getElementById("out-weight-gain").value
+                );
+                const fd = {
+                    age: parseFloat(document.getElementById("out-age").value),
+                    bmi: parseFloat(document.getElementById("out-bmi").value),
+                    ethnicity: document.getElementById("out-ethnicity").value,
+                    fastingGlucose: parseFloat(
+                        document.getElementById("out-fasting").value
+                    ),
+                    glucose1h: parseFloat(
+                        document.getElementById("out-1h").value
+                    ),
+                    gaAtDiagnosis: gaAtDiag,
+                    weightGainPerWeek: gaAtDiag > 0 ? totalGain / gaAtDiag : 0,
+                    nulliparous:
+                        document.getElementById("out-nulliparous").checked,
+                    prevLGA: document.getElementById("out-prev-lga").checked,
+                    prevPreeclampsia:
+                        document.getElementById("out-prev-pe").checked,
+                    familyDM: document.getElementById("out-family-dm").checked,
+                };
+                const v = validateOutcomesInputs(fd);
+                if (!v.valid) return showError("out-error", v.error);
+
+                const result = calcPersonalGDMOutcomes(fd);
+                const riskPct = result.risk * 100;
+                const strat = stratifyOutcomesRisk(riskPct);
+                const detail = `<div class="risk-detail-grid">${statBox(
+                    "Y (log-odds)",
+                    result.Y.toFixed(4)
+                )}${statBox(
+                    "Nguy cơ biến cố",
+                    riskPct.toFixed(1) + "%",
+                    riskPct >= 30 ? "val-risk" : "val-ok"
+                )}${statBox(
+                    "Tăng cân/tuần",
+                    fd.weightGainPerWeek.toFixed(2) + " kg"
+                )}${statBox("AUROC mô hình", "0.68")}</div>`;
+                showResults(
+                    strat,
+                    riskPct,
+                    "PersonalGDM Outcomes (Monash 2022)",
+                    detail,
+                    OUTCOMES_THRESHOLD,
+                    buildOutcomesPrompt(fd, result)
+                );
+            });
+
+        // ── C: Iowa Form ──
+        document.getElementById("iowa-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            hideError("iowa-error");
+            const fd = {
+                ethnicity: document.getElementById("iowa-ethnicity").value,
+                age: parseFloat(document.getElementById("iowa-age").value),
+                bmi: parseFloat(document.getElementById("iowa-bmi").value),
+                familyDM:
+                    document.querySelector(
+                        'input[name="iowa-family-dm"]:checked'
+                    )?.value === "yes",
+                preexistingHTN:
+                    document.querySelector('input[name="iowa-htn"]:checked')
+                        ?.value === "yes",
+            };
+            const v = validateIowaInputs(fd);
+            if (!v.valid) return showError("iowa-error", v.error);
+
+            const result = calcIowaGDMRisk(fd);
+            const riskPct = result.risk * 100;
+            const strat = stratifyIowaRisk(riskPct);
+            const detail = `<div class="risk-detail-grid">${statBox(
+                "t (log-odds)",
+                result.t.toFixed(4)
+            )}${statBox(
+                "Nguy cơ GDM",
+                riskPct.toFixed(1) + "%",
+                riskPct >= 6 ? "val-risk" : "val-ok"
+            )}${statBox("Ngưỡng cao", "≥ 6%")}${statBox(
+                "AUC (Asian)",
+                "0.665"
+            )}</div>`;
+            showResults(
+                strat,
+                riskPct,
+                "Iowa Nulliparous (Donovan 2019)",
+                detail,
+                IOWA_THRESHOLD,
+                buildIowaPrompt(fd, result)
+            );
+        });
+
+        // ── Copy Prompt ──
+        document
+            .getElementById("copy-prompt-btn")
+            .addEventListener("click", async () => {
+                const text =
+                    document.getElementById("prompt-output").textContent;
+                try {
+                    await navigator.clipboard.writeText(text);
+                } catch {
+                    const ta = document.createElement("textarea");
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(ta);
+                }
+                const btn = document.getElementById("copy-btn-text");
+                btn.textContent = "✅ Đã Copy!";
+                setTimeout(() => {
+                    btn.textContent = "Copy Prompt";
+                }, 2000);
+            });
     </script>
 </BaseLayout>

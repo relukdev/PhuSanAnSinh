@@ -1,15 +1,14 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import BottomSheetStyles from "../../components/BottomSheetStyles.astro";
 import "../../styles/global.css";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+const title =
+    "Tính Ngày Dự Sinh Online — Chính Xác Theo Công Thức Y Khoa | An Sinh";
+const description =
+    "Công cụ tính ngày dự sinh ACOG-700 chính xác. Hỗ trợ 4 phương pháp: LMP, thụ thai, IVF/ART, siêu âm CRL. Miễn phí, dựa trên y khoa quốc tế.";
 ---
 
-<BottomSheetStyles />
-
-<BaseLayout
-    title="Tính Ngày Dự Sinh Chính Xác — ACOG 700 | Phòng Khám An Sinh"
-    description="Công cụ tính ngày dự sinh theo Naegele, IVF/ART, siêu âm CRL. Tuân thủ ACOG Committee Opinion 700. Miễn phí, dựa trên khoa học y khoa."
->
+<BaseLayout title={title} description={description}>
+    <!-- Schema.org FAQ -->
     <script
         type="application/ld+json"
         set:html={JSON.stringify({
@@ -18,26 +17,26 @@ import "../../styles/global.css";
             mainEntity: [
                 {
                     "@type": "Question",
-                    name: "Tính ngày dự sinh như thế nào?",
+                    name: "Công thức tính ngày dự sinh như thế nào?",
                     acceptedAnswer: {
                         "@type": "Answer",
-                        text: "Ngày dự sinh được tính theo quy tắc Naegele: ngày đầu kỳ kinh cuối + 280 ngày (40 tuần). Với chu kỳ không phải 28 ngày, công thức được hiệu chỉnh: LMP + 280 + (độ dài chu kỳ − 28) ngày, theo ACOG Committee Opinion No. 700.",
+                        text: "Công cụ sử dụng Quy tắc Naegele cải tiến: EDD = ngày kinh cuối + 280 ngày + (độ dài chu kỳ - 28). Theo ACOG Committee Opinion No. 700 (2017).",
                     },
                 },
                 {
                     "@type": "Question",
-                    name: "Ngày dự sinh có chính xác 100% không?",
+                    name: "Tính ngày dự sinh cho thai IVF như thế nào?",
                     acceptedAnswer: {
                         "@type": "Answer",
-                        text: "Chỉ khoảng 4-5% phụ nữ sinh đúng ngày dự sinh. Phần lớn sinh trong khoảng ±2 tuần. Siêu âm tam cá nguyệt I (đo CRL) cho độ chính xác cao nhất (±5-7 ngày).",
+                        text: "Với thai IVF: EDD = ngày chuyển phôi + (266 - ngày tuổi phôi). Phôi ngày 5: +261 ngày, phôi ngày 3: +263 ngày. Theo ACOG-700, EDD từ IVF ưu tiên tuyệt đối, không điều chỉnh bằng siêu âm.",
                     },
                 },
                 {
                     "@type": "Question",
-                    name: "IVF thì tính ngày dự sinh thế nào?",
+                    name: "Khi nào cần điều chỉnh ngày dự sinh theo siêu âm?",
                     acceptedAnswer: {
                         "@type": "Answer",
-                        text: "Với IVF/thụ tinh ống nghiệm, ngày dự sinh = ngày chuyển phôi + (266 − tuổi phôi) ngày. Phôi ngày 5: +261 ngày, phôi ngày 3: +263 ngày. Theo ACOG-700, thai kỳ ART không cần điều chỉnh bằng siêu âm.",
+                        text: "Theo ACOG-700: Nếu tuổi thai <9 tuần và sai lệch >5 ngày, hoặc 9-14 tuần sai lệch >7 ngày → cần điều chỉnh EDD theo siêu âm. Chi tiết xem bảng ACOG Redating trong công cụ.",
                     },
                 },
             ],
@@ -45,260 +44,529 @@ import "../../styles/global.css";
     ></script>
 
     <!-- Hero -->
-    <section class="hero tool-hero" id="hero">
+    <section class="calc-hero">
         <div class="container">
-            <div class="tool-hero-content">
-                <span class="section-label">Công cụ miễn phí</span>
-                <h1>
-                    Tính Ngày Dự Sinh<br />
-                    <span class="text-accent-color">Chính Xác</span>
-                </h1>
-                <p class="hero-sub">
-                    Dựa trên quy tắc Naegele & ACOG Committee Opinion No. 700.
-                    Hỗ trợ tính theo ngày kinh cuối, IVF, hoặc siêu âm CRL.
-                </p>
+            <div class="hero-badge">
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    ><path d="M22 11.08V12a10 10 0 11-5.93-9.14"
+                    ></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Chuẩn ACOG-700 · Miễn phí 100%
             </div>
+            <h1>
+                Tính Ngày Dự Sinh <span class="text-accent-color"
+                    >Chính Xác</span
+                >
+            </h1>
+            <p class="hero-sub">
+                Hỗ trợ 4 phương pháp: LMP, ngày thụ thai, IVF/ART, và siêu âm
+                CRL. Dựa trên tiêu chuẩn quốc tế ACOG Committee Opinion No. 700.
+            </p>
         </div>
     </section>
 
     <!-- Calculator -->
-    <section class="section" id="calculator">
+    <section class="calc-section">
         <div class="container">
-            <div class="calc-layout">
-                <div class="calc-form-panel">
-                    <!-- Skeleton Loading (visible immediately while JS loads) -->
-                    <div class="calc-skeleton" id="calc-skeleton">
-                        <div class="skeleton skeleton-heading"></div>
-                        <div class="skeleton skeleton-text" style="width:45%"></div>
-                        <div class="skeleton-chips">
-                            <div class="skeleton skeleton-chip"></div>
-                            <div class="skeleton skeleton-chip"></div>
-                            <div class="skeleton skeleton-chip"></div>
-                        </div>
-                        <div class="skeleton skeleton-text" style="width:55%"></div>
-                        <div class="skeleton skeleton-input"></div>
-                        <div class="skeleton skeleton-text" style="width:40%"></div>
-                        <div class="skeleton skeleton-input"></div>
-                        <div class="skeleton skeleton-btn"></div>
+            <div class="calc-grid">
+                <!-- Input Panel -->
+                <div class="calc-input-panel card">
+                    <h2 class="calc-panel-title">
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--primary)"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                            ><rect
+                                x="3"
+                                y="4"
+                                width="18"
+                                height="18"
+                                rx="2"
+                                ry="2"></rect><line
+                                x1="16"
+                                y1="2"
+                                x2="16"
+                                y2="6"></line><line x1="8" y1="2" x2="8" y2="6"
+                            ></line><line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Nhập thông tin
+                    </h2>
+
+                    <!-- Tab Bar -->
+                    <div
+                        class="tab-bar"
+                        role="tablist"
+                        aria-label="Phương pháp tính"
+                    >
+                        <button
+                            class="tab-btn active"
+                            data-tab="lmp"
+                            role="tab"
+                            aria-selected="true"
+                            aria-controls="tab-lmp"
+                            id="tab-btn-lmp">LMP</button
+                        >
+                        <button
+                            class="tab-btn"
+                            data-tab="conception"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="tab-conception"
+                            id="tab-btn-conception">Thụ thai</button
+                        >
+                        <button
+                            class="tab-btn"
+                            data-tab="ivf"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="tab-ivf"
+                            id="tab-btn-ivf">IVF</button
+                        >
+                        <button
+                            class="tab-btn"
+                            data-tab="ultrasound"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="tab-ultrasound"
+                            id="tab-btn-ultrasound">Siêu âm</button
+                        >
                     </div>
-                    <div class="card calc-card calc-form-hidden" id="calc-form-panel">
-                        <h2 class="calc-title">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                            Nhập thông tin thai kỳ
-                        </h2>
 
-                        <form id="due-date-form" novalidate>
-                            <!-- Method selector -->
+                    <!-- Tab: LMP -->
+                    <div
+                        class="tab-content active"
+                        id="tab-lmp"
+                        role="tabpanel"
+                        aria-labelledby="tab-btn-lmp"
+                    >
+                        <form id="form-lmp" novalidate>
                             <div class="form-group">
-                                <label class="form-label">Phương pháp tính</label>
-                                <div class="method-chips" id="method-chips">
-                                    <button type="button" class="method-chip is-active" data-method="lmp">📅 Ngày kinh cuối</button>
-                                    <button type="button" class="method-chip" data-method="ivf">🧬 IVF / ART</button>
-                                    <button type="button" class="method-chip" data-method="us">📷 Siêu âm CRL</button>
-                                </div>
+                                <label for="lmp-date" class="form-label"
+                                    >Ngày đầu kỳ kinh cuối</label
+                                >
+                                <input
+                                    type="date"
+                                    id="lmp-date"
+                                    class="form-input"
+                                    required
+                                    aria-describedby="lmp-help"
+                                />
+                                <small id="lmp-help" class="form-help"
+                                    >Ngày đầu tiên bạn thấy kinh nguyệt gần nhất</small
+                                >
                             </div>
-
-                            <!-- LMP fields -->
-                            <div id="fields-lmp">
-                                <div class="form-group">
-                                    <label for="lmp-date" class="form-label">Ngày đầu tiên kỳ kinh cuối</label>
-                                    <input type="date" id="lmp-date" class="form-input" required aria-describedby="lmp-help" />
-                                    <small id="lmp-help" class="form-help">Ngày đầu tiên bạn thấy kinh nguyệt</small>
+                            <div class="form-group">
+                                <label for="cycle-length" class="form-label"
+                                    >Độ dài chu kỳ: <strong id="cycle-value"
+                                        >28</strong
+                                    > ngày</label
+                                >
+                                <input
+                                    type="range"
+                                    id="cycle-length"
+                                    min="21"
+                                    max="45"
+                                    value="28"
+                                    class="form-range"
+                                />
+                                <div class="range-labels">
+                                    <span>21</span><span>28</span><span>35</span
+                                    ><span>45</span>
                                 </div>
-                                <div class="form-group">
-                                    <label for="cycle-length" class="form-label">
-                                        Độ dài chu kỳ: <strong id="cycle-value">28</strong> ngày
-                                    </label>
-                                    <input type="range" id="cycle-length" min="21" max="40" value="28" class="form-range" />
-                                    <div class="range-labels"><span>21</span><span>28</span><span>40</span></div>
-                                    <small class="form-help">Trung bình 28 ngày. Nếu không rõ, giữ nguyên giá trị mặc định.</small>
-                                </div>
+                                <small class="form-help"
+                                    >Trung bình 28 ngày. Naegele cải tiến: điều
+                                    chỉnh theo chu kỳ thực tế.</small
+                                >
                             </div>
-
-                            <!-- IVF fields -->
-                            <div id="fields-ivf" hidden>
-                                <div class="form-group">
-                                    <label for="ivf-date" class="form-label">Ngày chuyển phôi</label>
-                                    <input type="date" id="ivf-date" class="form-input" />
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Tuổi phôi khi chuyển</label>
-                                    <div class="embryo-chips" id="embryo-chips">
-                                        <button type="button" class="embryo-chip" data-day="3">Ngày 3</button>
-                                        <button type="button" class="embryo-chip is-active" data-day="5">Ngày 5</button>
-                                        <button type="button" class="embryo-chip" data-day="6">Ngày 6</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Ultrasound CRL fields -->
-                            <div id="fields-us" hidden>
-                                <div class="form-group">
-                                    <label for="us-date" class="form-label">Ngày siêu âm</label>
-                                    <input type="date" id="us-date" class="form-input" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="crl-mm" class="form-label">CRL — Chiều dài đầu mông (mm)</label>
-                                    <input type="number" id="crl-mm" class="form-input" placeholder="vd: 45" min="10" max="84" step="1" inputmode="numeric" />
-                                    <small class="form-help">Giá trị hợp lệ: 10–84 mm (khoảng 7–14 tuần)</small>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-accent btn-lg calc-submit" id="calc-submit">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                            <button
+                                type="submit"
+                                class="btn btn-accent btn-lg calc-submit"
+                                id="submit-lmp"
+                            >
+                                <svg
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    aria-hidden="true"
+                                    ><line x1="8" y1="18" x2="16" y2="18"
+                                    ></line><line x1="12" y1="6" x2="12" y2="18"
+                                    ></line><polyline points="7 11 12 6 17 11"
+                                    ></polyline>
+                                </svg>
                                 Tính Ngày Dự Sinh
                             </button>
-
-                            <div id="form-error" class="form-error" role="alert" aria-live="polite" hidden></div>
                         </form>
                     </div>
 
-                    <div class="edu-note">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        <p>
-                            Dựa trên <strong>ACOG Committee Opinion No. 700 (2017)</strong>.
-                            Kết quả là <strong>ước tính</strong>, không thay thế tư vấn y khoa.
-                        </p>
+                    <!-- Tab: Conception -->
+                    <div
+                        class="tab-content"
+                        id="tab-conception"
+                        role="tabpanel"
+                        aria-labelledby="tab-btn-conception"
+                        hidden
+                    >
+                        <form id="form-conception" novalidate>
+                            <div class="form-group">
+                                <label for="conception-date" class="form-label"
+                                    >Ngày thụ thai / rụng trứng</label
+                                >
+                                <input
+                                    type="date"
+                                    id="conception-date"
+                                    class="form-input"
+                                    required
+                                />
+                                <small class="form-help"
+                                    >Ngày bạn biết thụ thai (hoặc ngày rụng
+                                    trứng ước tính)</small
+                                >
+                            </div>
+                            <button
+                                type="submit"
+                                class="btn btn-accent btn-lg calc-submit"
+                            >
+                                Tính Ngày Dự Sinh
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tab: IVF -->
+                    <div
+                        class="tab-content"
+                        id="tab-ivf"
+                        role="tabpanel"
+                        aria-labelledby="tab-btn-ivf"
+                        hidden
+                    >
+                        <form id="form-ivf" novalidate>
+                            <div class="form-group">
+                                <label for="transfer-date" class="form-label"
+                                    >Ngày chuyển phôi</label
+                                >
+                                <input
+                                    type="date"
+                                    id="transfer-date"
+                                    class="form-input"
+                                    required
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Loại phôi</label>
+                                <div class="embryo-options">
+                                    <label class="radio-card"
+                                        ><input
+                                            type="radio"
+                                            name="embryo-day"
+                                            value="3"
+                                        />
+                                        <span>Day-3</span>
+                                    </label>
+                                    <label class="radio-card"
+                                        ><input
+                                            type="radio"
+                                            name="embryo-day"
+                                            value="5"
+                                            checked
+                                        />
+                                        <span>Day-5</span>
+                                    </label>
+                                    <label class="radio-card"
+                                        ><input
+                                            type="radio"
+                                            name="embryo-day"
+                                            value="6"
+                                        />
+                                        <span>Day-6</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="art-notice">
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="var(--accent)"
+                                    stroke-width="2"
+                                    aria-hidden="true"
+                                    ><circle cx="12" cy="12" r="10"
+                                    ></circle><line
+                                        x1="12"
+                                        y1="16"
+                                        x2="12"
+                                        y2="12"></line><line
+                                        x1="12"
+                                        y1="8"
+                                        x2="12.01"
+                                        y2="8"></line>
+                                </svg>
+                                <span
+                                    >Theo ACOG-700: EDD từ ART ưu tiên tuyệt
+                                    đối, <strong>không</strong> điều chỉnh bằng siêu
+                                    âm.</span
+                                >
+                            </div>
+                            <button
+                                type="submit"
+                                class="btn btn-accent btn-lg calc-submit"
+                                >Tính Ngày Dự Sinh</button
+                            >
+                        </form>
+                    </div>
+
+                    <!-- Tab: Ultrasound -->
+                    <div
+                        class="tab-content"
+                        id="tab-ultrasound"
+                        role="tabpanel"
+                        aria-labelledby="tab-btn-ultrasound"
+                        hidden
+                    >
+                        <form id="form-ultrasound" novalidate>
+                            <div class="form-group">
+                                <label for="us-lmp-date" class="form-label"
+                                    >Ngày đầu kỳ kinh cuối</label
+                                >
+                                <input
+                                    type="date"
+                                    id="us-lmp-date"
+                                    class="form-input"
+                                    required
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="us-cycle" class="form-label"
+                                    >Chu kỳ: <strong id="us-cycle-val"
+                                        >28</strong
+                                    > ngày</label
+                                >
+                                <input
+                                    type="range"
+                                    id="us-cycle"
+                                    min="21"
+                                    max="45"
+                                    value="28"
+                                    class="form-range"
+                                />
+                            </div>
+                            <hr class="form-divider" />
+                            <div class="form-group">
+                                <label for="us-date" class="form-label"
+                                    >Ngày siêu âm</label
+                                >
+                                <input
+                                    type="date"
+                                    id="us-date"
+                                    class="form-input"
+                                    required
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="crl-input" class="form-label"
+                                    >CRL — Chiều dài đầu mông (mm)</label
+                                >
+                                <input
+                                    type="number"
+                                    id="crl-input"
+                                    class="form-input"
+                                    min="10"
+                                    max="84"
+                                    step="1"
+                                    placeholder="10 – 84 mm"
+                                    required
+                                />
+                                <small class="form-help"
+                                    >Áp dụng tam cá nguyệt I (7–14 tuần). Công
+                                    thức Robinson-Fleming 1975.</small
+                                >
+                            </div>
+                            <button
+                                type="submit"
+                                class="btn btn-accent btn-lg calc-submit"
+                                >So Sánh & Đánh Giá</button
+                            >
+                        </form>
+                    </div>
+
+                    <!-- Validation Error -->
+                    <div
+                        id="validation-error"
+                        class="validation-error"
+                        role="alert"
+                        aria-live="polite"
+                        hidden
+                    >
                     </div>
                 </div>
 
-                <!-- Results -->
+                <!-- Results Panel -->
                 <div class="calc-results-panel" id="results-panel" hidden>
-                    <!-- EDD Result -->
-                    <div class="results-cards">
-                        <div class="result-card result-edd">
-                            <div class="result-icon" aria-hidden="true">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                            </div>
-                            <div class="result-info">
-                                <span class="result-label">Ngày dự sinh</span>
-                                <strong class="result-date" id="result-edd">—</strong>
-                            </div>
+                    <!-- Primary Result -->
+                    <div class="result-card result-primary card">
+                        <div class="result-icon-wrap">
+                            <span class="result-emoji">👶</span>
                         </div>
-                        <div class="result-card result-ga">
-                            <div class="result-icon" aria-hidden="true">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <div class="result-content">
+                            <span class="result-label"
+                                >Ngày dự sinh ước tính</span
+                            >
+                            <div class="result-edd" id="result-edd">
+                                --/--/----
                             </div>
-                            <div class="result-info">
-                                <span class="result-label">Tuổi thai hiện tại</span>
-                                <strong class="result-date" id="result-ga">—</strong>
-                            </div>
-                        </div>
-                        <div class="result-card result-trimester">
-                            <div class="result-icon" aria-hidden="true">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                            </div>
-                            <div class="result-info">
-                                <span class="result-label">Tam cá nguyệt</span>
-                                <strong class="result-date" id="result-trimester">—</strong>
-                            </div>
+                            <div class="result-sub" id="result-countdown"></div>
                         </div>
                     </div>
 
-                    <!-- Progress Bar -->
-                    <div class="card progress-card">
-                        <h3 class="progress-title">Tiến trình thai kỳ</h3>
-                        <div class="progress-bar-wrap">
-                            <div class="progress-track">
-                                <div class="progress-fill" id="progress-fill"></div>
+                    <!-- GA + Progress -->
+                    <div class="result-card card">
+                        <div class="result-row">
+                            <div class="result-circle-wrap">
+                                <svg
+                                    class="progress-ring"
+                                    width="90"
+                                    height="90"
+                                    viewBox="0 0 90 90"
+                                >
+                                    <circle
+                                        cx="45"
+                                        cy="45"
+                                        r="38"
+                                        fill="none"
+                                        stroke="var(--border-light)"
+                                        stroke-width="6"></circle>
+                                    <circle
+                                        id="progress-circle"
+                                        cx="45"
+                                        cy="45"
+                                        r="38"
+                                        fill="none"
+                                        stroke="var(--primary)"
+                                        stroke-width="6"
+                                        stroke-linecap="round"
+                                        stroke-dasharray="238.76"
+                                        stroke-dashoffset="238.76"
+                                        transform="rotate(-90 45 45)"></circle>
+                                </svg>
+                                <span class="progress-pct" id="progress-pct"
+                                    >0%</span
+                                >
                             </div>
-                            <div class="progress-labels">
-                                <span>0 tuần</span>
-                                <span id="progress-text">0%</span>
-                                <span>40 tuần</span>
-                            </div>
-                        </div>
-                        <div class="baby-dev" id="baby-dev" hidden>
-                            <span class="baby-emoji" id="baby-emoji"></span>
                             <div>
-                                <strong id="baby-fruit"></strong>
-                                <p id="baby-desc"></p>
-                                <div class="baby-stats">
-                                    <span id="baby-size"></span>
-                                    <span id="baby-weight"></span>
+                                <span class="result-label"
+                                    >Tuổi thai hiện tại</span
+                                >
+                                <div class="result-ga" id="result-ga">
+                                    -- tuần -- ngày
+                                </div>
+                                <div class="result-badges">
+                                    <span class="badge" id="trimester-badge"
+                                        >--</span
+                                    >
+                                    <span class="badge" id="term-badge" hidden
+                                        >--</span
+                                    >
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Milestones -->
-                    <div class="card milestones-card">
-                        <h3 class="milestones-title">Lịch khám thai theo chuẩn Bộ Y Tế</h3>
-                        <div class="milestones-list" id="milestones-list"></div>
-                    </div>
+                    <!-- Method badge -->
+                    <div class="method-badge" id="method-badge" hidden></div>
 
-                    <!-- Warnings -->
-                    <div id="warnings-container"></div>
+                    <!-- Clinical Warnings -->
+                    <div id="clinical-warnings"></div>
 
-                    <!-- Reminder CTA -->
-                    <div class="card reminder-cta-card" id="reminder-cta" hidden>
-                        <div class="reminder-cta-content">
-                            <div class="reminder-cta-icon">🔔</div>
-                            <div>
-                                <h3 class="reminder-cta-title">Nhắc lịch thăm khám</h3>
-                                <p class="reminder-cta-desc">Tải lịch khám thai vào điện thoại — nhắc tự động trước mỗi mốc quan trọng.</p>
+                    <!-- ACOG Comparison (ultrasound only) -->
+                    <div
+                        class="card acog-comparison"
+                        id="acog-comparison"
+                        hidden
+                    >
+                        <h3 class="card-title">So sánh ACOG Redating</h3>
+                        <div class="comparison-grid">
+                            <div class="comp-col">
+                                <span class="comp-label">EDD theo LMP</span>
+                                <strong class="comp-date" id="comp-edd-lmp"
+                                    >--</strong
+                                >
+                                <span class="comp-sub" id="comp-ga-lmp">--</span
+                                >
+                            </div>
+                            <div class="comp-vs">VS</div>
+                            <div class="comp-col">
+                                <span class="comp-label">EDD theo Siêu âm</span>
+                                <strong class="comp-date" id="comp-edd-us"
+                                    >--</strong
+                                >
+                                <span class="comp-sub" id="comp-ga-us">--</span>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-accent btn-lg reminder-cta-btn" id="open-reminder-sheet">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg>
-                            Xem lịch & Tải về
-                        </button>
+                        <div class="comp-result" id="comp-result"></div>
+                        <div class="comp-citation" id="comp-citation"></div>
+                    </div>
+
+                    <!-- Milestones Timeline -->
+                    <div class="card milestones-card">
+                        <h3 class="card-title">
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="var(--primary)"
+                                stroke-width="2"
+                                aria-hidden="true"
+                                ><polyline
+                                    points="22 12 18 12 15 21 9 3 6 12 2 12"
+                                ></polyline>
+                            </svg>
+                            Lịch khám thai quan trọng
+                        </h3>
+                        <div class="timeline" id="milestones-timeline"></div>
+                    </div>
+
+                    <!-- Baby Dev -->
+                    <div class="card baby-dev-card" id="baby-dev-card" hidden>
+                        <h3 class="card-title">
+                            <span id="baby-emoji">🍇</span>
+                            Bé yêu tuần <span id="baby-week">--</span>
+                        </h3>
+                        <div class="baby-stats">
+                            <span class="baby-stat"
+                                ><strong>Kích thước:</strong>
+                                <span id="baby-size">--</span>
+                            </span>
+                            <span class="baby-stat"
+                                ><strong>Cân nặng:</strong>
+                                <span id="baby-weight">--</span>
+                            </span>
+                            <span class="baby-stat"
+                                ><strong>So sánh:</strong>
+                                <span id="baby-fruit">--</span>
+                            </span>
+                        </div>
+                        <p class="baby-desc" id="baby-desc"></p>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="section section-alt" id="faq">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-label">Câu hỏi thường gặp</span>
-                <h2>Hiểu rõ hơn về ngày dự sinh</h2>
-            </div>
-            <div class="faq-list">
-                <details class="faq-item">
-                    <summary class="faq-question">Ngày dự sinh được tính theo công thức nào?</summary>
-                    <div class="faq-answer">
-                        <p>
-                            Công thức Naegele (1838): <strong>Ngày dự sinh = LMP + 280 ngày</strong> (40 tuần).
-                            Với chu kỳ không phải 28 ngày, ACOG-700 khuyến cáo hiệu chỉnh:
-                            EDD = LMP + 280 + (chu kỳ − 28) ngày. Ví dụ: chu kỳ 30 ngày thì +282 ngày.
-                        </p>
-                    </div>
-                </details>
-                <details class="faq-item">
-                    <summary class="faq-question">Bao nhiêu phụ nữ sinh đúng ngày dự sinh?</summary>
-                    <div class="faq-answer">
-                        <p>
-                            Chỉ khoảng <strong>4-5%</strong> phụ nữ sinh đúng ngày dự sinh.
-                            Khoảng 80% sinh trong khoảng ±2 tuần (38-42 tuần). Thai kỳ đủ tháng
-                            là từ 39+0 đến 40+6 tuần (ACOG Committee Opinion No. 579).
-                        </p>
-                    </div>
-                </details>
-                <details class="faq-item">
-                    <summary class="faq-question">Tại sao siêu âm CRL cho kết quả chính xác hơn?</summary>
-                    <div class="faq-answer">
-                        <p>
-                            CRL (chiều dài đầu mông) đo trong tam cá nguyệt I (7-14 tuần) có sai số
-                            chỉ <strong>±5-7 ngày</strong>, vì thai nhi ở giai đoạn sớm phát triển
-                            rất đồng đều giữa các cá thể. Càng về sau, biến thiên càng lớn
-                            (sai số ±21 ngày ở tam cá nguyệt III).
-                        </p>
-                    </div>
-                </details>
-                <details class="faq-item">
-                    <summary class="faq-question">IVF tính ngày dự sinh khác gì?</summary>
-                    <div class="faq-answer">
-                        <p>
-                            Với IVF/ART, ngày thụ thai đã biết chính xác nên công thức là:
-                            <strong>EDD = ngày chuyển phôi + (266 − tuổi phôi)</strong>.
-                            Phôi ngày 5 (blastocyst): +261 ngày, phôi ngày 3: +263 ngày.
-                            Theo ACOG-700, thai kỳ ART <em>không cần</em> điều chỉnh bằng siêu âm.
-                        </p>
-                    </div>
-                </details>
             </div>
         </div>
     </section>
@@ -306,21 +574,23 @@ import "../../styles/global.css";
     <!-- CTA -->
     <section class="section cta-section" id="cta">
         <div class="container">
-            <div class="cta-content">
-                <h2>Cần tư vấn thêm về thai kỳ?</h2>
+            <div class="cta-inner">
+                <h2>Cần tư vấn chuyên sâu?</h2>
                 <p>
-                    Bác sĩ sản khoa 20+ năm kinh nghiệm tại An Sinh
-                    sẵn sàng đồng hành cùng bạn suốt thai kỳ.
+                    Bác sĩ chuyên khoa sản tại An Sinh sẵn sàng đồng hành cùng
+                    bạn trong thai kỳ.
                 </p>
                 <div class="cta-actions">
-                    <button type="button" class="btn btn-accent btn-lg open-booking" data-form-type="kham-thai">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        Đặt Lịch Khám Thai
-                    </button>
-                    <a href="tel:0899268299" class="btn btn-outline btn-lg">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"></path></svg>
-                        Gọi: 0899 268 299
-                    </a>
+                    <a
+                        href="https://phusanansinh.com/dat-lich-hen-kham.html"
+                        class="btn btn-accent btn-lg"
+                        id="cta-booking">Đặt Lịch Khám Ngay</a
+                    >
+                    <a
+                        href="tel:0899268299"
+                        class="btn btn-outline btn-lg"
+                        id="cta-call">Gọi: 0899 268 299</a
+                    >
                 </div>
             </div>
         </div>
@@ -330,512 +600,964 @@ import "../../styles/global.css";
     <section class="disclaimer-section">
         <div class="container">
             <p class="disclaimer-text">
-                <strong>Lưu ý y khoa:</strong> Công cụ này cung cấp kết quả <em>ước tính</em>
-                dựa trên ACOG Committee Opinion No. 700 (2017, Reaffirmed 2022).
-                Kết quả không thay thế tư vấn y khoa chuyên nghiệp.
-                Vui lòng liên hệ bác sĩ chuyên khoa để được tư vấn chính xác.
+                <strong>Lưu ý y khoa:</strong> Công cụ này chỉ mang tính hỗ trợ tham
+                khảo lâm sàng, KHÔNG thay thế đánh giá của bác sĩ chuyên khoa. Dựa
+                trên: ACOG Committee Opinion No. 700 (2017, Reaffirmed 2022) — "Methods
+                for Estimating the Due Date." Công thức CRL: Robinson & Fleming (1975).
+                Phân kỳ thai: ACOG Committee Opinion No. 579.
             </p>
         </div>
     </section>
 
-    <!-- ═══ BOTTOM SHEET: Prenatal Reminder ═══ -->
-    <div class="bs-backdrop" id="bs-backdrop" hidden></div>
-    <div class="bs-sheet" id="bs-sheet" role="dialog" aria-hidden="true" aria-label="Lịch thăm khám thai kỳ">
-        <div class="bs-handle"><span></span></div>
-        <div class="bs-header">
-            <h3 class="bs-title">📅 Lịch Thăm Khám Thai Kỳ</h3>
-            <p class="bs-subtitle" id="bs-ga-info">—</p>
-            <button type="button" class="bs-close" id="bs-close" aria-label="Đóng">✕</button>
-        </div>
-        <div class="bs-body" id="bs-body">
-            <!-- Tier sections populated by JS -->
-        </div>
-        <div class="bs-prefs">
-            <h4 class="bs-prefs-title">⚙️ Tuỳ chọn lịch</h4>
-            <div class="bs-pref-row">
-                <span class="bs-pref-label">Khám ngày:</span>
-                <div class="bs-chips" id="day-pref-chips">
-                    <button type="button" class="bs-chip is-active" data-val="weekday">T2-T7</button>
-                    <button type="button" class="bs-chip" data-val="sunday">Chủ nhật</button>
-                </div>
-            </div>
-            <div class="bs-pref-row" id="time-pref-row" hidden>
-                <span class="bs-pref-label">Ca khám:</span>
-                <div class="bs-chips" id="time-pref-chips">
-                    <button type="button" class="bs-chip is-active" data-val="morning">☀️ Sáng</button>
-                    <button type="button" class="bs-chip" data-val="afternoon">🌤️ Chiều</button>
-                    <button type="button" class="bs-chip" data-val="evening">🌙 Tối</button>
-                </div>
-            </div>
-            <div class="bs-pref-row">
-                <span class="bs-pref-label">Nhắc trước:</span>
-                <div class="bs-chips" id="reminder-chips">
-                    <button type="button" class="bs-chip is-active" data-val="24">24 giờ</button>
-                    <button type="button" class="bs-chip" data-val="8">8 giờ</button>
-                </div>
-            </div>
-            <!-- SMS section -->
-            <!-- SMS Section (Hidden for core flow testing) -->
-            <details class="bs-sms-section" hidden>
-                <summary class="bs-sms-toggle">📱 Nhận tin nhắn nhắc lịch (tuỳ chọn)</summary>
-                <div class="bs-sms-body">
-                    <input type="tel" id="sms-phone" class="form-input" placeholder="0899 268 299" pattern="[0-9]{10}" inputmode="tel" />
-                    <small class="form-help">Nhập số điện thoại để nhận SMS nhắc lịch (sắp ra mắt)</small>
-                </div>
-            </details>
-        </div>
-        <div class="bs-actions">
-            <button type="button" class="btn btn-primary btn-lg bs-action-btn" id="bs-save-cal">
-                📥 Lưu vào Calendar
-            </button>
-            <button type="button" class="btn btn-accent btn-lg bs-action-btn" id="bs-download">
-                📲 Tải về điện thoại
-            </button>
-        </div>
-        <div class="bs-footer-cta">
-            <a href="tel:0899268299" class="bs-book-link">📞 Đặt lịch khám tại An Sinh: 0899 268 299</a>
-        </div>
-    </div>
-
     <style>
-        .tool-hero { background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%); padding: var(--space-4xl) 0 var(--space-3xl); text-align: center; }
-        .tool-hero-content { max-width: 700px; margin: 0 auto; }
-        .tool-hero h1 { margin-bottom: var(--space-lg); }
-        .hero-sub { font-size: 1.125rem; color: var(--text-secondary); line-height: 1.8; max-width: 600px; margin: 0 auto; }
-        .calc-layout { display: grid; grid-template-columns: 1fr; gap: var(--space-2xl); max-width: 700px; margin: 0 auto; }
-        .calc-card { position: static; }
-        .calc-title { display: flex; align-items: center; gap: var(--space-sm); font-size: 1.25rem; margin-bottom: var(--space-xl); }
-        .form-group { margin-bottom: var(--space-xl); }
-        .form-label { display: block; font-weight: 600; font-size: 0.9375rem; margin-bottom: var(--space-sm); color: var(--text-primary); }
-        .form-input { width: 100%; padding: 0.875rem 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; color: var(--text-primary); background: var(--bg-white); transition: border-color var(--transition-fast); min-height: 44px; box-sizing: border-box; }
-        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,122,109,.1); }
-        .form-range { width: 100%; height: 8px; appearance: none; -webkit-appearance: none; background: var(--border); border-radius: var(--radius-full); outline: none; margin: var(--space-sm) 0; }
-        .form-range::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 3px solid #fff; box-shadow: var(--shadow-md); }
-        .form-range::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); cursor: pointer; border: 3px solid #fff; box-shadow: var(--shadow-md); }
-        .range-labels { display: flex; justify-content: space-between; font-size: .75rem; color: var(--text-muted); }
-        .form-help { display: block; font-size: .8125rem; color: var(--text-muted); margin-top: var(--space-xs); }
-        .calc-submit { width: 100%; }
-        .form-error { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); background: #fef2f2; border: 1px solid #fca5a5; border-radius: var(--radius-md); color: var(--error); font-size: .875rem; }
-        .edu-note { display: flex; gap: var(--space-sm); padding: var(--space-md); background: #eff6ff; border-radius: var(--radius-md); border-left: 3px solid var(--info); margin-top: var(--space-lg); }
-        .edu-note svg { flex-shrink: 0; margin-top: 2px; }
-        .edu-note p { font-size: .8125rem; color: var(--text-secondary); margin: 0; line-height: 1.6; }
-
-        /* Method chips */
-        .method-chips, .embryo-chips { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
-        .method-chip, .embryo-chip { padding: .625rem 1rem; border-radius: var(--radius-full); border: 1.5px solid var(--border); background: var(--surface); font-size: .875rem; font-weight: 500; cursor: pointer; transition: all var(--transition-fast); color: var(--text-secondary); font-family: var(--font-body); min-height: 44px; }
-        .method-chip:hover, .embryo-chip:hover { border-color: var(--primary); color: var(--primary); }
-        .method-chip.is-active, .embryo-chip.is-active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-        /* Results */
-        .results-cards { display: grid; grid-template-columns: 1fr; gap: var(--space-md); margin-bottom: var(--space-xl); }
-        .result-card { display: flex; align-items: center; gap: var(--space-lg); padding: var(--space-lg); border-radius: var(--radius-lg); border: 1px solid var(--border-light); background: var(--surface); transition: all var(--transition-base); }
-        .result-card:hover { box-shadow: var(--shadow-md); }
-        .result-icon { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: var(--radius-md); flex-shrink: 0; }
-        .result-edd .result-icon { background: #fff7ed; color: var(--accent); }
-        .result-ga .result-icon { background: var(--primary-light); color: var(--primary); }
-        .result-trimester .result-icon { background: #f0fdf4; color: var(--success); }
-        .result-label { display: block; font-size: .8125rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; font-weight: 500; }
-        .result-date { display: block; font-size: 1.25rem; color: var(--text-primary); margin-top: 2px; }
-
-        /* Progress */
-        .progress-title, .milestones-title { font-size: 1.125rem; margin-bottom: var(--space-lg); }
-        .progress-track { width: 100%; height: 12px; background: var(--border); border-radius: var(--radius-full); overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: var(--radius-full); transition: width .6s ease; width: 0; }
-        .progress-labels { display: flex; justify-content: space-between; font-size: .75rem; color: var(--text-muted); margin-top: var(--space-xs); }
-        .baby-dev { display: flex; gap: var(--space-md); align-items: flex-start; margin-top: var(--space-lg); padding: var(--space-lg); background: var(--surface-alt); border-radius: var(--radius-md); }
-        .baby-emoji { font-size: 2.5rem; line-height: 1; flex-shrink: 0; }
-        .baby-dev strong { display: block; font-size: .9375rem; margin-bottom: 4px; }
-        .baby-dev p { font-size: .8125rem; color: var(--text-secondary); margin: 0 0 var(--space-sm); line-height: 1.6; }
-        .baby-stats { display: flex; gap: var(--space-lg); font-size: .8125rem; color: var(--text-muted); }
-
-        /* Milestones */
-        .milestones-list { display: flex; flex-direction: column; gap: var(--space-md); }
-        .milestone-item { display: flex; gap: var(--space-md); padding: var(--space-md); border-radius: var(--radius-md); border: 1px solid var(--border-light); transition: all var(--transition-fast); }
-        .milestone-item:hover { box-shadow: var(--shadow-sm); }
-        .milestone-item.is-past { opacity: .5; }
-        .milestone-item.is-current { border-color: var(--primary); background: var(--primary-light); }
-        .milestone-dot { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; background: var(--surface-alt); }
-        .milestone-item.is-past .milestone-dot { background: var(--border); }
-        .milestone-item.is-current .milestone-dot { background: var(--primary); color: #fff; }
-        .milestone-info { flex: 1; }
-        .milestone-week { font-size: .75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
-        .milestone-name { font-weight: 600; font-size: .9375rem; margin: 2px 0; }
-        .milestone-desc { font-size: .8125rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
-        .milestone-tests { display: flex; flex-wrap: wrap; gap: 4px; margin-top: var(--space-xs); }
-        .milestone-tag { font-size: .6875rem; background: var(--surface-alt); padding: 2px 8px; border-radius: var(--radius-full); color: var(--text-muted); }
-
-        /* Warnings */
-        .warning-card { padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-md); display: flex; gap: var(--space-sm); align-items: flex-start; }
-        .warning-card.severity-info { background: #eff6ff; border: 1px solid #93c5fd; }
-        .warning-card.severity-warning { background: #fffbeb; border: 1px solid #fbbf24; }
-        .warning-card.severity-danger { background: #fef2f2; border: 1px solid #fca5a5; }
-        .warning-card p { font-size: .875rem; margin: 0; line-height: 1.6; }
-
-        /* Reminder CTA */
-        .reminder-cta-card { margin-top: var(--space-xl); background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%); border: 2px solid var(--accent); animation: pulseGlow 2s ease-in-out infinite; }
-        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(240,125,0,.15); } 50% { box-shadow: 0 0 20px 4px rgba(240,125,0,.2); } }
-        .reminder-cta-content { display: flex; gap: var(--space-md); align-items: center; margin-bottom: var(--space-lg); }
-        .reminder-cta-icon { font-size: 2.5rem; line-height: 1; flex-shrink: 0; }
-        .reminder-cta-title { font-size: 1.125rem; margin-bottom: 4px; }
-        .reminder-cta-desc { font-size: .8125rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
-        .reminder-cta-btn { width: 100%; }
-
-        .bs-sms-section { margin-top: var(--space-sm); }
-        .bs-sms-toggle { font-size: .8125rem; color: var(--text-secondary); cursor: pointer; padding: var(--space-xs) 0; font-weight: 500; }
-        .bs-sms-body { padding-top: var(--space-sm); }
-        .bs-sms-body .form-input { font-size: .875rem; padding: .625rem .875rem; }
-        .bs-actions { display: flex; gap: var(--space-sm); padding: var(--space-md) var(--space-lg); border-top: 1px solid var(--border-light); }
-        .bs-action-btn { flex: 1; font-size: .875rem; padding: .75rem 1rem; }
-        .bs-footer-cta { text-align: center; padding: var(--space-sm) var(--space-lg) var(--space-lg); }
-        .bs-book-link { font-size: .8125rem; color: var(--primary); font-weight: 600; text-decoration: underline; }
-
-        @media (min-width: 640px) {
-            .bs-sheet { max-width: 520px; left: 50%; transform: translateX(-50%) translateY(100%); border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
-            .bs-sheet.is-open { transform: translateX(-50%) translateY(0); }
+        /* ── Hero ── */
+        .calc-hero {
+            background: linear-gradient(
+                135deg,
+                var(--primary-light) 0%,
+                var(--bg) 100%
+            );
+            padding: var(--space-4xl) 0 var(--space-3xl);
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-lg);
+            background: var(--surface);
+            border-radius: var(--radius-full);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+            border: 1px solid var(--border-light);
+        }
+        .hero-sub {
+            font-size: 1.0625rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        /* ── Calculator Layout ── */
+        .calc-section {
+            padding: var(--space-3xl) 0;
+        }
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-2xl);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .calc-input-panel {
+            position: static;
+        }
+        .calc-panel-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1.125rem;
+            margin-bottom: var(--space-lg);
+        }
+        /* ── Tab Bar ── */
+        .tab-bar {
+            display: flex;
+            gap: 2px;
+            background: var(--surface-alt);
+            border-radius: var(--radius-md);
+            padding: 3px;
+            margin-bottom: var(--space-xl);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: var(--space-sm) var(--space-md);
+            background: none;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            min-height: 44px;
+        }
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+        .tab-btn.active {
+            background: var(--bg-white);
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .tab-content:not(.active) {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* ── Form ── */
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--text-primary);
+            background: var(--bg-white);
+            transition: border-color var(--transition-fast);
+            min-height: 44px;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(27, 122, 109, 0.1);
+        }
+        .form-range {
+            width: 100%;
+            height: 8px;
+            appearance: none;
+            -webkit-appearance: none;
+            background: var(--border);
+            border-radius: var(--radius-full);
+            outline: none;
+            margin: var(--space-sm) 0;
+        }
+        .form-range::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: var(--shadow-md);
+        }
+        .form-range::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: var(--shadow-md);
+        }
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .form-help {
+            display: block;
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-top: var(--space-xs);
+        }
+        .form-divider {
+            border: 0;
+            border-top: 1px solid var(--border-light);
+            margin: var(--space-lg) 0;
+        }
+        .calc-submit {
+            width: 100%;
+        }
+        /* ── IVF Radio Cards ── */
+        .embryo-options {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        .radio-card {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-md);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-weight: 600;
+            font-size: 0.9375rem;
+            min-height: 44px;
+        }
+        .radio-card:has(input:checked) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .radio-card input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .art-notice {
+            display: flex;
+            gap: var(--space-sm);
+            padding: var(--space-md);
+            background: #fff7ed;
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--accent);
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-lg);
+        }
+        .art-notice svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        /* ── Validation Error ── */
+        .validation-error {
+            margin-top: var(--space-md);
+            padding: var(--space-sm) var(--space-md);
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: var(--radius-md);
+            color: var(--error);
+            font-size: 0.875rem;
+        }
+        /* ── Results ── */
+        .calc-results-panel:not([hidden]) {
+            animation: fadeInUp 0.4s ease-out;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        @media (max-width: 640px) {
-            .method-chips { flex-direction: column; }
-            .method-chip { text-align: center; }
-            .bs-actions { flex-direction: column; }
+        .result-card {
+            margin-bottom: var(--space-md);
+        }
+        .result-primary {
+            background: linear-gradient(
+                135deg,
+                var(--primary) 0%,
+                var(--primary-dark) 100%
+            );
+            color: #fff;
+            text-align: center;
+            padding: var(--space-xl);
+        }
+        .result-icon-wrap {
+            margin-bottom: var(--space-sm);
+        }
+        .result-emoji {
+            font-size: 2.5rem;
+        }
+        .result-label {
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.85;
+        }
+        .result-edd {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: var(--space-xs) 0;
+        }
+        .result-sub {
+            font-size: 0.9375rem;
+            opacity: 0.9;
+        }
+        .result-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xl);
+        }
+        .result-circle-wrap {
+            position: relative;
+        }
+        .progress-pct {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .result-ga {
+            font-size: 1.375rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: var(--space-xs);
+        }
+        .result-badges {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-sm);
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-t1 {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .badge-t2 {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .badge-t3 {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+        .badge-preterm {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-early-term {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+        .badge-full-term {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .badge-late-term {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+        .badge-post-term {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        /* ── Method Badge ── */
+        .method-badge {
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            text-align: center;
+        }
+        .method-badge.method-art {
+            background: #fff7ed;
+            color: var(--accent);
+            border: 1px solid #fed7aa;
+        }
+        .method-badge.method-us-redate {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        .method-badge.method-us-keep {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        /* ── ACOG Comparison ── */
+        .acog-comparison {
+            border: 2px solid var(--border);
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: var(--space-md);
+            align-items: center;
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+        .comp-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+        }
+        .comp-date {
+            display: block;
+            font-size: 1.125rem;
+            margin-top: 4px;
+        }
+        .comp-sub {
+            display: block;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .comp-vs {
+            font-weight: 800;
+            color: var(--text-muted);
+            font-size: 0.8125rem;
+        }
+        .comp-result {
+            text-align: center;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-sm);
+            font-weight: 600;
+        }
+        .comp-result.redate {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .comp-result.keep {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .comp-citation {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        /* ── Clinical Warning ── */
+        .clinical-warning {
+            display: flex;
+            gap: var(--space-sm);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            font-size: 0.875rem;
+        }
+        .clinical-warning svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .warning-warning {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+        .warning-danger {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+        /* ── Card Titles ── */
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 1rem;
+            margin-bottom: var(--space-lg);
+        }
+        /* ── Timeline ── */
+        .timeline {
+            position: relative;
+            padding-left: var(--space-xl);
+        }
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-light);
+        }
+        .milestone {
+            position: relative;
+            padding-bottom: var(--space-lg);
+            padding-left: var(--space-md);
+        }
+        .milestone:last-child {
+            padding-bottom: 0;
+        }
+        .milestone-dot {
+            position: absolute;
+            left: calc(-1 * var(--space-xl) + 4px);
+            top: 3px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--bg-white);
+        }
+        .milestone.past .milestone-dot {
+            background: var(--text-muted);
+            border-color: var(--text-muted);
+        }
+        .milestone.current .milestone-dot {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(27, 122, 109, 0.2);
+        }
+        .milestone.upcoming .milestone-dot {
+            background: var(--bg-white);
+            border-color: var(--border);
+        }
+        .milestone-title {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+        }
+        .milestone.past .milestone-title {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+        .milestone-date {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .milestone-tests {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        /* ── Baby Dev ── */
+        .baby-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            margin-bottom: var(--space-sm);
+        }
+        .baby-stat {
+            font-size: 0.875rem;
+        }
+        .baby-desc {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        /* ── CTA ── */
+        .cta-section {
+            background: linear-gradient(
+                135deg,
+                var(--primary) 0%,
+                var(--primary-dark) 100%
+            );
+            color: #fff;
+            text-align: center;
+        }
+        .cta-inner {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .cta-inner h2 {
+            color: #fff;
+            margin-bottom: var(--space-md);
+        }
+        .cta-inner p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-xl);
+        }
+        .cta-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .cta-section .btn-outline {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .cta-section .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-color: #fff;
+        }
+        /* ── Disclaimer ── */
+        .disclaimer-section {
+            padding: var(--space-xl) 0;
+            background: var(--surface-alt);
+        }
+        .disclaimer-text {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .calc-grid {
+                grid-template-columns: 1fr;
+            }
+            .calc-input-panel {
+                position: static;
+            }
+            .tab-btn {
+                font-size: 0.75rem;
+                padding: var(--space-sm);
+            }
+            .result-row {
+                flex-direction: column;
+                text-align: center;
+            }
+            .comparison-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-sm);
+            }
+            .comp-vs {
+                display: none;
+            }
+            .cta-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
         }
     </style>
 
     <script>
-        // Reveal form immediately, hide skeleton
-        document.getElementById('calc-skeleton')?.classList.add('skeleton-fade-out');
-        const formPanel = document.getElementById('calc-form-panel');
-        if (formPanel) formPanel.classList.remove('calc-form-hidden');
+        import {
+            calculateDueDate,
+            calculateDueDateFromConception,
+            calculateGestationalAge,
+            getTrimester,
+            getPregnancyProgress,
+            generateCheckupMilestones,
+            getBabyDevelopment,
+            getMilestoneStatus,
+            formatDateVN,
+            validateLmpDate,
+            toLocalDate,
+            calcEddByLmpModified,
+            calcEddByIvf,
+            calcGaFromCrl,
+            calcEddFromUltrasoundGa,
+            shouldRedate,
+            reconcileEdd,
+            getTermClassification,
+            getClinicalWarnings,
+        } from "../../utils/due-date-calc.js";
 
-        // Defer heavy module loading to after first paint
-        const { toLocalDate, calculateDueDate, calculateGestationalAge, getTrimester,
-            getPregnancyProgress, generateCheckupMilestones, getBabyDevelopment,
-            getMilestoneStatus, formatDateVN, validateLmpDate,
-            calcEddByLmpModified, calcEddByIvf, calcGaFromCrl, calcEddFromUltrasoundGa,
-            getTermClassification, getClinicalWarnings
-        } = await import('../../utils/due-date-calc.js');
-
-        const { generateReminderSchedule, generateIcsCalendar, downloadIcsFile, saveToCalendar,
-            TIER_CONFIG
-        } = await import('../../utils/prenatal-reminder-engine.js');
-
-        let currentMethod = 'lmp';
-        let selectedEmbryoDay = 5;
-        let currentLmpForGa = null; // Stored after calculation for reminder engine
-        let currentGa = null;
-
-        // Method switching
-        document.getElementById('method-chips')?.addEventListener('click', (e) => {
-            const chip = e.target.closest('.method-chip');
-            if (!chip) return;
-            document.querySelectorAll('.method-chip').forEach(c => c.classList.remove('is-active'));
-            chip.classList.add('is-active');
-            currentMethod = chip.dataset.method;
-            document.getElementById('fields-lmp').hidden = currentMethod !== 'lmp';
-            document.getElementById('fields-ivf').hidden = currentMethod !== 'ivf';
-            document.getElementById('fields-us').hidden = currentMethod !== 'us';
+        // ── Tab Switching ──
+        const tabBtns = document.querySelectorAll(".tab-btn");
+        const tabContents = document.querySelectorAll(".tab-content");
+        tabBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const t = btn.dataset.tab;
+                tabBtns.forEach((b) => {
+                    b.classList.remove("active");
+                    b.setAttribute("aria-selected", "false");
+                });
+                tabContents.forEach((c) => {
+                    c.classList.remove("active");
+                    c.hidden = true;
+                });
+                btn.classList.add("active");
+                btn.setAttribute("aria-selected", "true");
+                const panel = document.getElementById("tab-" + t);
+                panel.classList.add("active");
+                panel.hidden = false;
+                document.getElementById("results-panel").hidden = true;
+                hideError();
+            });
         });
 
-        // Embryo day chips
-        document.getElementById('embryo-chips')?.addEventListener('click', (e) => {
-            const chip = e.target.closest('.embryo-chip');
-            if (!chip) return;
-            document.querySelectorAll('.embryo-chip').forEach(c => c.classList.remove('is-active'));
-            chip.classList.add('is-active');
-            selectedEmbryoDay = parseInt(chip.dataset.day);
+        // ── Sliders ──
+        const cycleSlider = document.getElementById("cycle-length");
+        const cycleValue = document.getElementById("cycle-value");
+        cycleSlider.addEventListener("input", () => {
+            cycleValue.textContent = cycleSlider.value;
         });
 
-        // Cycle length slider
-        const cycleSlider = document.getElementById('cycle-length');
-        const cycleValue = document.getElementById('cycle-value');
-        cycleSlider?.addEventListener('input', () => {
-            if (cycleValue) cycleValue.textContent = cycleSlider.value;
+        const usCycleSlider = document.getElementById("us-cycle");
+        const usCycleVal = document.getElementById("us-cycle-val");
+        usCycleSlider.addEventListener("input", () => {
+            usCycleVal.textContent = usCycleSlider.value;
         });
 
-        // Form submit
-        document.getElementById('due-date-form')?.addEventListener('submit', (e) => {
+        // ── Set max date ──
+        const today = new Date();
+        const maxDate = today.toISOString().split("T")[0];
+        document.querySelectorAll('input[type="date"]').forEach((el) => {
+            el.max = maxDate;
+        });
+
+        // ── Form: LMP ──
+        document.getElementById("form-lmp").addEventListener("submit", (e) => {
             e.preventDefault();
-            const errorEl = document.getElementById('form-error');
-
-            try {
-                let edd, lmpForGa;
-
-                if (currentMethod === 'lmp') {
-                    const lmpDate = document.getElementById('lmp-date').value;
-                    const cycleLength = parseInt(cycleSlider?.value || '28');
-                    if (!lmpDate) throw new Error('Vui lòng nhập ngày kinh cuối.');
-                    const validation = validateLmpDate(lmpDate);
-                    if (!validation.valid) throw new Error(validation.error);
-                    edd = calcEddByLmpModified(lmpDate, cycleLength);
-                    lmpForGa = toLocalDate(lmpDate);
-
-                } else if (currentMethod === 'ivf') {
-                    const ivfDate = document.getElementById('ivf-date').value;
-                    if (!ivfDate) throw new Error('Vui lòng nhập ngày chuyển phôi.');
-                    edd = calcEddByIvf(ivfDate, selectedEmbryoDay);
-                    // Convert to equivalent LMP for GA calculation
-                    const eddDate = toLocalDate(edd);
-                    lmpForGa = new Date(eddDate);
-                    lmpForGa.setDate(lmpForGa.getDate() - 280);
-
-                } else if (currentMethod === 'us') {
-                    const usDate = document.getElementById('us-date').value;
-                    const crl = parseFloat(document.getElementById('crl-mm').value);
-                    if (!usDate) throw new Error('Vui lòng nhập ngày siêu âm.');
-                    if (isNaN(crl) || crl < 10 || crl > 84) throw new Error('CRL phải từ 10–84 mm.');
-                    const gaFromCrl = calcGaFromCrl(crl);
-                    edd = calcEddFromUltrasoundGa(usDate, gaFromCrl);
-                    lmpForGa = new Date(edd);
-                    lmpForGa.setDate(lmpForGa.getDate() - 280);
-                }
-
-                // Calculate results
-                const ga = calculateGestationalAge(lmpForGa);
-                const trimester = getTrimester(ga.weeks);
-                const progress = getPregnancyProgress(lmpForGa);
-                const babyDev = getBabyDevelopment(ga.weeks);
-                const milestones = generateCheckupMilestones(lmpForGa);
-                const termClass = getTermClassification(ga.weeks, ga.days);
-                const warnings = getClinicalWarnings(ga);
-
-                // Store for reminder engine
-                currentLmpForGa = lmpForGa;
-                currentGa = ga;
-
-                // Render results
-                displayResults(edd, ga, trimester, progress, babyDev, milestones, termClass, warnings);
-
-                // Show reminder CTA
-                const reminderCta = document.getElementById('reminder-cta');
-                if (reminderCta) reminderCta.hidden = false;
-
-                // Hide error
-                if (errorEl) { errorEl.hidden = true; }
-            } catch (err) {
-                if (errorEl) {
-                    errorEl.textContent = err.message;
-                    errorEl.hidden = false;
-                }
-            }
+            hideError();
+            const lmpDate = document.getElementById("lmp-date").value;
+            const cycleLength = parseInt(cycleSlider.value, 10);
+            const valid = validateLmpDate(lmpDate);
+            if (!valid.valid) return showError(valid.error);
+            const edd = calcEddByLmpModified(lmpDate, cycleLength);
+            const ga = calculateGestationalAge(lmpDate);
+            showResults(edd, ga, lmpDate, "LMP (Naegele cải tiến)");
         });
 
-        function displayResults(edd, ga, trimester, progress, babyDev, milestones, termClass, warnings) {
-            const resultsPanel = document.getElementById('results-panel');
-            if (resultsPanel) resultsPanel.hidden = false;
+        // ── Form: Conception ──
+        document
+            .getElementById("form-conception")
+            .addEventListener("submit", (e) => {
+                e.preventDefault();
+                hideError();
+                const cDate = document.getElementById("conception-date").value;
+                if (!cDate) return showError("Vui lòng chọn ngày thụ thai.");
+                const edd = calculateDueDateFromConception(cDate);
+                // GA from conception ≈ conception + 14 days = LMP equivalent
+                const lmpEquiv = new Date(toLocalDate(cDate));
+                lmpEquiv.setDate(lmpEquiv.getDate() - 14);
+                const ga = calculateGestationalAge(lmpEquiv);
+                showResults(edd, ga, lmpEquiv, "Ngày thụ thai");
+            });
 
-            // EDD
-            document.getElementById('result-edd').textContent = formatDateVN(edd);
+        // ── Form: IVF ──
+        document.getElementById("form-ivf").addEventListener("submit", (e) => {
+            e.preventDefault();
+            hideError();
+            const tDate = document.getElementById("transfer-date").value;
+            if (!tDate) return showError("Vui lòng chọn ngày chuyển phôi.");
+            const embryoDay = parseInt(
+                document.querySelector('input[name="embryo-day"]:checked')
+                    .value,
+                10
+            );
+            const edd = calcEddByIvf(tDate, embryoDay);
+            // GA equivalent: transfer - (embryoDay) + 14 = LMP equivalent
+            const lmpEquiv = new Date(toLocalDate(tDate));
+            lmpEquiv.setDate(lmpEquiv.getDate() - embryoDay - 14);
+            const ga = calculateGestationalAge(lmpEquiv);
+            showResults(edd, ga, lmpEquiv, "ART-derived", true);
+        });
+
+        // ── Form: Ultrasound ──
+        document
+            .getElementById("form-ultrasound")
+            .addEventListener("submit", (e) => {
+                e.preventDefault();
+                hideError();
+                const lmpDate = document.getElementById("us-lmp-date").value;
+                const cycleLength = parseInt(usCycleSlider.value, 10);
+                const usDate = document.getElementById("us-date").value;
+                const crl = parseFloat(
+                    document.getElementById("crl-input").value
+                );
+
+                const validLmp = validateLmpDate(lmpDate);
+                if (!validLmp.valid) return showError(validLmp.error);
+                if (!usDate) return showError("Vui lòng chọn ngày siêu âm.");
+                if (isNaN(crl) || crl < 10 || crl > 84)
+                    return showError("CRL phải từ 10 đến 84 mm.");
+
+                const gaUs = calcGaFromCrl(crl, "robinson");
+                const result = reconcileEdd(
+                    lmpDate,
+                    cycleLength,
+                    usDate,
+                    gaUs,
+                    false
+                );
+                const ga = calculateGestationalAge(lmpDate);
+                showResults(result.eddFinal, ga, lmpDate, result.method);
+                showAcogComparison(result, gaUs, lmpDate, usDate, cycleLength);
+            });
+
+        // ── Show Results ──
+        function showResults(edd, ga, lmpDate, method, isArt = false) {
+            const panel = document.getElementById("results-panel");
+            document.getElementById("result-edd").textContent =
+                formatDateVN(edd);
+
+            // Countdown
+            const daysLeft = Math.ceil(
+                (edd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+            );
+            document.getElementById("result-countdown").textContent =
+                daysLeft > 0
+                    ? `Còn ${daysLeft} ngày nữa`
+                    : daysLeft === 0
+                    ? "Hôm nay là ngày dự sinh!"
+                    : `Đã qua ${Math.abs(daysLeft)} ngày`;
 
             // GA
-            document.getElementById('result-ga').textContent = `${ga.weeks} tuần ${ga.days} ngày`;
-
-            // Trimester
-            const TRIMESTER_LABELS = { 1: 'Tam cá nguyệt I (0-13 tuần)', 2: 'Tam cá nguyệt II (14-27 tuần)', 3: 'Tam cá nguyệt III (28+ tuần)' };
-            document.getElementById('result-trimester').textContent = TRIMESTER_LABELS[trimester];
+            document.getElementById(
+                "result-ga"
+            ).textContent = `${ga.weeks} tuần ${ga.days} ngày`;
 
             // Progress
-            const progressFill = document.getElementById('progress-fill');
-            const progressText = document.getElementById('progress-text');
-            if (progressFill) progressFill.style.width = `${progress}%`;
-            if (progressText) progressText.textContent = `${progress}%`;
+            const progress = getPregnancyProgress(lmpDate);
+            document.getElementById("progress-pct").textContent =
+                Math.round(progress) + "%";
+            const circle = document.getElementById("progress-circle");
+            const circumference = 2 * Math.PI * 38;
+            circle.style.strokeDashoffset =
+                circumference - (progress / 100) * circumference;
 
-            // Baby development
-            const babyDevEl = document.getElementById('baby-dev');
-            if (babyDev && babyDevEl) {
-                babyDevEl.hidden = false;
-                document.getElementById('baby-emoji').textContent = babyDev.fruitEmoji;
-                document.getElementById('baby-fruit').textContent = `Bé như ${babyDev.fruit}`;
-                document.getElementById('baby-desc').textContent = babyDev.description;
-                document.getElementById('baby-size').textContent = `📏 ${babyDev.size}`;
-                document.getElementById('baby-weight').textContent = `⚖️ ${babyDev.weight}`;
-            } else if (babyDevEl) {
-                babyDevEl.hidden = true;
+            // Trimester badge
+            const tri = getTrimester(ga.weeks);
+            const triBadge = document.getElementById("trimester-badge");
+            triBadge.textContent = `Tam cá nguyệt ${
+                tri === 1 ? "I" : tri === 2 ? "II" : "III"
+            }`;
+            triBadge.className = `badge badge-t${tri}`;
+
+            // Term classification
+            const termBadge = document.getElementById("term-badge");
+            if (ga.weeks >= 37) {
+                const term = getTermClassification(ga.weeks, ga.days);
+                const termLabels = {
+                    preterm: "Non tháng",
+                    "early-term": "Đủ tháng sớm",
+                    "full-term": "Đủ tháng",
+                    "late-term": "Muộn kỳ",
+                    "post-term": "Quá ngày",
+                };
+                termBadge.textContent = termLabels[term];
+                termBadge.className = `badge badge-${term}`;
+                termBadge.hidden = false;
+            } else {
+                termBadge.hidden = true;
             }
+
+            // Method badge
+            const methodBadge = document.getElementById("method-badge");
+            if (isArt) {
+                methodBadge.textContent =
+                    "🧪 ART-derived — Không điều chỉnh bằng siêu âm";
+                methodBadge.className = "method-badge method-art";
+                methodBadge.hidden = false;
+            } else if (method.includes("Siêu âm")) {
+                methodBadge.textContent = "📋 " + method;
+                methodBadge.className = "method-badge method-us-redate";
+                methodBadge.hidden = false;
+            } else {
+                methodBadge.hidden = true;
+            }
+
+            // Clinical warnings
+            const warningsDiv = document.getElementById("clinical-warnings");
+            const warnings = getClinicalWarnings(ga);
+            warningsDiv.innerHTML = warnings
+                .map(
+                    (w) => `
+        <div class="clinical-warning warning-${w.severity}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span>${w.message}</span>
+        </div>
+    `
+                )
+                .join("");
+
+            // ACOG comparison hidden by default (shown only for ultrasound)
+            document.getElementById("acog-comparison").hidden = true;
 
             // Milestones
-            const ICONS_MAP = {
-                stethoscope: '🩺', baby: '👶', clipboard: '📋', scan: '📷',
-                droplet: '💉', syringe: '💉', activity: '📊', heart: '❤️',
-                'calendar-check': '📅', star: '⭐'
-            };
-            const milestonesEl = document.getElementById('milestones-list');
-            if (milestonesEl) {
-                milestonesEl.innerHTML = milestones.map(m => {
-                    const status = getMilestoneStatus(m.week, ga.weeks, ga.days);
-                    const statusClass = status === 'past' ? 'is-past' : status === 'current' ? 'is-current' : '';
-                    const icon = ICONS_MAP[m.icon] || '📌';
-                    return `
-                        <div class="milestone-item ${statusClass}">
-                            <div class="milestone-dot">${icon}</div>
-                            <div class="milestone-info">
-                                <span class="milestone-week">Tuần ${m.week} — ${formatDateVN(m.date)}</span>
-                                <div class="milestone-name">${m.title}</div>
-                                <p class="milestone-desc">${m.description}</p>
-                                <div class="milestone-tests">
-                                    ${m.tests.map(t => `<span class="milestone-tag">${t}</span>`).join('')}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+            renderMilestones(lmpDate, ga);
+
+            // Baby dev
+            renderBabyDev(ga.weeks);
+
+            panel.hidden = false;
+            panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function showAcogComparison(
+            result,
+            gaUs,
+            lmpDate,
+            usDate,
+            cycleLength
+        ) {
+            const comp = document.getElementById("acog-comparison");
+            document.getElementById("comp-edd-lmp").textContent = formatDateVN(
+                result.eddLmp
+            );
+            document.getElementById("comp-edd-us").textContent = formatDateVN(
+                result.eddUltrasound
+            );
+            const gaLmpAtUs = calculateGestationalAge(lmpDate, usDate);
+            document.getElementById(
+                "comp-ga-lmp"
+            ).textContent = `${gaLmpAtUs.weeks}t ${gaLmpAtUs.days}ng (theo LMP)`;
+            document.getElementById(
+                "comp-ga-us"
+            ).textContent = `${gaUs.weeks}t ${gaUs.days}ng (theo CRL)`;
+
+            const compResult = document.getElementById("comp-result");
+            if (result.wasRedated) {
+                compResult.textContent = `⚠️ ĐIỀU CHỈNH sang EDD siêu âm — sai lệch ${result.discrepancyDays} ngày > ngưỡng ${result.decision.threshold} ngày`;
+                compResult.className = "comp-result redate";
+            } else {
+                compResult.textContent = `✅ GIỮ NGUYÊN EDD theo LMP — sai lệch ${result.discrepancyDays} ngày ≤ ngưỡng ${result.decision.threshold} ngày`;
+                compResult.className = "comp-result keep";
+            }
+            document.getElementById("comp-citation").textContent =
+                result.decision.acogCitation;
+
+            // Check for T3 redating warning
+            if (result.wasRedated && gaLmpAtUs.weeks >= 28) {
+                const warningsDiv =
+                    document.getElementById("clinical-warnings");
+                warningsDiv.innerHTML += `
+            <div class="clinical-warning warning-danger">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span>Cảnh báo IUGR: Điều chỉnh EDD trong tam cá nguyệt III có nguy cơ bỏ sót thai chậm tăng trưởng. Cần đánh giá lâm sàng toàn diện. (ACOG-700)</span>
+            </div>`;
             }
 
-            // Warnings
-            const warningsEl = document.getElementById('warnings-container');
-            if (warningsEl) {
-                warningsEl.innerHTML = warnings.map(w => `
-                    <div class="warning-card severity-${w.severity}">
-                        <span>${w.severity === 'danger' ? '🚨' : w.severity === 'warning' ? '⚠️' : 'ℹ️'}</span>
-                        <p>${w.message}</p>
-                    </div>
-                `).join('');
+            comp.hidden = false;
+        }
+
+        function renderMilestones(lmpDate, ga) {
+            const milestones = generateCheckupMilestones(lmpDate);
+            const timeline = document.getElementById("milestones-timeline");
+            timeline.innerHTML = milestones
+                .map((m) => {
+                    const status = getMilestoneStatus(
+                        m.week,
+                        ga.weeks,
+                        ga.days
+                    );
+                    return `<div class="milestone ${status}">
+            <div class="milestone-dot"></div>
+            <div class="milestone-title">Tuần ${m.week}: ${m.title}</div>
+            <div class="milestone-date">${formatDateVN(m.date)}</div>
+            <div class="milestone-tests">${m.tests
+                .slice(0, 2)
+                .join(" · ")}</div>
+        </div>`;
+                })
+                .join("");
+        }
+
+        function renderBabyDev(weeks) {
+            const dev = getBabyDevelopment(weeks);
+            const card = document.getElementById("baby-dev-card");
+            if (!dev) {
+                card.hidden = true;
+                return;
             }
-
-            // Scroll to results
-            resultsPanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById("baby-emoji").textContent = dev.fruitEmoji;
+            document.getElementById("baby-week").textContent = weeks;
+            document.getElementById("baby-size").textContent = dev.size;
+            document.getElementById("baby-weight").textContent = dev.weight;
+            document.getElementById("baby-fruit").textContent = dev.fruit;
+            document.getElementById("baby-desc").textContent = dev.description;
+            card.hidden = false;
         }
 
-        // ═══════════════════════════════════════════════
-        // BOTTOM SHEET LOGIC
-        // ═══════════════════════════════════════════════
-
-        const bsBackdrop = document.getElementById('bs-backdrop');
-        const bsSheet = document.getElementById('bs-sheet');
-        const bsBody = document.getElementById('bs-body');
-        const bsGaInfo = document.getElementById('bs-ga-info');
-
-        let bsDayPref = 'weekday';
-        let bsTimePref = 'morning';
-        let bsReminderHours = 24;
-        let bsSchedule = [];
-
-        function openSheet() {
-            if (!currentLmpForGa) return;
-            bsSchedule = generateReminderSchedule(currentLmpForGa);
-            if (bsGaInfo && currentGa) {
-                bsGaInfo.textContent = `Thai kỳ: Tuần ${currentGa.weeks} ngày ${currentGa.days} — Còn ${bsSchedule.length} mốc phía trước`;
-            }
-            renderSheetMilestones(bsSchedule);
-            bsBackdrop.hidden = false;
-            bsSheet.setAttribute('aria-hidden', 'false');
-            requestAnimationFrame(() => {
-                bsBackdrop.classList.add('is-visible');
-                bsSheet.classList.add('is-open');
-            });
-            document.body.style.overflow = 'hidden';
+        function showError(msg) {
+            const el = document.getElementById("validation-error");
+            el.textContent = msg;
+            el.hidden = false;
         }
-
-        function closeSheet() {
-            bsBackdrop.classList.remove('is-visible');
-            bsSheet.classList.remove('is-open');
-            bsSheet.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
-            setTimeout(() => { bsBackdrop.hidden = true; }, 300);
+        function hideError() {
+            document.getElementById("validation-error").hidden = true;
         }
-
-        function renderSheetMilestones(schedule) {
-            const grouped = { critical: [], recommended: [], monitoring: [] };
-            for (const m of schedule) grouped[m.tier].push(m);
-
-            const tierOrder = ['critical', 'recommended', 'monitoring'];
-            const tierLabels = {
-                critical: '🔴 Quan trọng — Không thể bỏ qua',
-                recommended: '🟡 Khuyến nghị — Nên đi để yên tâm',
-                monitoring: '🟢 Theo dõi — Giai đoạn cuối',
-            };
-
-            bsBody.innerHTML = tierOrder.map(tier => {
-                if (grouped[tier].length === 0) return '';
-                return `
-                    <div class="bs-tier-group">
-                        <div class="bs-tier-label tier-${tier}">${tierLabels[tier]}</div>
-                        ${grouped[tier].map(m => `
-                            <div class="bs-milestone">
-                                <input type="checkbox" id="chk-${m.id}" data-id="${m.id}" checked />
-                                <div class="bs-milestone-info">
-                                    <div class="bs-milestone-head">
-                                        <span class="bs-milestone-title">${m.icon} ${m.title}</span>
-                                        <span class="bs-milestone-week">Tuần ${m.week}</span>
-                                    </div>
-                                    <div class="bs-milestone-note">${m.urgencyNote}</div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function getSelectedMilestones() {
-            const checked = bsBody.querySelectorAll('input[type=checkbox]:checked');
-            const ids = new Set([...checked].map(c => c.dataset.id));
-            return bsSchedule.filter(m => ids.has(m.id));
-        }
-
-        // Open sheet
-        document.getElementById('open-reminder-sheet')?.addEventListener('click', openSheet);
-
-        // Close sheet
-        document.getElementById('bs-close')?.addEventListener('click', closeSheet);
-        bsBackdrop?.addEventListener('click', closeSheet);
-
-        // Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && bsSheet?.classList.contains('is-open')) closeSheet();
-        });
-
-        // Day preference chips
-        document.getElementById('day-pref-chips')?.addEventListener('click', (e) => {
-            const chip = e.target.closest('.bs-chip');
-            if (!chip) return;
-            document.querySelectorAll('#day-pref-chips .bs-chip').forEach(c => c.classList.remove('is-active'));
-            chip.classList.add('is-active');
-            bsDayPref = chip.dataset.val;
-            const timePrefRow = document.getElementById('time-pref-row');
-            if (timePrefRow) timePrefRow.hidden = bsDayPref !== 'sunday';
-        });
-
-        // Time preference chips
-        document.getElementById('time-pref-chips')?.addEventListener('click', (e) => {
-            const chip = e.target.closest('.bs-chip');
-            if (!chip) return;
-            document.querySelectorAll('#time-pref-chips .bs-chip').forEach(c => c.classList.remove('is-active'));
-            chip.classList.add('is-active');
-            bsTimePref = chip.dataset.val;
-        });
-
-        // Reminder hours chips
-        document.getElementById('reminder-chips')?.addEventListener('click', (e) => {
-            const chip = e.target.closest('.bs-chip');
-            if (!chip) return;
-            document.querySelectorAll('#reminder-chips .bs-chip').forEach(c => c.classList.remove('is-active'));
-            chip.classList.add('is-active');
-            bsReminderHours = parseInt(chip.dataset.val);
-        });
-
-        // Save to Calendar
-        document.getElementById('bs-save-cal')?.addEventListener('click', () => {
-            const selected = getSelectedMilestones();
-            if (selected.length === 0) return alert('Vui lòng chọn ít nhất 1 mốc khám.');
-            saveToCalendar(selected, {
-                lmpDate: currentLmpForGa,
-                dayPref: bsDayPref,
-                timePref: bsTimePref,
-                reminderHours: bsReminderHours,
-            });
-        });
-
-        // Download ICS
-        document.getElementById('bs-download')?.addEventListener('click', () => {
-            const selected = getSelectedMilestones();
-            if (selected.length === 0) return alert('Vui lòng chọn ít nhất 1 mốc khám.');
-            const ics = generateIcsCalendar(selected, {
-                lmpDate: currentLmpForGa,
-                dayPref: bsDayPref,
-                timePref: bsTimePref,
-                reminderHours: bsReminderHours,
-            });
-            downloadIcsFile(ics);
-        });
     </script>
 </BaseLayout>
