@@ -21,12 +21,12 @@ body {
 
 :root {
   /* ── Brand Colors ── */
-  --primary: #1B7A6D;
-  --primary-dark: #145D54;
-  --primary-light: #E0F2EF;
-  --accent: #F07D00;
-  --accent-dark: #D06D00;
-  --accent-light: #FFF3E6;
+  --primary: #E47320;
+  --primary-dark: #C75713;
+  --primary-light: #FEF6EE;
+  --accent: #E47320;
+  --accent-dark: #C75713;
+  --accent-light: #FEF6EE;
 
   /* ── Neutrals ── */
   --bg: #FDFBF7;

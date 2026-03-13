@@ -371,7 +371,7 @@ export function generateIcsCalendar(milestones, options) {
         lmpDate,
         dayPref = 'weekday',
         timePref = 'morning',
-        reminderHours = 24,
+        reminderHours = 'morning_prior',
         clinicName = CLINIC_NAME,
     } = options;
 
@@ -379,6 +379,20 @@ export function generateIcsCalendar(milestones, options) {
         const apptDate = calculateMilestoneDate(lmpDate, m.week, dayPref, timePref);
         const endDate = new Date(apptDate);
         endDate.setHours(endDate.getHours() + 1);
+
+        let triggerStr = '-PT24H';
+        if (reminderHours === 'morning_prior' || reminderHours == 24) {
+            const reminderDate = new Date(apptDate);
+            reminderDate.setDate(reminderDate.getDate() - 1);
+            reminderDate.setHours(10, 30, 0, 0);
+
+            const diffMinutes = Math.floor((apptDate - reminderDate) / 60000);
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffMins = diffMinutes % 60;
+            triggerStr = `-PT${diffHours}H${diffMins > 0 ? diffMins + 'M' : ''}`;
+        } else if (!isNaN(parseInt(reminderHours))) {
+            triggerStr = `-PT${parseInt(reminderHours)}H`;
+        }
 
         const tierLabel = TIER_CONFIG[m.tier]?.emoji || '';
         const summary = `${tierLabel} Tuần ${m.week}: ${m.title}`;
@@ -401,7 +415,7 @@ export function generateIcsCalendar(milestones, options) {
             `LOCATION:${escapeIcs(`${clinicName}\\, ${CLINIC_ADDRESS}`)}`,
             `STATUS:CONFIRMED`,
             `BEGIN:VALARM`,
-            `TRIGGER:-PT${reminderHours}H`,
+            `TRIGGER:${triggerStr}`,
             `ACTION:DISPLAY`,
             `DESCRIPTION:${escapeIcs(`Nhắc lịch khám thai: ${m.title} — ${clinicName}`)}`,
             `END:VALARM`,
