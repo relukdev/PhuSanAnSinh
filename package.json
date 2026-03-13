@@ -7,7 +7,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "npm run build && npx wrangler pages deploy dist --project-name phusanansinh --branch main"
+    "test": "node --test tests/*.test.js",
+    "test:gate": "node --test tests/*.test.js",
+    "deploy": "npm run test:gate && npm run build && npx wrangler pages deploy dist --project-name phusanansinh --branch main"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",

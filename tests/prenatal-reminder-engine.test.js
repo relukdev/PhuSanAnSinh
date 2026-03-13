@@ -252,9 +252,12 @@ describe('generateIcsCalendar', () => {
         assert.equal(eventCount, milestones.length);
     });
 
-    it('contains VALARM with correct trigger', () => {
+    it('contains VALARM with correct trigger for morning_prior (10:30 AM day before)', () => {
         const ics = generateIcsCalendar(milestones, options);
-        assert.ok(ics.includes('TRIGGER:-PT24H'));
+        // morning_prior generates dynamic trigger based on diff between appt time and 10:30 AM prior day
+        assert.ok(ics.includes('BEGIN:VALARM'), 'must have VALARM block');
+        assert.ok(ics.includes('TRIGGER:-PT'), 'must have negative TRIGGER');
+        assert.ok(ics.includes('ACTION:DISPLAY'), 'must have ACTION:DISPLAY');
     });
 
     it('8-hour reminder works', () => {

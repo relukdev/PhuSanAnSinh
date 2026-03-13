@@ -127,8 +127,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
             height="40"
           />
           <div class="logo-text">
+            <span class="logo-sub">Phụ Sản</span>
             <span class="logo-brand">An Sinh</span>
-            <span class="logo-sub">Sản Phụ Khoa</span>
           </div>
         </a>
 
@@ -3511,21 +3511,187 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         openBookingSheet();
       };
 
-      function openBookingSheet() {
+      // ═══ Booking context state ═══
+      (window as any)._bookingContext = {
+        milestones: [] as any[],
+        lmpDate: null as string | null,
+        dayPref: 'weekday',
+        timePref: 'morning',
+        reminderHours: 'morning_prior' as string | number,
+        source: 'general' as 'checklist' | 'general',
+      };
+
+      // Inline milestone data (avoid module import issues in Astro)
+      const MILESTONES_DATA = [
+        { id: 'w8', week: 8, title: 'Khám lần đầu', tier: 'critical', icon: '🩺', service: 'Khám thai định kỳ', reason: 'Xác nhận thai trong tử cung, đánh giá toàn diện sức khỏe mẹ.' },
+        { id: 'w12', week: 12, title: 'Sàng lọc dị tật — Mốc Vàng', tier: 'critical', icon: '👶', service: 'Khám thai định kỳ', reason: 'Đo độ mờ da gáy (NT), sàng lọc Down. CHỈ làm được tuần 11-13.' },
+        { id: 'w16', week: 16, title: 'Xét nghiệm tam cá nguyệt 2', tier: 'recommended', icon: '📋', service: 'Khám thai định kỳ', reason: 'Kiểm tra phát triển thai, xét nghiệm bổ sung.' },
+        { id: 'w22', week: 22, title: 'Siêu âm hình thái chi tiết', tier: 'critical', icon: '📷', service: 'Siêu âm 5D', reason: 'Siêu âm QUAN TRỌNG NHẤT. Phát hiện 80% dị tật bẩm sinh.' },
+        { id: 'w26', week: 26, title: 'Tầm soát tiểu đường thai kỳ', tier: 'critical', icon: '🩸', service: 'Khám thai định kỳ', reason: 'Nghiệm pháp dung nạp glucose — BẮT BUỘC cho tất cả thai phụ.' },
+        { id: 'w28', week: 28, title: 'Tiêm phòng + Đánh giá thiếu máu', tier: 'recommended', icon: '💉', service: 'Khám thai định kỳ', reason: 'Tiêm Tdap bảo vệ bé khỏi ho gà.' },
+        { id: 'w32', week: 32, title: 'Đánh giá phát triển thai nhi', tier: 'recommended', icon: '📊', service: 'Khám thai định kỳ', reason: 'Kiểm tra ngôi thai, nước ối, phát hiện bất thường.' },
+        { id: 'w34', week: 34, title: 'Đánh giá ngôi thai', tier: 'monitoring', icon: '🔄', service: 'Khám thai định kỳ', reason: 'Xác nhận ngôi thai trước sinh.' },
+        { id: 'w36', week: 36, title: 'Sàng lọc GBS + Chuẩn bị sinh', tier: 'recommended', icon: '❤️', service: 'Khám thai định kỳ', reason: 'Tầm soát Streptococcus nhóm B. Khám HÀNG TUẦN từ đây.' },
+        { id: 'w37', week: 37, title: 'Theo dõi hàng tuần — Tuần 37', tier: 'monitoring', icon: '📋', service: 'Khám thai định kỳ', reason: 'Thai đủ tháng sớm. Đánh giá kế hoạch sinh.' },
+        { id: 'w38', week: 38, title: 'Đánh giá tiền sản — Tuần 38', tier: 'monitoring', icon: '📅', service: 'Khám thai định kỳ', reason: 'Đánh giá sẵn sàng sinh.' },
+        { id: 'w39', week: 39, title: 'Thai đủ tháng — Tuần 39', tier: 'monitoring', icon: '🏥', service: 'Khám thai định kỳ', reason: 'Thảo luận khởi phát chuyển dạ.' },
+        { id: 'w40', week: 40, title: 'Ngày dự sinh — Theo dõi sát', tier: 'critical', icon: '⭐', service: 'Khám thai định kỳ', reason: 'Theo dõi sát, NST hàng ngày.' },
+      ];
+
+      function openBookingSheet(ctx?: any) {
         if (!bookingSheet || !bookingBackdrop) return;
+
+        // Reset to Step 1
+        const stepForm = document.getElementById('booking-step-form');
+        const stepCal = document.getElementById('booking-step-calendar');
+        if (stepForm) stepForm.hidden = false;
+        if (stepCal) stepCal.hidden = true;
+
+        // Reset submit button
+        const footerEl = bookingSheet.querySelector('.booking-sheet-footer') as HTMLElement;
+        if (footerEl) footerEl.hidden = false;
+
         bookingSheet.classList.add("is-open");
         bookingBackdrop.classList.add("is-visible");
         document.body.style.overflow = "hidden";
 
         // Set current page URL
-        const urlInput = bookingSheet.querySelector(
-          'input[name="url"]',
-        ) as HTMLInputElement;
+        const urlInput = bookingSheet.querySelector('input[name="url"]') as HTMLInputElement;
         if (urlInput) urlInput.value = window.location.href;
 
         // Close mobile drawer if open
-        if (window.innerWidth <= 768) {
-          closeDrawer();
+        if (window.innerWidth <= 768) { closeDrawer(); }
+
+        // ═══ Configure context ═══
+        const bCtx = (window as any)._bookingContext;
+        if (ctx && ctx.milestones && ctx.milestones.length > 0) {
+          bCtx.milestones = ctx.milestones;
+          bCtx.lmpDate = ctx.lmpDate || null;
+          bCtx.source = 'checklist';
+        } else {
+          bCtx.milestones = [];
+          bCtx.source = 'general';
+          // Try to detect EDD from localStorage for Step 2 after submit
+          try {
+            const eddRaw = localStorage.getItem('ansinh_edd_info');
+            if (eddRaw) {
+              const eddInfo = JSON.parse(eddRaw);
+              if (eddInfo && eddInfo.lmpDate) bCtx.lmpDate = eddInfo.lmpDate;
+            }
+          } catch (e) { /* ignore */ }
+        }
+
+        // ═══ Configure conditional fields ═══
+        const dateField = document.getElementById('booking-date-field');
+        const dayPrefField = document.getElementById('booking-daypref-field');
+        const timeField = document.getElementById('booking-time-field');
+        const timePrefField = document.getElementById('booking-timepref-field');
+        const reminderField = document.getElementById('booking-reminder-field');
+
+        const isMulti = bCtx.milestones.length > 1;
+        const isChecklist = bCtx.source === 'checklist';
+
+        if (isMulti) {
+          // Multi milestone: show day-of-week chips, hide date dropdown
+          if (dateField) dateField.hidden = true;
+          if (dayPrefField) dayPrefField.hidden = false;
+          if (timeField) timeField.hidden = true;
+          if (timePrefField) timePrefField.hidden = false;
+          if (reminderField) reminderField.hidden = false;
+        } else {
+          // Single or no milestone: show date dropdown
+          if (dateField) dateField.hidden = false;
+          if (dayPrefField) dayPrefField.hidden = true;
+          if (timePrefField) timePrefField.hidden = isChecklist ? false : true;
+          if (reminderField) reminderField.hidden = isChecklist ? false : true;
+          // Time field managed by date selection
+        }
+
+        // Set hidden form fields
+        if (isChecklist && bCtx.milestones.length > 0) {
+          const msInput = bookingSheet.querySelector('input[name="selectedMilestones"]') as HTMLInputElement;
+          const mwInput = bookingSheet.querySelector('input[name="milestoneWeeks"]') as HTMLInputElement;
+          if (msInput) msInput.value = bCtx.milestones.map((m: any) => m.title).join(', ');
+          if (mwInput) mwInput.value = bCtx.milestones.map((m: any) => m.week).join(',');
+        }
+
+        // ═══ Smart Booking: Auto-fill & Suggestion Banner ═══
+        try {
+          const smartBanner = document.getElementById("booking-smart-banner");
+          const bannerTitle = document.getElementById("smart-banner-title");
+          const bannerDesc = document.getElementById("smart-banner-desc");
+          const bannerIcon = document.getElementById("smart-banner-icon");
+          const bannerDismiss = document.getElementById("smart-banner-dismiss");
+
+          const historyRaw = localStorage.getItem('ansinh_booking_history');
+          if (historyRaw) {
+            try {
+              const history = JSON.parse(historyRaw);
+              if (Array.isArray(history) && history.length > 0) {
+                const last = history[0];
+                const phoneEl = document.getElementById("booking-phone") as HTMLInputElement;
+                const nameEl = document.getElementById("booking-name") as HTMLInputElement;
+                if (phoneEl && !phoneEl.value && last.phone) phoneEl.value = last.phone;
+                if (nameEl && !nameEl.value && last.name) nameEl.value = last.name;
+              }
+            } catch (e) { /* ignore */ }
+          }
+
+          // Show smart suggestion banner (only in general mode, not checklist)
+          if (!isChecklist && bCtx.lmpDate) {
+            try {
+              const lmp = new Date(bCtx.lmpDate);
+              const now = new Date();
+              const totalDays = Math.floor((now.getTime() - lmp.getTime()) / (1000 * 60 * 60 * 24));
+              if (totalDays > 0) {
+                const gaWeeks = Math.floor(totalDays / 7);
+                const gaDays = totalDays % 7;
+                let nextMilestone = null;
+                for (const m of MILESTONES_DATA) {
+                  if (m.week > gaWeeks || (m.week === gaWeeks && gaDays <= 2)) {
+                    nextMilestone = m; break;
+                  }
+                }
+                if (nextMilestone) {
+                  // Auto-detect next milestone for Step 2 calendar save
+                  bCtx.milestones = [nextMilestone];
+
+                  const serviceEl = document.getElementById("booking-service") as HTMLSelectElement;
+                  if (serviceEl && nextMilestone.service) {
+                    for (const opt of serviceEl.options) {
+                      if (opt.value === nextMilestone.service) { serviceEl.value = nextMilestone.service; break; }
+                    }
+                  }
+                  const noteEl = document.getElementById("booking-note") as HTMLTextAreaElement;
+                  if (noteEl && !noteEl.value) noteEl.value = `Khám thai tuần ${nextMilestone.week} — ${nextMilestone.title}`;
+
+                  if (smartBanner && bannerTitle && bannerDesc && bannerIcon) {
+                    const weeksUntil = nextMilestone.week - gaWeeks;
+                    bannerTitle.textContent = weeksUntil <= 0
+                      ? `Tuần ${gaWeeks}: Đã đến lúc ${nextMilestone.title}`
+                      : weeksUntil <= 2
+                        ? `Tuần ${gaWeeks}: Sắp đến mốc ${nextMilestone.title}`
+                        : `Tuần ${gaWeeks}: Mốc tiếp theo — ${nextMilestone.title} (tuần ${nextMilestone.week})`;
+                    bannerDesc.textContent = nextMilestone.reason;
+                    bannerIcon.textContent = nextMilestone.icon;
+                    smartBanner.hidden = false;
+                  }
+                }
+              }
+            } catch (e) { /* ignore */ }
+          }
+
+          if (bannerDismiss && smartBanner) {
+            bannerDismiss.onclick = () => {
+              smartBanner.hidden = true;
+              const serviceEl = document.getElementById("booking-service") as HTMLSelectElement;
+              const noteEl = document.getElementById("booking-note") as HTMLTextAreaElement;
+              if (serviceEl) serviceEl.value = '';
+              if (noteEl) noteEl.value = '';
+            };
+          }
+        } catch (e) {
+          console.warn('Smart Booking error:', e);
         }
       }
 
@@ -3534,20 +3700,32 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         bookingSheet.classList.remove("is-open");
         bookingBackdrop.classList.remove("is-visible");
         document.body.style.overflow = "";
+        // Reset wizard to Step 1
+        setTimeout(() => {
+          const stepForm = document.getElementById('booking-step-form');
+          const stepCal = document.getElementById('booking-step-calendar');
+          const footerEl = bookingSheet?.querySelector('.booking-sheet-footer') as HTMLElement;
+          if (stepForm) stepForm.hidden = false;
+          if (stepCal) stepCal.hidden = true;
+          if (footerEl) footerEl.hidden = false;
+        }, 350);
       }
 
       // Global event delegation for all booking triggers
       document.addEventListener("click", (e) => {
         const target = e.target as Element;
-        // Intercept clicks on .open-booking elements OR links to the booking form
         const bookingTrigger = target.closest('.open-booking, a[href*="dat-lich-hen-kham"]');
-        
         if (bookingTrigger) {
           e.preventDefault();
           e.stopPropagation();
           openBookingSheet();
         }
       });
+
+      // Custom event for checklist pages to pass context
+      document.addEventListener('open-booking', ((e: CustomEvent) => {
+        openBookingSheet(e.detail);
+      }) as EventListener);
 
       if (bookingBackdrop) {
         bookingBackdrop.addEventListener("click", closeBookingSheet);
@@ -3622,116 +3800,110 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         "https://script.google.com/macros/s/AKfycbz5gOgCVmLJPvkRkMKGz5cwspW9pjm0fMOiqHZFp-m1R2I0dKNJoWQKG8v5VD6VGBs6/exec";
 
       // Generate date dropdown
-      let dateListenersAdded = false;
-
-      function generateDateChips() {
+      function generateDateDropdown() {
         const select = document.getElementById("booking-date-select") as HTMLSelectElement;
         if (!select) return;
         const today = new Date();
-        const dayNames = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
-        const dateInput = document.getElementById(
-          "booking-date",
-        ) as HTMLInputElement;
-        let html = "";
+        const todayDay = today.getDay();
+        const dayFullNames = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
 
-        for (let i = 0; i < 5; i++) {
+        let html = '';
+        const daysUntilSunday = todayDay === 0 ? 0 : 7 - todayDay;
+
+        // This week
+        for (let i = 0; i <= daysUntilSunday; i++) {
           const d = new Date(today);
           d.setDate(d.getDate() + i);
-          const dayAbbr = dayNames[d.getDay()];
-          const dateStr = `${d.getDate()}/${d.getMonth() + 1}`;
-          const label = i === 0 ? "Hôm nay" : i === 1 ? "Ngày mai" : dayAbbr;
           const val = d.toISOString().split("T")[0];
-          const selected = i === 1 ? " selected" : ""; // Default to tomorrow
-          html += `<option value="${val}"${selected}>${label} - ${dayAbbr} ${dateStr}</option>`;
+          const dayName = dayFullNames[d.getDay()];
+          const dateStr = `${d.getDate()}/${d.getMonth() + 1}`;
+          let label = "";
+          if (i === 0) label = `Hôm nay — ${dayName} ${dateStr}`;
+          else if (i === 1) label = `Ngày mai — ${dayName} ${dateStr}`;
+          else if (i === 2) label = `Ngày kia — ${dayName} ${dateStr}`;
+          else label = `${dayName} ${dateStr}`;
+          const sel = i === 1 ? " selected" : "";
+          html += `<option value="${val}"${sel}>${label}</option>`;
         }
-        html += `<option value="custom">Khác...</option>`;
+
+        // Separator
+        html += `<option disabled>── Tuần tới ──</option>`;
+
+        // Next week
+        const daysToNextMonday = todayDay === 0 ? 1 : 8 - todayDay;
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(today);
+          d.setDate(d.getDate() + daysToNextMonday + i);
+          const val = d.toISOString().split("T")[0];
+          const dayName = dayFullNames[d.getDay()];
+          const dateStr = `${d.getDate()}/${d.getMonth() + 1}`;
+          html += `<option value="${val}">${dayName} ${dateStr}</option>`;
+        }
+
         select.innerHTML = html;
 
-        // Trigger time chips for default value
-        const initialVal = select.value;
-        if (initialVal !== "custom") {
-           if (dateInput) dateInput.value = initialVal;
-           const timeField = document.getElementById("booking-time-field");
-           if (timeField) {
-             timeField.hidden = false;
-             generateTimeChips(initialVal);
-           }
-        }
-
-        if (!dateListenersAdded) {
-          select.addEventListener("change", () => {
-            const v = select.value;
-            const customWrap = document.getElementById("booking-date-custom");
-            const timeField = document.getElementById("booking-time-field");
-            if (v === "custom") {
-              if (customWrap) customWrap.hidden = false;
-              if (dateInput) dateInput.value = "";
-              if (timeField) timeField.hidden = true;
-            } else {
-              if (customWrap) customWrap.hidden = true;
-              if (dateInput) dateInput.value = v;
-              if (timeField) {
-                timeField.hidden = false;
-                generateTimeChips(v);
-              }
-            }
-          });
-
-          const customDateInput = document.getElementById(
-            "booking-date-input",
-          ) as HTMLInputElement;
-          if (customDateInput) {
-            const minDate = today.toISOString().split("T")[0];
-            customDateInput.min = minDate;
-            customDateInput.addEventListener("change", () => {
-              if (dateInput) dateInput.value = customDateInput.value;
-              const timeField = document.getElementById("booking-time-field");
-              if (timeField && customDateInput.value) {
-                timeField.hidden = false;
-                generateTimeChips(customDateInput.value);
-              }
-            });
+        // Trigger time slots for default selected date
+        if (select.value) {
+          const timeField = document.getElementById("booking-time-field");
+          if (timeField) {
+            timeField.hidden = false;
+            generateTimeSlots(select.value);
           }
-          dateListenersAdded = true;
         }
+
+        // Listen for date changes
+        select.onchange = () => {
+          if (select.value) {
+            const timeField = document.getElementById("booking-time-field");
+            if (timeField) {
+              timeField.hidden = false;
+              generateTimeSlots(select.value);
+            }
+          }
+        };
       }
 
-      function generateTimeChips(dateStr: string) {
-        const container = document.getElementById("booking-time-chips");
-        if (!container) return;
-        const timeInput = document.getElementById(
-          "booking-time",
-        ) as HTMLInputElement;
+      function generateTimeSlots(dateStr: string) {
+        const select = document.getElementById("booking-time-select") as HTMLSelectElement;
+        if (!select) return;
         const isToday = dateStr === new Date().toISOString().split("T")[0];
         const now = new Date();
-        const slots = [
-          "17:00-18:00",
-          "18:00-19:00",
-          "19:00-20:00",
-          "20:00-21:00",
-        ];
-        let html = "";
+        const slots = ["17:00-18:00", "18:00-19:00", "19:00-20:00", "20:00-21:00"];
+        let html = `<option value="">— Chọn khung giờ —</option>`;
+        let firstAvailable = "";
         for (const slot of slots) {
           const hour = parseInt(slot.split(":")[0]);
           const disabled = isToday && now.getHours() >= hour;
-          html += `<button type="button" class="time-chip${disabled ? " disabled" : ""}" data-time="${slot}" ${disabled ? "disabled" : ""}>${slot}</button>`;
+          if (!disabled && !firstAvailable) firstAvailable = slot;
+          html += `<option value="${slot}" ${disabled ? "disabled" : ""}>${slot}${disabled ? " (đã qua)" : ""}</option>`;
         }
-        container.innerHTML = html;
-        container
-          .querySelectorAll(".time-chip:not(.disabled)")
-          .forEach((chip) => {
-            chip.addEventListener("click", () => {
-              container
-                .querySelectorAll(".time-chip")
-                .forEach((c) => c.classList.remove("is-active"));
-              chip.classList.add("is-active");
-              if (timeInput)
-                timeInput.value = (chip as HTMLElement).dataset.time || "";
-            });
-          });
+        select.innerHTML = html;
+        if (firstAvailable) select.value = firstAvailable;
       }
 
-      generateDateChips();
+      generateDateDropdown();
+
+      // ═══ Chip handlers ═══
+      function setupChipGroup(containerId: string, onSelect: (val: string) => void) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.addEventListener('click', (e) => {
+          const chip = (e.target as Element).closest('.booking-chip') as HTMLElement;
+          if (!chip) return;
+          container.querySelectorAll('.booking-chip').forEach(c => c.classList.remove('is-active'));
+          chip.classList.add('is-active');
+          onSelect(chip.dataset.val || '');
+        });
+      }
+      // Day preference dropdown handler
+      const daySelect = document.getElementById('booking-day-select') as HTMLSelectElement;
+      if (daySelect) {
+        daySelect.onchange = () => {
+          (window as any)._bookingContext.dayPref = daySelect.value === 'cn' ? 'sunday' : daySelect.value;
+        };
+      }
+      setupChipGroup('booking-time-chips', (v) => { (window as any)._bookingContext.timePref = v; });
+      setupChipGroup('booking-reminder-chips', (v) => { (window as any)._bookingContext.reminderHours = v === '8' ? 8 : 'morning_prior'; });
 
       // Form submit
       if (bookingForm) {
@@ -3769,29 +3941,145 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(data),
             });
-            showToast(
-              "success",
-              "Đặt lịch thành công! Bác sĩ sẽ liên hệ bạn sớm.",
-            );
-            closeBookingSheet();
+
+            // ═══ Smart Booking: Save booking history ═══
+            try {
+              const historyRaw = localStorage.getItem('ansinh_booking_history');
+              const history = historyRaw ? JSON.parse(historyRaw) : [];
+              history.unshift({
+                phone: data.phone || '',
+                name: data.name || '',
+                service: data.service || '',
+                date: data.date || '',
+                note: data.note || '',
+                timestamp: new Date().toISOString(),
+              });
+              localStorage.setItem('ansinh_booking_history', JSON.stringify(history.slice(0, 5)));
+            } catch (e) { /* localStorage may fail — non-critical */ }
+
+            // ═══ Wizard: Step 2 or Toast ═══
+            const bCtx = (window as any)._bookingContext;
+            if (bCtx.milestones && bCtx.milestones.length > 0) {
+              // Morph to Step 2: Calendar Save
+              const stepForm = document.getElementById('booking-step-form');
+              const stepCal = document.getElementById('booking-step-calendar');
+              const footerEl = bookingSheet?.querySelector('.booking-sheet-footer') as HTMLElement;
+              if (stepForm) stepForm.hidden = true;
+              if (stepCal) stepCal.hidden = false;
+              if (footerEl) footerEl.hidden = true;
+
+              // Populate calendar info
+              const ms = bCtx.milestones;
+              const calInfo = document.getElementById('booking-cal-info');
+              if (calInfo) {
+                if (ms.length === 1) {
+                  calInfo.innerHTML = `<strong>${ms[0].icon} ${ms[0].title}</strong> — Tuần ${ms[0].week}<br>${ms[0].reason}`;
+                } else {
+                  calInfo.innerHTML = `<strong>📋 ${ms.length} mốc khám thai</strong><br>` + ms.map((m: any) => `${m.icon} Tuần ${m.week}: ${m.title}`).join('<br>');
+                }
+              }
+
+              // Configure buttons: 1 milestone = Google Cal + ICS, multi = ICS only
+              const btnGoogle = document.getElementById('booking-cal-google') as HTMLButtonElement;
+              const btnIcs = document.getElementById('booking-cal-ics') as HTMLButtonElement;
+              if (btnGoogle) btnGoogle.hidden = ms.length > 1;
+              if (btnIcs) {
+                btnIcs.textContent = ms.length > 1 ? `📲 Tải ${ms.length} lịch (.ics)` : '📲 Tải lịch (.ics)';
+              }
+
+              showToast('success', 'Đặt lịch thành công! Lưu lịch để nhắc nhở nhé.');
+            } else {
+              // No milestones: just toast and close
+              showToast('success', 'Đặt lịch thành công! Bác sĩ sẽ liên hệ bạn sớm.');
+              closeBookingSheet();
+            }
+
+            // Reset form for next use
+            const smartBanner = document.getElementById('booking-smart-banner');
+            if (smartBanner) smartBanner.hidden = true;
             bookingForm.reset();
-            generateDateChips();
-            const timeField = document.getElementById("booking-time-field");
-            if (timeField) timeField.hidden = true;
+            generateDateDropdown();
           } catch {
-            showToast(
-              "error",
-              "Lỗi kết nối. Vui lòng gọi hotline 0899 268 299.",
-            );
+            showToast('error', 'Lỗi kết nối. Vui lòng gọi hotline 0899 268 299.');
           } finally {
             if (submitBtn) {
               submitBtn.disabled = false;
-              submitBtn.innerHTML =
-                '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Xác Nhận Đặt Lịch';
+              submitBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Xác Nhận Đặt Lịch';
             }
           }
         });
       }
+
+      // ═══ Step 2: Calendar Save Button Handlers ═══
+
+      // Helper: adjust date to target day of week
+      // dayPref: '2'-'7' (Thứ 2=Mon..Thứ 7=Sat) or 'sunday'
+      function adjustToTargetDay(d: Date, dayPref: string) {
+        let targetDay: number;
+        if (dayPref === 'sunday') targetDay = 0;
+        else {
+          const thu = parseInt(dayPref);
+          if (isNaN(thu) || thu < 2 || thu > 7) return;
+          targetDay = thu - 1; // Thứ 2→1(Mon), Thứ 7→6(Sat)
+        }
+        const diff = (targetDay - d.getDay() + 7) % 7;
+        d.setDate(d.getDate() + diff);
+      }
+
+      document.getElementById('booking-cal-google')?.addEventListener('click', () => {
+        const bCtx = (window as any)._bookingContext;
+        if (!bCtx.milestones || bCtx.milestones.length === 0) return;
+        const m = bCtx.milestones[0];
+        const lmp = bCtx.lmpDate ? new Date(bCtx.lmpDate) : null;
+        if (!lmp) { showToast('error', 'Không tìm thấy ngày kinh cuối.'); return; }
+        const apptDate = new Date(lmp);
+        apptDate.setDate(apptDate.getDate() + m.week * 7);
+        adjustToTargetDay(apptDate, bCtx.dayPref || '7');
+        // Set time
+        const timePref = bCtx.timePref || 'morning';
+        const hours = timePref === 'morning' ? 8 : timePref === 'afternoon' ? 14 : 18;
+        apptDate.setHours(hours, 0, 0, 0);
+        const endDate = new Date(apptDate);
+        endDate.setHours(hours + 1);
+        // Format for Google Calendar
+        const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+        const gcUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('🩺 ' + m.title + ' — An Sinh')}&dates=${fmt(apptDate)}/${fmt(endDate)}&details=${encodeURIComponent(m.reason + '\n\nPhòng Khám An Sinh\nĐT: 0899 268 299')}&location=${encodeURIComponent('Phòng Khám An Sinh, Từ Sơn, Bắc Ninh')}`;
+        window.open(gcUrl, '_blank');
+      });
+
+      document.getElementById('booking-cal-ics')?.addEventListener('click', () => {
+        const bCtx = (window as any)._bookingContext;
+        if (!bCtx.milestones || bCtx.milestones.length === 0) return;
+        const lmp = bCtx.lmpDate ? new Date(bCtx.lmpDate) : null;
+        if (!lmp) { showToast('error', 'Không tìm thấy ngày kinh cuối.'); return; }
+        const dayPref = bCtx.dayPref || '7';
+        const timePref = bCtx.timePref || 'morning';
+        const hours = timePref === 'morning' ? 8 : timePref === 'afternoon' ? 14 : 18;
+
+        let icsContent = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//AnSinh//PrenatalReminder//VI\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n';
+        for (const m of bCtx.milestones) {
+          const apptDate = new Date(lmp);
+          apptDate.setDate(apptDate.getDate() + m.week * 7);
+          adjustToTargetDay(apptDate, dayPref);
+          apptDate.setHours(hours, 0, 0, 0);
+          const endDate = new Date(apptDate);
+          endDate.setHours(hours + 1);
+          const fmtIcs = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+          const uid = `ansinh-w${m.week}-${Date.now()}@phusanansinh.com`;
+          icsContent += `BEGIN:VEVENT\nUID:${uid}\nDTSTART:${fmtIcs(apptDate)}\nDTEND:${fmtIcs(endDate)}\nSUMMARY:🩺 ${m.title} — An Sinh\nDESCRIPTION:${m.reason.replace(/\n/g, '\\n')}\\n\\nPhòng Khám An Sinh\\nĐT: 0899 268 299\nLOCATION:Phòng Khám An Sinh\, Từ Sơn\, Bắc Ninh\nBEGIN:VALARM\nTRIGGER:-P1D\nACTION:DISPLAY\nDESCRIPTION:Nhắc lịch khám: ${m.title}\nEND:VALARM\nEND:VEVENT\n`;
+        }
+        icsContent += 'END:VCALENDAR';
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = bCtx.milestones.length === 1 ? `lich-kham-tuan-${bCtx.milestones[0].week}.ics` : 'lich-kham-thai-ky.ics';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('success', 'Đã tải file lịch!');
+      });
 
       function showToast(type: string, msg: string) {
         const toast = document.getElementById("form-toast");

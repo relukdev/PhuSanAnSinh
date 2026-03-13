@@ -7,89 +7,171 @@
   aria-modal="true"
   aria-label="Đặt lịch khám"
 >
-  <div class="booking-handle"><span></span></div>
-  <div class="booking-header">
-    <div class="booking-header-info">
-      <span class="booking-icon" id="booking-icon">📋</span>
-      <div>
-        <h3 id="booking-title">Đặt Lịch Khám</h3>
-        <p id="booking-hint">Bác sĩ sẽ liên hệ bạn trong 30 phút</p>
+  <!-- ── Sticky Header ── -->
+  <div class="booking-sheet-header">
+    <div class="booking-header">
+      <div class="booking-header-info">
+        <span class="booking-icon" id="booking-icon">📋</span>
+        <div>
+          <h3 id="booking-title">Đặt Lịch Khám</h3>
+          <p id="booking-hint">Bác sĩ sẽ liên hệ bạn trong 30 phút</p>
+        </div>
       </div>
+      <button class="booking-close" id="booking-close" aria-label="Đóng">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
-    <button class="booking-close" id="booking-close" aria-label="Đóng">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
   </div>
-  <form class="booking-form" id="booking-form" novalidate>
-    <input type="hidden" name="url" value="">
-    <input type="hidden" name="formType" value="">
 
-    <div class="booking-field">
-      <label for="booking-phone">Số điện thoại <span class="required-mark">*</span></label>
-      <input type="tel" id="booking-phone" name="phone" placeholder="Nhập số điện thoại" required autocomplete="tel" inputmode="numeric" pattern="0[0-9]{8,10}">
-    </div>
+  <!-- ── Scrollable Body ── -->
+  <div class="booking-sheet-body">
 
-    <div class="booking-field">
-      <label for="booking-name">Họ và tên</label>
-      <input type="text" id="booking-name" name="name" placeholder="VD: Nguyễn Thị Hoa" autocomplete="name">
-    </div>
-
-    <div class="booking-field">
-      <label for="booking-date-select">Ngày muốn khám</label>
-      <select id="booking-date-select" name="dateSelect">
-        <!-- Rendered dynamically by JS -->
-      </select>
-      <div class="booking-date-custom" id="booking-date-custom" hidden style="margin-top: 0.5rem;">
-        <input type="date" id="booking-date-input" name="dateCustom">
+    <!-- ══ STEP 1: BOOKING FORM ══ -->
+    <div class="booking-step" id="booking-step-form">
+      <!-- Smart Suggestion Banner -->
+      <div class="booking-smart-banner" id="booking-smart-banner" hidden>
+        <div class="smart-banner-icon" id="smart-banner-icon">💡</div>
+        <div class="smart-banner-content">
+          <strong class="smart-banner-title" id="smart-banner-title"></strong>
+          <p class="smart-banner-desc" id="smart-banner-desc"></p>
+        </div>
+        <button type="button" class="smart-banner-dismiss" id="smart-banner-dismiss" aria-label="Bỏ qua gợi ý">✕</button>
       </div>
-      <input type="hidden" name="date" id="booking-date" value="">
+
+      <form class="booking-form" id="booking-form" novalidate>
+        <input type="hidden" name="url" value="">
+        <input type="hidden" name="formType" value="">
+        <input type="hidden" name="selectedMilestones" value="">
+        <input type="hidden" name="milestoneWeeks" value="">
+        <input type="hidden" name="dayPreference" value="">
+        <input type="hidden" name="reminderPreference" value="">
+
+        <div class="booking-field">
+          <label for="booking-phone">Số điện thoại <span class="required-mark">*</span></label>
+          <input type="tel" id="booking-phone" name="phone" placeholder="Nhập số điện thoại" required autocomplete="tel" inputmode="numeric" pattern="0[0-9]{8,10}">
+        </div>
+
+        <div class="booking-field">
+          <label for="booking-name">Họ và tên</label>
+          <input type="text" id="booking-name" name="name" placeholder="VD: Nguyễn Thị Hoa" autocomplete="name">
+        </div>
+
+        <!-- Single milestone: specific date dropdown -->
+        <div class="booking-field" id="booking-date-field">
+          <label for="booking-date-select">Ngày muốn khám</label>
+          <select id="booking-date-select" name="date">
+            <!-- Rendered dynamically by JS -->
+          </select>
+        </div>
+
+        <!-- Multi milestone: day-of-week dropdown -->
+        <div class="booking-field" id="booking-daypref-field" hidden>
+          <label for="booking-day-select">Thứ muốn khám</label>
+          <select id="booking-day-select" name="dayPreference">
+            <option value="2">Thứ 2</option>
+            <option value="3">Thứ 3</option>
+            <option value="4">Thứ 4</option>
+            <option value="5">Thứ 5</option>
+            <option value="6">Thứ 6</option>
+            <option value="7" selected>Thứ 7</option>
+            <option value="cn">Chủ nhật</option>
+          </select>
+        </div>
+
+        <div class="booking-field" id="booking-time-field" hidden>
+          <label for="booking-time-select">Khung giờ muốn tới</label>
+          <select id="booking-time-select" name="timeSlot">
+            <!-- Rendered dynamically by JS based on selected date -->
+          </select>
+        </div>
+
+        <!-- Time pref chips (shown in multi-milestone or checklist mode) -->
+        <div class="booking-field" id="booking-timepref-field" hidden>
+          <label>Ca khám</label>
+          <div class="booking-chips" id="booking-time-chips">
+            <button type="button" class="booking-chip is-active" data-val="morning">☀️ Sáng</button>
+            <button type="button" class="booking-chip" data-val="afternoon">🌤️ Chiều</button>
+            <button type="button" class="booking-chip" data-val="evening">🌙 Tối</button>
+          </div>
+        </div>
+
+        <!-- Reminder pref chips -->
+        <div class="booking-field" id="booking-reminder-field" hidden>
+          <label>Nhắc trước</label>
+          <div class="booking-chips" id="booking-reminder-chips">
+            <button type="button" class="booking-chip is-active" data-val="morning_prior">1 ngày (10:30 sáng)</button>
+            <button type="button" class="booking-chip" data-val="8">8 giờ</button>
+          </div>
+        </div>
+
+        <div class="booking-service-hint" id="booking-service-hint" hidden>
+          <span class="hint-icon">💡</span>
+          <span class="hint-text" id="booking-service-hint-text"></span>
+        </div>
+
+        <div class="booking-field">
+          <label for="booking-service">Dịch vụ</label>
+          <select id="booking-service" name="service">
+            <option value="">— Chọn dịch vụ —</option>
+            <option value="Khám thai định kỳ">Khám thai định kỳ</option>
+            <option value="Siêu âm 5D">Siêu âm 5D</option>
+            <option value="Khám phụ khoa">Khám phụ khoa</option>
+            <option value="Khám nam khoa">Khám nam khoa</option>
+            <option value="Điều trị vô sinh">Điều trị vô sinh</option>
+            <option value="Tư vấn tránh thai">Tư vấn tránh thai</option>
+            <option value="Tư vấn chung">Tư vấn chung</option>
+          </select>
+        </div>
+
+        <div class="booking-field">
+          <label for="booking-note">Lưu ý cho bác sĩ <span class="optional">(tuỳ chọn)</span></label>
+          <textarea id="booking-note" name="note" placeholder="VD: Muốn khám với BS nữ, đã có kết quả xét nghiệm..." rows="2"></textarea>
+        </div>
+      </form>
     </div>
 
-    <div class="booking-field" id="booking-time-field" hidden>
-      <label>Khung giờ muốn tới</label>
-      <div class="booking-time-chips" id="booking-time-chips">
-        <!-- Rendered dynamically by JS based on selected date -->
+    <!-- ══ STEP 2: CALENDAR SAVE (after successful booking) ══ -->
+    <div class="booking-step" id="booking-step-calendar" hidden>
+      <div class="booking-success-wrap">
+        <div class="booking-success-icon">✅</div>
+        <h3 class="booking-success-title">Đặt lịch thành công!</h3>
+        <p class="booking-success-desc">Bác sĩ sẽ liên hệ bạn sớm. Lưu lịch để không quên nhé!</p>
       </div>
-      <input type="hidden" name="timeSlot" id="booking-time" value="">
+
+      <div class="booking-cal-info" id="booking-cal-info">
+        <!-- Filled dynamically: milestone summary -->
+      </div>
+
+      <div class="booking-cal-actions">
+        <button type="button" class="btn btn-primary btn-lg booking-cal-btn" id="booking-cal-google">
+          📥 Thêm Google Cal
+        </button>
+        <button type="button" class="btn btn-primary btn-lg booking-cal-btn booking-cal-btn-outline" id="booking-cal-ics">
+          📲 Tải lịch (.ics)
+        </button>
+      </div>
+
+      <div class="booking-cal-footer">
+        <a href="tel:0899268299" class="booking-cal-phone">📞 Đặt lịch khám tại An Sinh: 0899 268 299</a>
+      </div>
     </div>
 
-    <div class="booking-service-hint" id="booking-service-hint" hidden>
-      <span class="hint-icon">💡</span>
-      <span class="hint-text" id="booking-service-hint-text"></span>
-    </div>
+  </div>
 
-    <div class="booking-field">
-      <label for="booking-service">Dịch vụ</label>
-      <select id="booking-service" name="service">
-        <option value="">— Chọn dịch vụ —</option>
-        <option value="Khám thai định kỳ">Khám thai định kỳ</option>
-        <option value="Siêu âm 5D">Siêu âm 5D</option>
-        <option value="Khám phụ khoa">Khám phụ khoa</option>
-        <option value="Khám nam khoa">Khám nam khoa</option>
-        <option value="Điều trị vô sinh">Điều trị vô sinh</option>
-        <option value="Tư vấn tránh thai">Tư vấn tránh thai</option>
-        <option value="Tư vấn chung">Tư vấn chung</option>
-      </select>
-    </div>
-
-    <div class="booking-field">
-      <label for="booking-note">Lưu ý cho bác sĩ <span class="optional">(tuỳ chọn)</span></label>
-      <textarea id="booking-note" name="note" placeholder="VD: Muốn khám với BS nữ, đã có kết quả xét nghiệm..." rows="2"></textarea>
-    </div>
-
-    <button type="submit" class="booking-submit" id="booking-submit">
+  <!-- ── Sticky Footer ── -->
+  <div class="booking-sheet-footer">
+    <button type="submit" form="booking-form" class="booking-submit" id="booking-submit">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
       Xác Nhận Đặt Lịch
     </button>
-
     <p class="booking-privacy">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       Thông tin được bảo mật. Bác sĩ sẽ liên hệ bạn sớm nhất.
     </p>
-  </form>
+  </div>
 </div>
 
 <!-- Toast Notification -->
@@ -102,7 +184,7 @@
 </div>
 
 <style>
-  /* ── Booking Bottom Sheet ── */
+  /* ── Booking Bottom Sheet — Full-screen with sticky header/footer ── */
   .booking-backdrop {
     position: fixed;
     inset: 0;
@@ -123,39 +205,36 @@
     position: fixed;
     z-index: 10001;
     background: #fff;
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
-    max-height: 90vh;
-    overflow-y: auto;
-    overscroll-behavior: contain;
     bottom: 0;
     left: 0;
     right: 0;
+    height: 100vh;
+    height: 100dvh; /* dynamic viewport for mobile */
+    display: flex;
+    flex-direction: column;
     transform: translateY(100%);
     transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+    overscroll-behavior: contain;
   }
   .booking-sheet.is-open {
     transform: translateY(0);
   }
 
-  .booking-handle {
-    display: flex;
-    justify-content: center;
-    padding: 10px 0 4px;
-    cursor: grab;
-  }
-  .booking-handle span {
-    width: 40px;
-    height: 4px;
-    background: #d1d5db;
-    border-radius: 2px;
+  /* ── Sticky Header ── */
+  .booking-sheet-header {
+    flex-shrink: 0;
+    background: #fff;
+    border-bottom: 1px solid var(--border-light, #e5e7eb);
+    position: sticky;
+    top: 0;
+    z-index: 2;
   }
 
   .booking-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.5rem 1.25rem 0.75rem;
+    padding: 0.875rem 1.25rem;
   }
   .booking-header-info {
     display: flex;
@@ -179,22 +258,53 @@
   }
 
   .booking-close {
-    background: none;
+    background: var(--surface-alt, #f3f4f6);
     border: none;
-    padding: 6px;
+    padding: 8px;
     cursor: pointer;
-    border-radius: var(--radius-sm);
-    color: var(--text-muted);
+    border-radius: 50%;
+    color: var(--text-secondary, #4b5563);
     transition: all 0.15s;
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .booking-close:hover {
-    background: var(--surface-alt);
+    background: var(--border-light, #e5e7eb);
     color: var(--text-primary);
+  }
+
+  /* ── Scrollable Body ── */
+  .booking-sheet-body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-top: 0.5rem;
+  }
+
+  /* ── Sticky Footer ── */
+  .booking-sheet-footer {
+    flex-shrink: 0;
+    background: #fff;
+    border-top: 1px solid var(--border-light, #e5e7eb);
+    padding: 0.875rem 1.25rem;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+  }
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .booking-sheet-footer {
+      padding-bottom: calc(0.875rem + env(safe-area-inset-bottom));
+    }
   }
 
   /* ── Form Fields ── */
   .booking-form {
-    padding: 0 1.25rem 1.5rem;
+    padding: 0 1.25rem 1rem;
   }
 
   .booking-field {
@@ -259,54 +369,111 @@
   .booking-service-hint[hidden] { display: none; }
   .hint-icon { font-size: 1rem; flex-shrink: 0; }
 
-  /* Time chips */
-  .booking-time-chips {
+  /* ── Date List (mobile-friendly tappable) ── */
+  .booking-date-list {
     display: flex;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 210px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 2px;
+    scroll-behavior: smooth;
   }
-  .time-chip {
-    flex: 1;
+  .booking-date-list::-webkit-scrollbar {
+    width: 3px;
+  }
+  .booking-date-list::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+  }
+
+  .booking-date-list :global(.date-option) {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.625rem 0.75rem;
+    border: 1.5px solid var(--border-light, #e5e7eb);
+    border-radius: var(--radius-md, 10px);
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s ease;
     min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+  }
+  .booking-date-list :global(.date-option:active) {
+    transform: scale(0.98);
+  }
+  .booking-date-list :global(.date-option.is-selected) {
+    border-color: var(--primary, #E47320);
+    background: #fff7ed;
+    box-shadow: 0 0 0 2px rgba(228, 115, 32, 0.12);
+  }
+
+  .booking-date-list :global(.date-radio) {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem 0.25rem;
-    border: 1.5px solid var(--border-light);
-    border-radius: var(--radius-md);
-    background: #fff;
-    font-size: 0.8125rem;
+    transition: all 0.15s;
+  }
+  .booking-date-list :global(.date-option.is-selected .date-radio) {
+    border-color: var(--primary, #E47320);
+  }
+  .booking-date-list :global(.date-radio-dot) {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary, #E47320);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.15s;
+  }
+  .booking-date-list :global(.date-option.is-selected .date-radio-dot) {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .booking-date-list :global(.date-label) {
+    flex: 1;
+    font-size: 0.875rem;
+    color: var(--text-primary, #1f2937);
     font-weight: 500;
-    font-family: var(--font-body);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-    color: var(--text-secondary);
-    -webkit-tap-highlight-color: transparent;
+    line-height: 1.3;
+    text-align: left;
   }
-  .time-chip:hover:not(:disabled) {
-    border-color: var(--primary);
-    color: var(--primary);
+  .booking-date-list :global(.date-option.is-selected .date-label) {
+    color: var(--primary, #E47320);
+    font-weight: 600;
   }
-  .time-chip.is-active {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: #fff;
+  .booking-date-list :global(.date-label-sub) {
+    font-size: 0.75rem;
+    color: var(--text-muted, #9ca3af);
+    font-weight: 400;
   }
-  /* UX: Poka-Yoke — Disabled time chips visually distinct */
-  .time-chip:disabled,
-  .time-chip.disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-    text-decoration: line-through;
-    background: var(--surface-alt, #f8f9fa);
-    border-color: var(--border-light);
-    color: var(--text-muted);
+  .booking-date-list :global(.date-option.is-selected .date-label-sub) {
+    color: #c2711f;
   }
-  .time-chip:disabled:hover,
-  .time-chip.disabled:hover {
-    border-color: var(--border-light);
-    color: var(--text-muted);
+
+  .booking-date-list :global(.date-week-sep) {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-muted, #9ca3af);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 4px 0;
+    margin-top: 2px;
   }
+
+
 
   /* Submit */
   .booking-submit {
@@ -316,7 +483,7 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 0.875rem;
-    background: var(--accent, #e74c3c);
+    background: var(--primary, #E47320);
     color: #fff;
     border: none;
     border-radius: var(--radius-md);
@@ -325,7 +492,6 @@
     font-family: var(--font-body);
     cursor: pointer;
     transition: all 0.2s;
-    margin-top: 0.25rem;
   }
   .booking-submit:hover {
     filter: brightness(1.08);
@@ -346,7 +512,8 @@
     gap: 0.375rem;
     font-size: 0.75rem;
     color: var(--text-muted);
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
     justify-content: center;
   }
 
@@ -397,24 +564,202 @@
   }
   .form-toast-close:hover { color: #fff; }
 
-  /* ── Desktop: center sheet ── */
+  /* ── Desktop: center sheet as modal ── */
   @media (min-width: 640px) {
     .booking-sheet {
       max-width: 480px;
       left: 50%;
       right: auto;
-      transform: translateX(-50%) translateY(100%);
+      height: auto;
+      max-height: 92vh;
       border-radius: 20px 20px 0 0;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+      transform: translateX(-50%) translateY(100%);
     }
     .booking-sheet.is-open {
       transform: translateX(-50%) translateY(0);
     }
   }
 
-  /* Safe area for iOS */
-  @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    .booking-form {
-      padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
-    }
+  /* ── Step visibility ── */
+  .booking-step[hidden] { display: none; }
+
+  /* ── Chip groups ── */
+  .booking-chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .booking-chip {
+    padding: 0.5rem 1rem;
+    border: 1.5px solid var(--border-light, #e5e7eb);
+    border-radius: var(--radius-full, 999px);
+    background: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+    color: var(--text-secondary, #4b5563);
+    cursor: pointer;
+    transition: all 0.15s;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .booking-chip:hover {
+    border-color: var(--primary, #E47320);
+    color: var(--primary, #E47320);
+  }
+  .booking-chip.is-active {
+    background: var(--primary, #E47320);
+    border-color: var(--primary, #E47320);
+    color: #fff;
+  }
+
+  /* ── Step 2: Calendar Save ── */
+  .booking-success-wrap {
+    text-align: center;
+    padding: 2rem 1.25rem 1rem;
+    animation: fadeInUp 0.4s ease-out;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .booking-success-icon {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+  }
+  .booking-success-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 0.375rem;
+  }
+  .booking-success-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .booking-cal-info {
+    margin: 1rem 1.25rem;
+    padding: 0.875rem 1rem;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: var(--radius-md, 10px);
+    font-size: 0.8125rem;
+    color: #9a3412;
+    line-height: 1.6;
+  }
+  .booking-cal-info:empty { display: none; }
+
+  .booking-cal-actions {
+    padding: 0 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .booking-cal-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem;
+    background: var(--primary, #E47320);
+    color: #fff;
+    border: 2px solid var(--primary, #E47320);
+    border-radius: var(--radius-md, 10px);
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .booking-cal-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+  .booking-cal-btn-outline {
+    background: #fff;
+    color: var(--primary, #E47320);
+  }
+  .booking-cal-btn-outline:hover {
+    background: #fff7ed;
+  }
+
+  .booking-cal-footer {
+    text-align: center;
+    padding: 1rem 1.25rem 0.5rem;
+  }
+  .booking-cal-phone {
+    font-size: 0.875rem;
+    color: var(--primary, #E47320);
+    text-decoration: underline;
+    font-weight: 600;
+  }
+
+  /* ── Smart Suggestion Banner ── */
+  .booking-smart-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    margin: 0 1.25rem 0.75rem;
+    background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+    border: 1.5px solid #fed7aa;
+    border-radius: var(--radius-md, 10px);
+    position: relative;
+    animation: smartBannerSlide 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .booking-smart-banner[hidden] { display: none; }
+
+  @keyframes smartBannerSlide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .smart-banner-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .smart-banner-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .smart-banner-title {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #9a3412;
+    line-height: 1.4;
+    margin-bottom: 2px;
+  }
+  .smart-banner-desc {
+    font-size: 0.75rem;
+    color: #b45309;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .smart-banner-dismiss {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 0.875rem;
+    color: #d97706;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
+    border-radius: 4px;
+    transition: background 0.15s;
+  }
+  .smart-banner-dismiss:hover {
+    background: rgba(217, 119, 6, 0.12);
+    color: #92400e;
   }
 </style>

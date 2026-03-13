@@ -309,6 +309,40 @@ p {
   .grid-4 {
     grid-template-columns: 1fr;
   }
+
+  .btn-lg {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  /* Tool submit buttons: prevent text wrap, hide icon on mobile */
+  .calc-submit,
+  .dp-submit,
+  .bs-submit,
+  .tdtk-calc-btn {
+    white-space: nowrap;
+    font-size: 0.9375rem;
+  }
+  .calc-submit svg,
+  .dp-submit svg,
+  .bs-submit svg,
+  .tdtk-calc-btn svg {
+    display: none;
+  }
+
+  /* CTA action buttons: stack vertically, prevent text wrap */
+  .cta-actions {
+    flex-direction: column;
+  }
+  .cta-actions .btn {
+    white-space: nowrap;
+    font-size: 0.9375rem;
+    width: 100%;
+    justify-content: center;
+  }
+  .cta-actions .btn svg {
+    display: none;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
@@ -392,8 +426,8 @@ p {
   }
 
   .btn-lg {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.9375rem;
   }
 }
 
