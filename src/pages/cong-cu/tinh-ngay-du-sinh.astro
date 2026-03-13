@@ -1191,6 +1191,7 @@ const description =
             getBabyDevelopment,
             validateLmpDate,
             toLocalDate,
+            formatDateVN,
             calcEddByLmpModified,
             calcEddByIvf,
             calcGaFromCrl,
@@ -1246,8 +1247,7 @@ const description =
         });
 
         // ── Set max date ──
-        const today = new Date();
-        const maxDate = today.toISOString().split("T")[0];
+        const maxDate = new Date().toISOString().split("T")[0];
         document.querySelectorAll('input[type="date"]').forEach((el) => {
             el.max = maxDate;
         });
@@ -1339,8 +1339,9 @@ const description =
                 formatDateVN(edd);
 
             // Countdown
+            const now = new Date();
             const daysLeft = Math.ceil(
-                (edd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+                (edd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
             );
             document.getElementById("result-countdown").textContent =
                 daysLeft > 0
@@ -1440,7 +1441,8 @@ const description =
             // ═══ Smart Booking: Save EDD info for booking suggestions ═══
             try {
                 const eddIso = edd.toISOString().split('T')[0];
-                const lmpIso = lmpDate.toISOString().split('T')[0];
+                const lmpDateObj = typeof lmpDate === 'string' ? toLocalDate(lmpDate) : lmpDate;
+                const lmpIso = lmpDateObj.toISOString().split('T')[0];
                 localStorage.setItem('ansinh_edd_info', JSON.stringify({
                     edd: eddIso,
                     lmpDate: lmpIso,
