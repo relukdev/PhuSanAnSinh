@@ -3562,6 +3562,36 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         // Close mobile drawer if open
         if (window.innerWidth <= 768) { closeDrawer(); }
 
+        // ═══ Pre-fill from URL param context (quick-booking) ═══
+        if (ctx && ctx.phone) {
+          const phoneEl = document.getElementById("booking-phone") as HTMLInputElement;
+          if (phoneEl) phoneEl.value = ctx.phone;
+        }
+        if (ctx && ctx.name) {
+          const nameEl = document.getElementById("booking-name") as HTMLInputElement;
+          if (nameEl) nameEl.value = ctx.name;
+        }
+        if (ctx && ctx.service) {
+          const serviceEl = document.getElementById("booking-service") as HTMLSelectElement;
+          if (serviceEl) {
+            for (const opt of serviceEl.options) {
+              if (opt.value === ctx.service) { serviceEl.value = ctx.service; break; }
+            }
+          }
+        }
+        if (ctx && ctx.note) {
+          const noteEl = document.getElementById("booking-note") as HTMLTextAreaElement;
+          if (noteEl) noteEl.value = ctx.note;
+        }
+        if (ctx && ctx.ref) {
+          const refInput = bookingSheet.querySelector('input[name="ref"]') as HTMLInputElement;
+          if (refInput) refInput.value = ctx.ref;
+        }
+        if (ctx && ctx.formType) {
+          const formTypeInput = bookingSheet.querySelector('input[name="formType"]') as HTMLInputElement;
+          if (formTypeInput) formTypeInput.value = ctx.formType;
+        }
+
         // ═══ Configure context ═══
         const bCtx = (window as any)._bookingContext;
         if (ctx && ctx.milestones && ctx.milestones.length > 0) {
@@ -3605,6 +3635,30 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           if (timePrefField) timePrefField.hidden = isChecklist ? false : true;
           if (reminderField) reminderField.hidden = isChecklist ? false : true;
           // Time field managed by date selection
+        }
+
+        // Pre-select date from ctx
+        if (ctx && ctx.date) {
+          const dateSelect = document.getElementById('booking-date-select') as HTMLSelectElement;
+          if (dateSelect) {
+            for (const opt of dateSelect.options) {
+              if (opt.value === ctx.date) { dateSelect.value = ctx.date; break; }
+            }
+            // Re-generate time slots for the selected date
+            const tf = document.getElementById('booking-time-field');
+            if (tf) { tf.hidden = false; generateTimeSlots(ctx.date); }
+          }
+        }
+        // Pre-select time slot from ctx
+        if (ctx && ctx.timeSlot) {
+          setTimeout(() => {
+            const timeSelect = document.getElementById('booking-time-select') as HTMLSelectElement;
+            if (timeSelect) {
+              for (const opt of timeSelect.options) {
+                if (opt.value === ctx.timeSlot) { timeSelect.value = ctx.timeSlot; break; }
+              }
+            }
+          }, 50);
         }
 
         // Set hidden form fields
@@ -3657,7 +3711,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
                   bCtx.milestones = [nextMilestone];
 
                   const serviceEl = document.getElementById("booking-service") as HTMLSelectElement;
-                  if (serviceEl && nextMilestone.service) {
+                  if (serviceEl && nextMilestone.service && !ctx?.service) {
                     for (const opt of serviceEl.options) {
                       if (opt.value === nextMilestone.service) { serviceEl.value = nextMilestone.service; break; }
                     }

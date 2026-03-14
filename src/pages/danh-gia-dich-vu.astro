@@ -1,0 +1,380 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import "../styles/landing.css";
+
+const pageTitle = "Đánh Giá Dịch Vụ — Phòng Khám An Sinh | Góp Ý Cải Thiện";
+const pageDescription = "Chia sẻ trải nghiệm của bạn tại Phòng khám An Sinh. Mọi góp ý của quý khách đều giúp chúng tôi hoàn thiện dịch vụ tốt hơn mỗi ngày.";
+
+const SERVICES = [
+    { id: "kham-thai", label: "Khám thai", icon: "🤰" },
+    { id: "phu-khoa", label: "Phụ khoa", icon: "🌸" },
+    { id: "nam-khoa", label: "Nam khoa", icon: "👔" },
+    { id: "sieu-am", label: "Siêu âm 5D", icon: "👶" },
+    { id: "vo-sinh", label: "Điều trị vô sinh", icon: "☀️" },
+    { id: "tranh-thai", label: "Tránh thai", icon: "🛡️" },
+];
+
+const QUICK_TAGS = [
+    "Bác sĩ tận tâm",
+    "Dịch vụ nhanh",
+    "Máy móc hiện đại",
+    "Giải thích rõ ràng",
+    "Sạch sẽ, thoáng mát",
+    "Đúng lịch hẹn",
+    "Chi phí hợp lý",
+    "Nhân viên nhiệt tình",
+];
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+    <!-- Breadcrumb -->
+    <nav class="landing-breadcrumb" aria-label="Breadcrumb">
+        <div class="container">
+            <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a itemprop="item" href="/"><span itemprop="name">Trang chủ</span></a>
+                    <meta itemprop="position" content="1" />
+                </li>
+                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <span itemprop="name">Đánh giá dịch vụ</span>
+                    <meta itemprop="position" content="2" />
+                </li>
+            </ol>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="feedback-hero">
+        <div class="container">
+            <div class="feedback-hero-content">
+                <span class="landing-hero-badge">⭐ Trải nghiệm khách hàng là số 1</span>
+                <h1>Chia Sẻ <span class="text-accent-color">Trải Nghiệm</span> Của Bạn</h1>
+                <p class="feedback-hero-sub">
+                    Sự hài lòng của quý khách là thước đo thành công của An Sinh. Mọi góp ý đều giúp chúng tôi hoàn thiện hơn mỗi ngày.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEEDBACK FORM -->
+    <section class="section feedback-section">
+        <div class="container">
+            <div class="feedback-container">
+                <form id="feedback-form" class="feedback-form" data-form-type="feedback">
+                    <input type="hidden" name="url" value="" />
+                    <input type="hidden" name="tags" id="tags-hidden" value="" />
+
+                    <!-- Section 1: Thông tin -->
+                    <div class="feedback-card">
+                        <div class="feedback-card-header">
+                            <span class="step-num">1</span>
+                            <h3>Thông tin của bạn</h3>
+                        </div>
+                        <div class="feedback-grid">
+                            <div class="form-group">
+                                <label class="form-label">Họ và tên (không bắt buộc)</label>
+                                <input type="text" name="name" class="form-input" placeholder="VD: Nguyễn Thị Mai" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Số điện thoại (không bắt buộc)</label>
+                                <input type="tel" name="phone" class="form-input" placeholder="0901... (để chúng tôi hỗ trợ nếu cần)" />
+                            </div>
+                        </div>
+                        <p class="anon-note">💡 Bạn có thể để trống nếu muốn góp ý ẩn danh.</p>
+                    </div>
+
+                    <!-- Section 2: Đánh giá -->
+                    <div class="feedback-card">
+                        <div class="feedback-card-header">
+                            <span class="step-num">2</span>
+                            <h3>Đánh giá dịch vụ</h3>
+                        </div>
+
+                        <!-- Service Selection -->
+                        <div class="form-group">
+                            <label class="form-label">Dịch vụ bạn đã sử dụng <span class="required">*</span></label>
+                            <div class="service-chips">
+                                {SERVICES.map(s => (
+                                    <label class="service-chip">
+                                        <input type="radio" name="service" value={s.label} required />
+                                        <span class="chip-content">
+                                            <span class="chip-icon">{s.icon}</span>
+                                            <span class="chip-label">{s.label}</span>
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        <!-- Star Rating -->
+                        <div class="form-group star-rating-group">
+                            <label class="form-label">Mức độ hài lòng chung <span class="required">*</span></label>
+                            <div class="star-rating">
+                                <input type="radio" id="star5" name="rating" value="5" required />
+                                <label for="star5" title="Rất hài lòng">★</label>
+                                <input type="radio" id="star4" name="rating" value="4" />
+                                <label for="star4" title="Hài lòng">★</label>
+                                <input type="radio" id="star3" name="rating" value="3" />
+                                <label for="star3" title="Bình thường">★</label>
+                                <input type="radio" id="star2" name="rating" value="2" />
+                                <label for="star2" title="Không hài lòng">★</label>
+                                <input type="radio" id="star1" name="rating" value="1" />
+                                <label for="star1" title="Rất kém">★</label>
+                            </div>
+                            <div class="rating-label" id="rating-text">Vui lòng chọn mức độ</div>
+                        </div>
+
+                        <!-- Quick Tags -->
+                        <div class="form-group">
+                            <label class="form-label">Điều gì làm bạn ấn tượng nhất?</label>
+                            <div class="tags-container" id="quick-tags">
+                                {QUICK_TAGS.map(tag => (
+                                    <button type="button" class="tag-btn" data-tag={tag}>{tag}</button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <!-- Review Text -->
+                        <div class="form-group">
+                            <label class="form-label">Chia sẻ chi tiết thêm (nếu có)</label>
+                            <textarea name="review_text" class="form-input" rows="3" placeholder="Điều bạn thích hoặc chưa thích..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Góp ý -->
+                    <div class="feedback-card">
+                        <div class="feedback-card-header">
+                            <span class="step-num">3</span>
+                            <h3>Góp ý cải thiện</h3>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phòng khám nên cải thiện điều gì để phục vụ bạn tốt hơn?</label>
+                            <textarea name="suggestions" class="form-input" rows="3" placeholder="VD: Rút ngắn thời gian chờ, thêm ghế ngồi..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg submit-btn" id="submit-btn" disabled>
+                            GỬI ĐÁNH GIÁ NGAY
+                        </button>
+                    </div>
+                </form>
+
+                <div class="success-screen" id="success-screen" hidden>
+                    <div class="success-content">
+                        <div class="success-icon">✅</div>
+                        <h2>Cảm Ơn Bạn!</h2>
+                        <p>Mọi góp ý của bạn đã được ghi nhận. An Sinh luôn trân trọng từng ý kiến để nâng cấp chất lượng dịch vụ.</p>
+                        <div class="redirect-box">
+                            <p>Đang chuyển hướng bạn sang Google Maps Review...</p>
+                            <div class="loading-bar"><div class="loading-progress"></div></div>
+                        </div>
+                        <a href="https://www.google.com/search?q=Ph%C3%B2ng+kh%C3%A1m+An+Sinh#lrd=0x31350878152011ed:0xe621f64a3d287614,10" class="btn btn-outline btn-lg">Bấm vào đây nết không tự chuyển</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="form-toast-container"></div>
+</BaseLayout>
+
+<script>
+    import { submitToGoogleSheet } from "../utils/form-handler.js";
+
+    // Configuration
+    const CONFIG = {
+        // NOTE: Please replace with your real Apps Script URL after deployment
+        MAPS_REVIEW_URL: 'https://www.google.com/search?hl=vi-VN&gl=vn&q=Ph%C3%B2ng+kh%C3%A1m+An+Sinh,+416+Minh+Khai,+%C4%90%E1%BB%93ng+Nguy%C3%AAn,+T%E1%BB%AB+S%C6%A1n,+B%E1%BA%AFc+Ninh&ludocid=16582806101668951572#lrd=0x31350878152011ed:0xe621f64a3d287614,10'
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("feedback-form") as HTMLFormElement;
+        const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+        const ratingInputs = document.querySelectorAll('input[name="rating"]');
+        const ratingText = document.getElementById("rating-text");
+        const tagBtns = document.querySelectorAll(".tag-btn");
+        const tagsHidden = document.getElementById("tags-hidden") as HTMLInputElement;
+        const successScreen = document.getElementById("success-screen");
+        
+        const selectedTags: string[] = [];
+
+        // 1. Rating Text Update
+        const labels: Record<string, string> = {
+            "5": "Tuyệt vời - Rất hài lòng ⭐⭐⭐⭐⭐",
+            "4": "Tốt - Hài lòng ⭐⭐⭐⭐",
+            "3": "Bình thường ⭐⭐⭐",
+            "2": "Chưa hài lòng ⭐⭐",
+            "1": "Rất kém - Cần cải thiện ⭐"
+        };
+
+        ratingInputs.forEach(input => {
+            input.addEventListener("change", (e) => {
+                const val = (e.target as HTMLInputElement).value;
+                if (ratingText) ratingText.textContent = labels[val] || "";
+                checkFormValidity();
+            });
+        });
+
+        // 2. Tag Selection Logic
+        tagBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const tag = btn.getAttribute("data-tag") || "";
+                btn.classList.toggle("active");
+                
+                if (selectedTags.includes(tag)) {
+                    selectedTags.splice(selectedTags.indexOf(tag), 1);
+                } else {
+                    selectedTags.push(tag);
+                }
+                
+                tagsHidden.value = selectedTags.join(", ");
+            });
+        });
+
+        // 3. Form Validity
+        function checkFormValidity() {
+            const hasService = form.querySelector('input[name="service"]:checked');
+            const hasRating = form.querySelector('input[name="rating"]:checked');
+            submitBtn.disabled = !(hasService && hasRating);
+        }
+
+        form.querySelectorAll('input[name="service"]').forEach(input => {
+            input.addEventListener("change", checkFormValidity);
+        });
+
+        // 4. Form Submission
+        form.addEventListener("submit", (e) => {
+            // Set URL
+            const urlInput = form.querySelector('input[name="url"]') as HTMLInputElement;
+            if (urlInput) urlInput.value = window.location.href;
+            
+            submitToGoogleSheet(e);
+        });
+
+        // 5. Success UI Handing
+        window.addEventListener('form-submit-success', (e: any) => {
+            if (e.detail.formType === 'feedback') {
+                form.hidden = true;
+                if (successScreen) successScreen.hidden = false;
+                setTimeout(() => {
+                    window.location.href = CONFIG.MAPS_REVIEW_URL;
+                }, 3000);
+            }
+        });
+    });
+</script>
+
+<style>
+    .feedback-hero {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: #fff;
+        padding: var(--space-3xl) 0 var(--space-2xl);
+        text-align: center;
+    }
+    .feedback-hero h1 { color: #fff; margin-bottom: var(--space-md); }
+    .feedback-hero-sub { color: rgba(255,255,255,0.9); font-size: 1.125rem; max-width: 600px; margin: 0 auto; }
+
+    .feedback-container { max-width: 700px; margin: 0 auto; }
+    .feedback-form { display: flex; flex-direction: column; gap: var(--space-xl); }
+    
+    .feedback-card {
+        background: var(--surface);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-lg);
+        padding: var(--space-xl);
+        box-shadow: var(--shadow-sm);
+    }
+    .feedback-card-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+        border-bottom: 1px solid var(--border-light);
+        padding-bottom: var(--space-md);
+    }
+    .step-num {
+        width: 32px; height: 32px;
+        background: var(--primary);
+        color: #fff;
+        border-radius: var(--radius-full);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 0.9rem;
+    }
+    .feedback-card h3 { margin: 0; font-size: 1.25rem; color: var(--text-primary); }
+
+    .feedback-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+    .anon-note { font-size: 0.85rem; color: var(--text-muted); margin-top: var(--space-md); }
+
+    /* Service Chips */
+    .service-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    .service-chip input { display: none; }
+    .chip-content {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 0.75rem; border: 1.5px solid var(--border); border-radius: var(--radius-md);
+        cursor: pointer; transition: all var(--transition-fast); background: var(--surface-alt);
+        text-align: center; height: 100%;
+    }
+    .chip-icon { font-size: 1.5rem; margin-bottom: 0.25rem; }
+    .chip-label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+    .service-chip input:checked + .chip-content {
+        border-color: var(--primary); background: var(--primary-light); color: var(--primary);
+    }
+    .service-chip input:checked + .chip-content .chip-label { color: var(--primary); }
+
+    /* Star Rating */
+    .star-rating-group { text-align: center; padding: var(--space-md) 0; }
+    .star-rating {
+        display: flex; flex-direction: row-reverse; justify-content: center;
+        gap: 0.25rem; font-size: 2.5rem; margin-bottom: var(--space-sm);
+    }
+    .star-rating input { display: none; }
+    .star-rating label {
+        color: var(--border); cursor: pointer; transition: color 0.2s;
+    }
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label { color: #f59e0b; }
+    .rating-label { font-weight: 700; color: var(--primary); font-size: 0.95rem; min-height: 1.5em; }
+
+    /* Quick Tags */
+    .tags-container { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .tag-btn {
+        padding: 0.5rem 1rem; border: 1.5px solid var(--border); border-radius: var(--radius-full);
+        background: transparent; font-size: 0.85rem; font-weight: 500; color: var(--text-secondary);
+        cursor: pointer; transition: all var(--transition-fast);
+    }
+    .tag-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .tag-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    /* Form Actions */
+    .form-actions { margin-top: var(--space-md); }
+    .submit-btn { width: 100%; font-weight: 800; padding: 1.25rem; }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Success Screen */
+    .success-screen {
+        background: var(--surface);
+        border: 2px solid var(--success-light);
+        border-radius: var(--radius-lg);
+        padding: var(--space-2xl) var(--space-xl);
+        text-align: center;
+        animation: slideUp 0.5s ease;
+    }
+    .success-icon { font-size: 4rem; margin-bottom: var(--space-md); }
+    .success-content h2 { color: var(--success); margin-bottom: var(--space-md); }
+    .redirect-box { margin: var(--space-xl) 0; padding: var(--space-lg); background: var(--surface-alt); border-radius: var(--radius-md); }
+    .loading-bar { height: 6px; background: var(--border); border-radius: var(--radius-full); overflow: hidden; margin-top: 1rem; }
+    .loading-progress { height: 100%; background: var(--primary); width: 100%; animation: progress 3s linear; }
+
+    @keyframes progress { from { width: 0; } to { width: 100%; } }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    @media (max-width: 768px) {
+        .feedback-grid { grid-template-columns: 1fr; }
+        .service-chips { grid-template-columns: repeat(2, 1fr); }
+        .star-rating { font-size: 2rem; }
+        .feedback-hero { padding: var(--space-xl) 0; }
+    }
+</style>

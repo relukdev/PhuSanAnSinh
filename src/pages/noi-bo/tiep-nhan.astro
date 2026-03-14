@@ -1,0 +1,318 @@
+---
+import "../../styles/global.css";
+---
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Nội Bộ - Tiếp Nhận Bác Sĩ</title>
+    <link rel="icon" type="image/png" href="/AnSinhLogo_256.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body class="admin-page">
+    <header class="a-header">
+      <div class="a-header-inner">
+        <div class="a-brand">
+          <img src="/AnSinhLogo_256.png" alt="An Sinh" width="32" height="32" class="a-logo" />
+          <span class="a-title">Điều Phối Gọi Số</span>
+        </div>
+        <div class="a-user">
+          <span class="a-room-label" id="lbl-room-id">Chưa chọn phòng</span>
+          <button class="btn btn-sm btn-outline" id="btn-logout" style="display: none;">Thoát</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="a-main">
+      <!-- 1. LOGIN SCREEN -->
+      <section id="screen-login" class="a-screen">
+        <div class="a-card login-card">
+          <h2>Đăng Nhập Quản Trị</h2>
+          <div class="q-field">
+            <label class="q-label">Chọn Phòng Khám</label>
+            <select id="sel-room" class="q-input" required>
+              <option value="">Đang tải phòng...</option>
+            </select>
+          </div>
+          <div class="q-field">
+            <label class="q-label">Mật khẩu Token</label>
+            <input type="password" id="inp-token" class="q-input" placeholder="Mã bảo mật" required />
+          </div>
+          <button class="btn btn-primary" id="btn-login" style="margin-top: 1rem; width: 100%;">Truy Cập</button>
+        </div>
+      </section>
+
+      <!-- 2. CALL SCREEN -->
+      <section id="screen-call" class="a-screen" style="display: none;">
+        <div class="call-dashboard">
+          <div class="a-card current-call-card">
+            <h3>ĐANG GỌI TẠI PHÒNG</h3>
+            <div class="current-number" id="lbl-curr-num">---</div>
+            <div class="current-name" id="lbl-curr-name">Chưa có khách</div>
+            
+            <div class="q-field" style="margin-top: 2rem;">
+              <label class="q-label">Nhập mã số tiếp theo để gọi (Vd: YYMMDD-KT-001)</label>
+              <input type="text" id="inp-next-num" class="q-input" placeholder="Mã số KH..." />
+            </div>
+            
+            <button class="btn btn-lg btn-primary" id="btn-call-next" style="width: 100%; margin-top: 1rem;">
+              🔔 GỌI SỐ NÀY
+            </button>
+            <button class="btn btn-lg btn-outline" id="btn-finish" style="width: 100%; margin-top: 0.5rem; color: var(--success); border-color: var(--success);">
+              ✅ KẾT THÚC / DỌN TRỐNG
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const API_CONFIG = 'https://queue-proxy.todyle.workers.dev/api/queue/config';
+      const API_CURRENT = 'https://queue-proxy.todyle.workers.dev/api/queue/current';
+      const API_NEXT = 'https://queue-proxy.todyle.workers.dev/api/queue/admin/next';
+
+      let adminToken = '';
+      let currentRoomId = '';
+
+      const elLogin = document.getElementById('screen-login');
+      const elCall = document.getElementById('screen-call');
+      const selRoom = document.getElementById('sel-room') as HTMLSelectElement;
+      const inpToken = document.getElementById('inp-token') as HTMLInputElement;
+      const btnLogin = document.getElementById('btn-login');
+      const btnLogout = document.getElementById('btn-logout');
+
+      const lblCurrNum = document.getElementById('lbl-curr-num');
+      const lblCurrName = document.getElementById('lbl-curr-name');
+      const inpNextNum = document.getElementById('inp-next-num') as HTMLInputElement;
+      const btnCallNext = document.getElementById('btn-call-next');
+      const btnFinish = document.getElementById('btn-finish');
+      const lblRoomId = document.getElementById('lbl-room-id');
+
+      // 1. Fetch Rooms Config
+      async function fetchConfig() {
+        try {
+          const res = await fetch(API_CONFIG);
+          const json = await res.json();
+          if (json.status === 'success' && json.data) {
+            selRoom.innerHTML = '<option value="">-- Chọn phòng --</option>';
+            json.data.forEach((r: any) => {
+              const opt = document.createElement('option');
+              opt.value = r.roomId;
+              opt.textContent = `${r.roomId} - BS. ${r.doctorName}`;
+              selRoom.appendChild(opt);
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      // 2. Auth Flow
+      function checkAuth() {
+        const t = localStorage.getItem('as_admin_token');
+        const r = localStorage.getItem('as_admin_room');
+        if (t && r) {
+          adminToken = t;
+          currentRoomId = r;
+          if (lblRoomId) lblRoomId.textContent = r;
+          if (elLogin) elLogin.style.display = 'none';
+          if (elCall) elCall.style.display = 'block';
+          if (btnLogout) btnLogout.style.display = 'inline-flex';
+          pollCurrentStatus();
+        } else {
+          if (elLogin) elLogin.style.display = 'block';
+          if (elCall) elCall.style.display = 'none';
+          if (btnLogout) btnLogout.style.display = 'none';
+          if (lblRoomId) lblRoomId.textContent = 'Chưa chọn phòng';
+          fetchConfig();
+        }
+      }
+
+      btnLogin?.addEventListener('click', () => {
+        const r = selRoom.value;
+        const t = inpToken.value.trim();
+        if (!r || !t) return alert("Vui lòng chọn phòng và nhập token");
+        localStorage.setItem('as_admin_token', t);
+        localStorage.setItem('as_admin_room', r);
+        checkAuth();
+      });
+
+      btnLogout?.addEventListener('click', () => {
+        localStorage.removeItem('as_admin_token');
+        localStorage.removeItem('as_admin_room');
+        checkAuth();
+      });
+
+      // 3. Poll Current Status
+      async function pollCurrentStatus() {
+        if (!currentRoomId || !adminToken) return;
+        try {
+          const res = await fetch(API_CURRENT);
+          const json = await res.json();
+          if (json.status === 'success' && json.data) {
+            const myRoom = json.data[currentRoomId];
+            if (myRoom) {
+              if (lblCurrNum) lblCurrNum.textContent = myRoom.queueNumber || '---';
+              if (lblCurrName) lblCurrName.textContent = myRoom.customerName || 'Trống';
+            } else {
+              if (lblCurrNum) lblCurrNum.textContent = '---';
+              if (lblCurrName) lblCurrName.textContent = 'Trống';
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      let pollInterval = setInterval(pollCurrentStatus, 15000);
+
+      // 4. Call Next Action
+      async function adminCallNext(nextQueueNumber: string) {
+        if (!currentRoomId || !adminToken) return;
+        const btn = btnCallNext as HTMLButtonElement;
+        const oldText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Đang gọi...";
+
+        try {
+          const res = await fetch(API_NEXT, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${adminToken}`
+            },
+            body: JSON.stringify({
+              roomId: currentRoomId,
+              nextQueueNumber: nextQueueNumber
+            })
+          });
+
+          if (res.status === 401) {
+             alert("Token sai hoặc hết hạn. Vui lòng đăng nhập lại!");
+             btnLogout?.click();
+             return;
+          }
+
+          const txt = await res.text();
+          let json;
+          try { json = JSON.parse(txt); } catch { json = null; }
+
+          if (json && json.status === 'success') {
+            inpNextNum.value = '';
+            pollCurrentStatus();
+          } else {
+            alert("Lỗi khi gọi số: " + (json?.message || res.status));
+          }
+        } catch (e) {
+          alert("Network error: " + e);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = oldText;
+        }
+      }
+
+      btnCallNext?.addEventListener('click', () => {
+        const n = inpNextNum.value.trim();
+        if (!n) return alert("Vui lòng nhập mã số (vd: 240314-KT-001)");
+        adminCallNext(n);
+      });
+
+      btnFinish?.addEventListener('click', () => {
+        if (confirm("Kết thúc lượt khám này và dọn trống màn hình gọi số?")) {
+           adminCallNext(""); // Pass empty to clear
+        }
+      });
+
+      // INIT
+      checkAuth();
+    </script>
+
+    <style>
+      .admin-page {
+        height: 100vh;
+        background: var(--surface-bg);
+        display: flex;
+        flex-direction: column;
+      }
+      .a-header {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        box-shadow: var(--shadow-sm);
+      }
+      .a-header-inner {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .a-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .a-title {
+        font-weight: 700;
+        font-size: 1.125rem;
+      }
+      .a-user {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .a-room-label {
+        font-weight: 600;
+        background: rgba(255,255,255,0.2);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+      }
+      .a-main {
+        flex: 1;
+        padding: 2rem 1rem;
+        overflow-y: auto;
+      }
+      .a-screen {
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .a-card {
+        background: white;
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+      }
+      .login-card h2 {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      
+      .current-call-card {
+        text-align: center;
+      }
+      .current-call-card h3 {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        letter-spacing: 2px;
+        margin-bottom: 1rem;
+      }
+      .current-number {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--primary);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+      }
+      .current-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+    </style>
+  </body>
+</html>

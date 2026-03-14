@@ -1,0 +1,34 @@
+[
+  { "name": "Đồng Nguyên", "type": "phường", "priority": 1 },
+  { "name": "Đình Bảng", "type": "phường", "priority": 2 },
+  { "name": "Trang Hạ", "type": "phường", "priority": 3 },
+  { "name": "Đồng Quang", "type": "phường", "priority": 4 },
+  { "name": "Châu Khê", "type": "phường", "priority": 5 },
+  { "name": "Tân Hồng", "type": "phường", "priority": 6 },
+  { "name": "Hương Mạc", "type": "phường", "priority": 7 },
+  { "name": "Phù Khê", "type": "phường", "priority": 8 },
+  { "name": "Tam Sơn", "type": "phường", "priority": 9 },
+  { "name": "Phù Chẩn", "type": "phường", "priority": 10 },
+  { "name": "Tương Giang", "type": "phường", "priority": 11 },
+  { "name": "Đông Ngàn", "type": "phường", "priority": 12 },
+  { "name": "Đồng Kỵ", "type": "phường", "priority": 13 },
+
+  { "name": "Tiên Du", "type": "huyện", "priority": 20 },
+  { "name": "Đại Phúc", "type": "phường", "priority": 21 },
+  { "name": "Ninh Xá", "type": "phường", "priority": 22 },
+  { "name": "Suối Hoa", "type": "phường", "priority": 23 },
+  { "name": "Võ Cường", "type": "phường", "priority": 24 },
+  { "name": "Vạn An", "type": "phường", "priority": 25 },
+  { "name": "Khắc Niệm", "type": "phường", "priority": 26 },
+  { "name": "Hạp Lĩnh", "type": "phường", "priority": 27 },
+  { "name": "Vân Dương", "type": "phường", "priority": 28 },
+  { "name": "Kim Chân", "type": "phường", "priority": 29 },
+
+  { "name": "Yên Phong", "type": "huyện", "priority": 30 },
+  { "name": "Thuận Thành", "type": "huyện", "priority": 31 },
+  { "name": "Quế Võ", "type": "huyện", "priority": 32 },
+  { "name": "Gia Bình", "type": "huyện", "priority": 33 },
+  { "name": "Lương Tài", "type": "huyện", "priority": 34 },
+
+  { "name": "Khác", "type": "", "priority": 99 }
+]

@@ -1,0 +1,1325 @@
+---
+import "../styles/global.css";
+import wardsData from "../data/wards-tu-son.json";
+
+const SERVICES = [
+  { slug: "kham-thai", name: "Khám thai định kỳ", icon: "🤰" },
+  { slug: "sieu-am-5d", name: "Siêu âm 5D", icon: "📷" },
+  { slug: "kham-phu-khoa", name: "Khám phụ khoa", icon: "🩺" },
+  { slug: "kham-nam-khoa", name: "Khám nam khoa", icon: "👨‍⚕️" },
+  { slug: "vo-sinh", name: "Điều trị vô sinh", icon: "💝" },
+  { slug: "tranh-thai", name: "Tư vấn tránh thai", icon: "💊" },
+  { slug: "tu-van", name: "Tư vấn chung", icon: "💬" },
+];
+---
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Lấy Số Thứ Tự — Phòng Khám An Sinh</title>
+    <meta
+      name="description"
+      content="Đăng ký lấy số thứ tự khám nhanh chóng tại Phòng Khám An Sinh, Từ Sơn, Bắc Ninh."
+    />
+    <link rel="icon" type="image/png" href="/AnSinhLogo_256.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body class="queue-page">
+    <!-- ═══ FIXED HEADER ═══ -->
+    <header class="q-header" id="q-header">
+      <div class="q-header-inner">
+        <div class="q-header-brand">
+          <img
+            src="/AnSinhLogo_256.png"
+            alt="An Sinh"
+            width="40"
+            height="40"
+            class="q-logo"
+          />
+          <div>
+            <span class="q-header-name">PK An Sinh</span>
+            <span class="q-header-sub">Lấy Số Thứ Tự</span>
+          </div>
+        </div>
+        <div class="q-header-badge" id="q-header-badge">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><circle cx="12" cy="12" r="10"></circle><polyline
+              points="12 6 12 12 16 14"></polyline></svg
+          >
+          <span id="q-clock"></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ═══ SCROLLABLE CONTENT ═══ -->
+    <main class="q-main" id="q-main">
+      <!-- FORM SCREEN -->
+      <div class="q-screen q-screen--form" id="screen-form">
+        <!-- Bảng Gọi Số Hiện Tại -->
+        <div class="q-queue-board" id="queue-board-container" hidden>
+            <h2 class="q-board-title">Trạng Thái Đang Gọi</h2>
+            <div class="q-board-grid" id="q-board-grid">
+              <!-- Render by JS -->
+            </div>
+        </div>
+
+        <div class="q-form-intro">
+          <h1 class="q-form-title">Đăng Ký Lấy Số</h1>
+          <p class="q-form-desc">
+            Điền thông tin bên dưới để nhận số thứ tự khám.
+          </p>
+        </div>
+
+        <form id="queue-form" data-form-type="queue" data-method="JSONP" class="q-form" autocomplete="off">
+          <input type="hidden" name="url" value="" />
+
+          <!-- Họ tên -->
+          <div class="q-field">
+            <label for="f-name" class="q-label">
+              Họ và tên <span class="q-required">*</span>
+            </label>
+            <input
+              type="text"
+              id="f-name"
+              name="name"
+              class="q-input"
+              placeholder="VD: Nguyễn Thị Mai"
+              required
+              autocomplete="name"
+            />
+          </div>
+
+          <!-- SĐT -->
+          <div class="q-field">
+            <label for="f-phone" class="q-label">
+              Số điện thoại <span class="q-required">*</span>
+            </label>
+            <input
+              type="tel"
+              id="f-phone"
+              name="phone"
+              class="q-input"
+              placeholder="VD: 0901234567"
+              required
+              inputmode="numeric"
+              pattern="0[0-9]{8,10}"
+              autocomplete="tel"
+            />
+          </div>
+
+          <!-- Ngày sinh + Giới tính (same row) -->
+          <div class="q-row">
+            <div class="q-field q-field--flex">
+              <label for="f-dob" class="q-label">Ngày sinh</label>
+              <input type="date" id="f-dob" name="dob" class="q-input" />
+            </div>
+            <div class="q-field q-field--flex">
+              <label class="q-label">Giới tính</label>
+              <div class="q-gender-group">
+                <label class="q-gender-opt">
+                  <input type="radio" name="gender" value="Nữ" checked />
+                  <span class="q-gender-pill">♀ Nữ</span>
+                </label>
+                <label class="q-gender-opt">
+                  <input type="radio" name="gender" value="Nam" />
+                  <span class="q-gender-pill">♂ Nam</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Khu vực (autocomplete) -->
+          <div class="q-field">
+            <label for="f-area" class="q-label">Khu vực (phường/xã)</label>
+            <div class="q-autocomplete-wrap">
+              <input
+                type="text"
+                id="f-area"
+                name="area"
+                class="q-input"
+                placeholder="Gõ để tìm... VD: Đồng Nguyên"
+                autocomplete="off"
+              />
+              <ul class="q-autocomplete-list" id="area-suggestions"></ul>
+            </div>
+            <span class="q-hint">Mặc định: TP Từ Sơn, Bắc Ninh</span>
+          </div>
+
+          <!-- Nhu cầu khám (radio) -->
+          <div class="q-field">
+            <label class="q-label">
+              Nhu cầu khám <span class="q-required">*</span>
+            </label>
+            <div class="q-service-list">
+              {
+                SERVICES.map((s, i) => (
+                  <label class="q-service-opt">
+                    <input
+                      type="radio"
+                      name="service"
+                      value={s.name}
+                      required
+                    />
+                    <span class="q-service-pill">
+                      <span class="q-service-icon">{s.icon}</span>
+                      <span>{s.name}</span>
+                    </span>
+                  </label>
+                ))
+              }
+            </div>
+          </div>
+
+          <!-- Ghi chú -->
+          <div class="q-field">
+            <label for="f-note" class="q-label">Ghi chú thêm</label>
+            <textarea
+              id="f-note"
+              name="note"
+              class="q-input q-textarea"
+              rows="2"
+              placeholder="VD: Tái khám, thai 20 tuần..."></textarea>
+          </div>
+
+          <!-- Spacer for footer -->
+          <div class="q-footer-spacer"></div>
+        </form>
+      </div>
+
+      <!-- RESULT SCREEN -->
+      <div class="q-screen q-screen--result" id="screen-result" hidden>
+        <div class="q-result-card">
+          <div class="q-result-check">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--success)"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline
+                points="22 4 12 14.01 9 11.01"></polyline></svg
+            >
+          </div>
+          <h2 class="q-result-title">Đăng Ký Thành Công!</h2>
+          <p class="q-result-sub">Số thứ tự của bạn</p>
+
+          <div class="q-result-number">
+            <span class="q-result-prefix" id="r-queue-prefix">------</span>
+            <span class="q-result-seq" id="r-queue-seq">---</span>
+          </div>
+
+          <div class="q-result-info">
+            <div class="q-result-row">
+              <span class="q-result-label">Họ tên</span>
+              <span class="q-result-value" id="r-name">—</span>
+            </div>
+            <div class="q-result-row">
+              <span class="q-result-label">Dịch vụ</span>
+              <span class="q-result-value" id="r-service">—</span>
+            </div>
+            <div class="q-result-row">
+              <span class="q-result-label">Thời gian</span>
+              <span class="q-result-value" id="r-time">—</span>
+            </div>
+          </div>
+
+          <div class="q-result-notice">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--primary)"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><circle cx="12" cy="12" r="10"></circle><polyline
+                points="12 6 12 12 16 14"></polyline></svg
+            >
+            <span>Vui lòng chờ gọi tên theo số thứ tự.</span>
+          </div>
+        </div>
+
+        <!-- Spacer for footer -->
+        <div class="q-footer-spacer"></div>
+      </div>
+    </main>
+
+    <!-- ═══ FIXED FOOTER ═══ -->
+    <footer class="q-footer" id="q-footer">
+      <!-- Form footer -->
+      <div class="q-footer-form" id="footer-form">
+        <button
+          type="submit"
+          form="queue-form"
+          class="btn btn-primary btn-lg q-submit-btn"
+          id="q-submit-btn"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline
+              points="22 4 12 14.01 9 11.01"></polyline></svg
+          >
+          🏥 ĐĂNG KÝ KHÁM
+        </button>
+      </div>
+      <!-- Result footer -->
+      <div class="q-footer-result" id="footer-result" hidden>
+        <button
+          type="button"
+          class="btn btn-outline btn-lg q-submit-btn"
+          id="q-new-btn"
+        >
+          Đăng ký thêm người khác
+        </button>
+      </div>
+    </footer>
+
+    <!-- ═══ TOAST CONTAINER ═══ -->
+    <div class="form-toast-container"></div>
+
+    <!-- ═══ WARD DATA (inline JSON for JS) ═══ -->
+    <script is:inline define:vars={{ wardsJson: JSON.stringify(wardsData) }}>
+      window.__WARDS_DATA__ = JSON.parse(wardsJson);
+    </script>
+
+    <script>
+      import { submitToGoogleSheet, showFormToast } from '../utils/form-handler.js';
+
+      // Service name → 2-digit code (must match Apps Script)
+      const SERVICE_CODES: Record<string, string> = {
+        "Khám thai định kỳ": "KT",
+        "Siêu âm 5D": "SA",
+        "Khám phụ khoa": "PK",
+        "Khám nam khoa": "NK",
+        "Điều trị vô sinh": "HM",
+        "Tư vấn tránh thai": "TT",
+        "Tư vấn chung": "CH",
+      };
+
+      // ═══════════════════════════════════════
+      // CLOCK
+      // ═══════════════════════════════════════
+      function updateClock() {
+        const el = document.getElementById("q-clock");
+        if (el) {
+          const now = new Date();
+          el.textContent = now.toLocaleTimeString("vi-VN", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        }
+      }
+      updateClock();
+      setInterval(updateClock, 30000);
+
+      // ═══════════════════════════════════════
+      // CACHE — Auto-fill returning patients
+      // ═══════════════════════════════════════
+      const CACHE_KEY = "ansinh_queue_patient";
+
+      function loadCache(): Record<string, string> {
+        try {
+          const raw = localStorage.getItem(CACHE_KEY);
+          return raw ? JSON.parse(raw) : {};
+        } catch {
+          return {};
+        }
+      }
+
+      function saveCache(data: Record<string, string>) {
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+        } catch {}
+      }
+
+      function autoFillFromCache() {
+        const cache = loadCache();
+        const fields: Record<string, string> = {
+          "f-name": "name",
+          "f-phone": "phone",
+          "f-dob": "dob",
+          "f-area": "area",
+        };
+
+        for (const [elId, key] of Object.entries(fields)) {
+          const el = document.getElementById(elId) as HTMLInputElement;
+          if (el && cache[key]) el.value = cache[key];
+        }
+
+        // Gender
+        if (cache.gender) {
+          const radio = document.querySelector(
+            `input[name="gender"][value="${cache.gender}"]`,
+          ) as HTMLInputElement;
+          if (radio) radio.checked = true;
+        }
+
+        // Service
+        if (cache.service) {
+          const radio = document.querySelector(
+            `input[name="service"][value="${cache.service}"]`,
+          ) as HTMLInputElement;
+          if (radio) radio.checked = true;
+        }
+      }
+
+      function cacheFormData() {
+        const data: Record<string, string> = {};
+        data.name =
+          (document.getElementById("f-name") as HTMLInputElement)?.value || "";
+        data.phone =
+          (document.getElementById("f-phone") as HTMLInputElement)?.value || "";
+        data.dob =
+          (document.getElementById("f-dob") as HTMLInputElement)?.value || "";
+        data.area =
+          (document.getElementById("f-area") as HTMLInputElement)?.value || "";
+
+        const genderEl = document.querySelector(
+          'input[name="gender"]:checked',
+        ) as HTMLInputElement;
+        if (genderEl) data.gender = genderEl.value;
+
+        const serviceEl = document.querySelector(
+          'input[name="service"]:checked',
+        ) as HTMLInputElement;
+        if (serviceEl) data.service = serviceEl.value;
+
+        saveCache(data);
+      }
+
+      // ═══════════════════════════════════════
+      // AUTOCOMPLETE — Ward/Commune
+      // ═══════════════════════════════════════
+      const wards: Array<{ name: string; type: string; priority: number }> =
+        (window as any).__WARDS_DATA__ || [];
+
+      function setupAutocomplete() {
+        const input = document.getElementById("f-area") as HTMLInputElement;
+        const list = document.getElementById(
+          "area-suggestions",
+        ) as HTMLUListElement;
+        if (!input || !list) return;
+
+        let selectedIdx = -1;
+
+        function showSuggestions(query: string) {
+          const q = query.toLowerCase().trim();
+          const filtered = q
+            ? wards.filter((w) => w.name.toLowerCase().includes(q))
+            : wards.filter((w) => w.priority <= 15);
+
+          list.innerHTML = "";
+          selectedIdx = -1;
+
+          if (filtered.length === 0) {
+            list.hidden = true;
+            return;
+          }
+
+          filtered.sort((a, b) => a.priority - b.priority);
+          const items = filtered.slice(0, 10);
+
+          items.forEach((w, i) => {
+            const li = document.createElement("li");
+            li.className = "q-ac-item";
+            li.dataset.index = String(i);
+            const typeLabel = w.type ? ` (${w.type})` : "";
+            li.innerHTML = `<span class="q-ac-name">${w.name}</span><span class="q-ac-type">${typeLabel}</span>`;
+            li.addEventListener("mousedown", (e) => {
+              e.preventDefault();
+              input.value = w.name;
+              list.hidden = true;
+            });
+            list.appendChild(li);
+          });
+
+          list.hidden = false;
+        }
+
+        input.addEventListener("focus", () => showSuggestions(input.value));
+        input.addEventListener("input", () => showSuggestions(input.value));
+        input.addEventListener("blur", () => {
+          setTimeout(() => {
+            list.hidden = true;
+          }, 150);
+        });
+
+        input.addEventListener("keydown", (e) => {
+          const items = list.querySelectorAll(".q-ac-item");
+          if (!items.length || list.hidden) return;
+
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            selectedIdx = Math.min(selectedIdx + 1, items.length - 1);
+            updateHighlight(items);
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            selectedIdx = Math.max(selectedIdx - 1, 0);
+            updateHighlight(items);
+          } else if (e.key === "Enter" && selectedIdx >= 0) {
+            e.preventDefault();
+            (items[selectedIdx] as HTMLElement).dispatchEvent(
+              new Event("mousedown"),
+            );
+          }
+        });
+
+        function updateHighlight(items: NodeListOf<Element>) {
+          items.forEach((el, i) => {
+            el.classList.toggle("q-ac-active", i === selectedIdx);
+          });
+        }
+      }
+
+      // ═══════════════════════════════════════
+      // Helpers handled by form-handler.js
+
+      // ═══════════════════════════════════════
+      // FORM SUBMIT
+      // ═══════════════════════════════════════
+      function switchScreen(screen: "form" | "result") {
+        const formScreen = document.getElementById("screen-form")!;
+        const resultScreen = document.getElementById("screen-result")!;
+        const footerForm = document.getElementById("footer-form")!;
+        const footerResult = document.getElementById("footer-result")!;
+
+        if (screen === "result") {
+          formScreen.hidden = true;
+          resultScreen.hidden = false;
+          footerForm.hidden = true;
+          footerResult.hidden = false;
+          document.getElementById("q-main")!.scrollTop = 0;
+        } else {
+          formScreen.hidden = false;
+          resultScreen.hidden = true;
+          footerForm.hidden = false;
+          footerResult.hidden = true;
+          document.getElementById("q-main")!.scrollTop = 0;
+        }
+      }
+
+      // ═══════════════════════════════════════
+      // INIT & SUBMIT EVENTS
+      // ═══════════════════════════════════════
+      document.addEventListener("DOMContentLoaded", () => {
+        autoFillFromCache();
+        setupAutocomplete();
+
+        const form = document.getElementById("queue-form") as HTMLFormElement;
+        
+        // Intercept submit to validate then pass to central handler
+        if (form) {
+          form.addEventListener("submit", (e: Event) => {
+            const phoneInput = document.getElementById("f-phone") as HTMLInputElement;
+            const phone = phoneInput.value.replace(/\s+/g, "");
+            if (!/^0\d{8,10}$/.test(phone)) {
+              e.preventDefault();
+              showFormToast("error", "Số điện thoại không hợp lệ", "Vui lòng nhập số bắt đầu bằng 0, từ 9–11 chữ số.");
+              phoneInput.focus();
+              return;
+            }
+            cacheFormData();
+            submitToGoogleSheet(e);
+          });
+        }
+
+        // Listen for Central Form Handler Success Event
+        window.addEventListener('form-submit-success', (e: any) => {
+            if (e.detail.formType !== 'queue') return;
+            const data = e.detail.responseData;
+            
+            const nameInput = document.getElementById("f-name") as HTMLInputElement;
+            const serviceChecked = document.querySelector('input[name="service"]:checked') as HTMLInputElement;
+            
+            let queueNumber = "—";
+            let regTime = "";
+            let serviceValue = serviceChecked ? serviceChecked.value : "—";
+            
+            if (data && data.queueNumber) queueNumber = data.queueNumber;
+            else {
+                // Fallback parsing (opaque/error)
+                const now = new Date();
+                const yy = String(now.getFullYear()).slice(2);
+                const mm = String(now.getMonth() + 1).padStart(2, "0");
+                const dd = String(now.getDate()).padStart(2, "0");
+                const sc = SERVICE_CODES[serviceValue] || "00";
+                queueNumber = yy + mm + dd + "-" + sc + "-???";
+            }
+
+            if (data && data.time) regTime = data.time;
+            else regTime = new Date().toLocaleTimeString("vi-VN") + " " + new Date().toLocaleDateString("vi-VN");
+
+            // Parse YYMMDD-XX-NNN into prefix + seq
+            const parts = queueNumber.split("-");
+            let prefix = queueNumber;
+            let seq = "—";
+            if (parts.length === 3) {
+              prefix = parts[0] + "-" + parts[1];
+              seq = parts[2];
+            }
+
+            // Show result
+            document.getElementById("r-queue-prefix")!.textContent = prefix;
+            document.getElementById("r-queue-seq")!.textContent = seq;
+            document.getElementById("r-name")!.textContent = nameInput.value.trim();
+            document.getElementById("r-service")!.textContent = serviceValue;
+            document.getElementById("r-time")!.textContent = regTime;
+
+            switchScreen("result");
+        });
+
+        // New registration button
+        const newBtn = document.getElementById("q-new-btn");
+        if (newBtn) {
+          newBtn.addEventListener("click", () => {
+            const form = document.getElementById(
+              "queue-form",
+            ) as HTMLFormElement;
+            form.reset();
+            autoFillFromCache();
+            switchScreen("form");
+          });
+        }
+        // Fetch current queue status
+        async function fetchCurrentQueue() {
+          const boardContainer = document.getElementById("queue-board-container");
+          const boardGrid = document.getElementById("q-board-grid");
+          if (!boardContainer || !boardGrid) return;
+          
+          try {
+            // Using Cloudflare proxy to hide GAS URL
+            const res = await fetch("https://queue-proxy.todyle.workers.dev/api/queue/current", {
+              method: "GET",
+              headers: { "Accept": "application/json" }
+            });
+            const result = await res.json();
+            
+            if (result.status === 'success' && result.data && Object.keys(result.data).length > 0) {
+              boardGrid.innerHTML = '';
+              for (const roomId in result.data) {
+                const info = result.data[roomId];
+                if (!info.queueNumber) continue; // Skip empty rooms
+                
+                // Format time: HH:mm
+                let timeStr = "";
+                if (info.timeCalled) {
+                   const d = new Date(info.timeCalled);
+                   if (!isNaN(d.getTime())) {
+                       timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+                   }
+                }
+
+                const card = document.createElement('div');
+                card.className = "q-board-card";
+                card.innerHTML = `
+                  <div class="q-board-room">${roomId}</div>
+                  <div class="q-board-num">${info.queueNumber.split('-').pop() || '—'}</div>
+                  <div class="q-board-footer">
+                    <span class="q-board-customer">${info.customerName || '—'}</span>
+                    <span class="q-board-time">${timeStr}</span>
+                  </div>
+                `;
+                boardGrid.appendChild(card);
+              }
+              
+              if (boardGrid.children.length > 0) {
+                 boardContainer.hidden = false;
+              } else {
+                 boardContainer.hidden = true;
+              }
+            } else {
+              boardContainer.hidden = true;
+            }
+          } catch (e) {
+            console.error("Error fetching queue status:", e);
+          }
+        }
+
+        // fetchCurrentQueue();
+        // Poll every 10 seconds
+        // setInterval(fetchCurrentQueue, 10000);
+      });
+    </script>
+
+    <style>
+      /* ═══════════════════════════════════════
+       Queue Registration — Mobile-First
+       ═══════════════════════════════════════ */
+
+      .queue-page {
+        height: 100vh;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--bg);
+      }
+
+      /* ── Fixed Header ── */
+      .q-header {
+        flex-shrink: 0;
+        background: var(--bg-white);
+        border-bottom: 1px solid var(--border-light);
+        padding: 0.75rem var(--container-padding);
+        z-index: 100;
+        box-shadow: var(--shadow-sm);
+      }
+      .q-header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 540px;
+        margin: 0 auto;
+      }
+      .q-header-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+      }
+      .q-logo {
+        border-radius: var(--radius-md);
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+      .q-header-name {
+        display: block;
+        font-size: 0.9375rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1.2;
+      }
+      .q-header-sub {
+        display: block;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .q-header-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        background: var(--primary-light);
+        border-radius: var(--radius-full);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      /* ── Scrollable Main ── */
+      .q-main {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Board styles */
+      .q-queue-board {
+        margin-bottom: var(--space-xl);
+        animation: resultSlide 0.5s ease-out;
+      }
+      .q-board-title {
+        font-size: 1.125rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: var(--space-md);
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .q-board-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: var(--space-md);
+      }
+      .q-board-card {
+        background: var(--surface-alt);
+        border: 2px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        text-align: center;
+        transition: transform var(--transition-fast);
+      }
+      .q-board-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary-light);
+      }
+      .q-board-room {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+      }
+      .q-board-num {
+        font-size: 2.25rem;
+        font-weight: 900;
+        color: var(--success);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+      }
+      .q-board-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        border-top: 1px solid var(--border-light);
+        padding-top: 0.375rem;
+        margin-top: 0.375rem;
+      }
+      .q-board-customer {
+        font-weight: 600;
+        color: var(--text-secondary);
+        max-width: 80px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .q-screen {
+        max-width: 540px;
+        margin: 0 auto;
+        padding: var(--space-lg) var(--container-padding);
+      }
+      .q-screen[hidden] {
+        display: none;
+      }
+
+      /* ── Form Intro ── */
+      .q-form-intro {
+        text-align: center;
+        margin-bottom: var(--space-xl);
+      }
+      .q-form-title {
+        font-size: 1.5rem !important;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: var(--space-xs);
+      }
+      .q-form-desc {
+        font-size: 0.9375rem;
+        color: var(--text-muted);
+        margin: 0;
+      }
+
+      /* ── Form Fields ── */
+      .q-form {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-lg);
+        background: var(--bg-white);
+        padding: var(--space-xl);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-light);
+      }
+      .q-field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xs);
+      }
+      .q-label {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        letter-spacing: 0.01em;
+      }
+      .q-required {
+        color: var(--error);
+      }
+      .q-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        min-height: 48px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        font-family: var(--font-body);
+        color: var(--text-primary);
+        background: var(--surface-alt);
+        transition:
+          border-color var(--transition-fast),
+          box-shadow var(--transition-fast);
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .q-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(228, 115, 32, 0.12);
+      }
+      .q-input::placeholder {
+        color: var(--text-muted);
+        font-size: 0.9375rem;
+      }
+      .q-textarea {
+        resize: vertical;
+        min-height: 56px;
+      }
+      .q-hint {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      /* Row layout */
+      .q-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
+      }
+
+      /* ── Gender Pills ── */
+      .q-gender-group {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .q-gender-opt input {
+        display: none;
+      }
+      .q-gender-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        min-height: 48px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-md);
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        background: var(--surface-alt);
+      }
+      .q-gender-opt input:checked + .q-gender-pill {
+        border-color: var(--primary);
+        background: var(--primary-light);
+        color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(228, 115, 32, 0.1);
+      }
+
+      /* ── Autocomplete ── */
+      .q-autocomplete-wrap {
+        position: relative;
+      }
+      .q-autocomplete-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: var(--bg-white);
+        border: 1.5px solid var(--border);
+        border-top: none;
+        border-radius: 0 0 var(--radius-md) var(--radius-md);
+        list-style: none;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: var(--shadow-md);
+      }
+      .q-autocomplete-list[hidden] {
+        display: none;
+      }
+      .q-ac-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        min-height: 48px;
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        font-size: 0.9375rem;
+      }
+      .q-ac-item:hover,
+      .q-ac-item.q-ac-active {
+        background: var(--primary-light);
+      }
+      .q-ac-name {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      .q-ac-type {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      /* ── Service Radio List ── */
+      .q-service-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .q-service-opt input {
+        display: none;
+      }
+      .q-service-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        min-height: 48px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        background: var(--surface-alt);
+        font-size: 0.9375rem;
+        color: var(--text-secondary);
+      }
+      .q-service-pill:active {
+        transform: scale(0.98);
+      }
+      .q-service-opt input:checked + .q-service-pill {
+        border-color: var(--primary);
+        background: var(--primary-light);
+        color: var(--primary);
+        font-weight: 600;
+        box-shadow: 0 0 0 3px rgba(228, 115, 32, 0.1);
+      }
+      .q-service-icon {
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+
+      /* ── Fixed Footer ── */
+      .q-footer {
+        flex-shrink: 0;
+        background: var(--bg-white);
+        border-top: 1px solid var(--border-light);
+        padding: 0.75rem var(--container-padding);
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+        z-index: 100;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+      }
+      .q-footer-form[hidden],
+      .q-footer-result[hidden] {
+        display: none;
+      }
+
+      .q-submit-btn {
+        width: 100%;
+        max-width: 540px;
+        min-height: 48px;
+        margin: 0 auto;
+        display: flex;
+        font-size: 1.0625rem;
+        letter-spacing: 0.02em;
+      }
+      .q-footer-spacer {
+        height: 1rem;
+      }
+
+      /* ── Spinner ── */
+      .qb-spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2.5px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: qbSpin 0.7s linear infinite;
+      }
+      @keyframes qbSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ═══ RESULT SCREEN ═══ */
+      .q-screen--result {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 140px);
+        min-height: calc(100dvh - 140px);
+      }
+
+      .q-result-card {
+        text-align: center;
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .q-result-check {
+        margin-bottom: var(--space-md);
+        animation: resultPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes resultPop {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .q-result-title {
+        font-size: 1.375rem !important;
+        font-weight: 800;
+        color: var(--success);
+        margin-bottom: var(--space-xs);
+      }
+      .q-result-sub {
+        font-size: 0.9375rem;
+        color: var(--text-muted);
+        margin-bottom: var(--space-md) !important;
+      }
+
+      .q-result-number {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem 2.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: #fff;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 8px 24px rgba(228, 115, 32, 0.3);
+        margin-bottom: var(--space-xl);
+        animation: resultSlide 0.6s ease-out 0.2s both;
+        gap: 0.125rem;
+      }
+      .q-result-prefix {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        opacity: 0.8;
+      }
+      .q-result-seq {
+        display: block;
+        font-size: 2.75rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        line-height: 1;
+      }
+      @keyframes resultSlide {
+        0% {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .q-result-info {
+        background: var(--surface-alt);
+        border-radius: var(--radius-md);
+        padding: var(--space-lg);
+        margin-bottom: var(--space-lg);
+        text-align: left;
+      }
+      .q-result-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+      }
+      .q-result-row:not(:last-child) {
+        border-bottom: 1px solid var(--border-light);
+      }
+      .q-result-label {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+      .q-result-value {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .q-result-notice {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: var(--primary-light);
+        border-radius: var(--radius-md);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      /* ═══ TOAST ═══ */
+      .form-toast-container {
+        position: fixed;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        width: 90%;
+        max-width: 480px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        pointer-events: none;
+      }
+      .form-toast {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.875rem 1rem;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-lg);
+        pointer-events: all;
+        animation: toastIn 0.3s ease-out;
+      }
+      .form-toast.hiding {
+        animation: toastOut 0.3s ease-in forwards;
+      }
+      @keyframes toastIn {
+        from {
+          transform: translateY(-20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      @keyframes toastOut {
+        from {
+          transform: translateY(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateY(-20px);
+          opacity: 0;
+        }
+      }
+
+      .form-toast--success {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+      }
+      .form-toast--error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+      }
+      .form-toast--retrying {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        color: #92400e;
+      }
+
+      .form-toast-icon {
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        line-height: 1;
+      }
+      .form-toast-body {
+        flex: 1;
+        min-width: 0;
+      }
+      .form-toast-title {
+        font-weight: 700;
+        font-size: 0.875rem;
+        margin-bottom: 2px;
+      }
+      .form-toast-msg {
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        opacity: 0.9;
+      }
+      .form-toast-zalo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        margin-top: 0.5rem;
+        padding: 0.375rem 0.75rem;
+        background: #0068ff;
+        color: #fff !important;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+      }
+      .form-toast-close {
+        background: none;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        opacity: 0.5;
+        padding: 0;
+        line-height: 1;
+        color: inherit;
+      }
+      .form-toast-close:hover {
+        opacity: 1;
+      }
+
+      /* ── Small phones & Mobile Breakpoint ── */
+      @media (max-width: 540px) {
+        .q-header-name {
+          font-size: 0.8125rem;
+        }
+        .q-form-title {
+          font-size: 1.25rem !important;
+        }
+        .q-submit-btn {
+          font-size: 0.9375rem;
+        }
+        .q-row {
+          grid-template-columns: 1fr;
+        }
+        .q-form {
+          padding: var(--space-lg) var(--space-md);
+          border-radius: var(--radius-lg);
+          border-left: none;
+          border-right: none;
+          border-radius: 0;
+          box-shadow: none;
+        }
+        .q-screen {
+          padding-left: 0;
+          padding-right: 0;
+        }
+        .q-form-intro {
+          padding: 0 var(--container-padding);
+        }
+      }
+    </style>
+  </body>
+</html>

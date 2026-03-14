@@ -1,0 +1,230 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+import "../styles/landing.css";
+---
+
+<BaseLayout
+  title="Đặt Lịch Khám — Phòng Khám An Sinh"
+  description="Đặt lịch khám nhanh tại Phòng Khám An Sinh. Sản phụ khoa, siêu âm 5D, khám nam khoa, điều trị vô sinh."
+>
+  <!-- Minimal landing area — booking auto-opens -->
+  <section class="landing-hero quick-book-hero">
+    <div class="container">
+      <div class="quick-book-inner">
+        <div class="quick-book-card card">
+          <div class="quick-book-logo">
+            <img src="/logo.webp" alt="Phòng Khám An Sinh" width="56" height="56" loading="eager" />
+            <div>
+              <h1 class="quick-book-title">Phòng Khám An Sinh</h1>
+              <p class="quick-book-subtitle">Sản Phụ Khoa — Từ Sơn, Bắc Ninh</p>
+            </div>
+          </div>
+
+          <div class="quick-book-info">
+            <div class="quick-book-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <span>416 Minh Khai, Đồng Nguyên, Từ Sơn</span>
+            </div>
+            <div class="quick-book-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span>17:00 – 21:00 hàng ngày</span>
+            </div>
+            <div class="quick-book-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              <a href="tel:0899268299" class="quick-book-phone">0899 268 299</a>
+            </div>
+          </div>
+
+          <p class="quick-book-loading" id="qb-loading">
+            <span class="qb-spinner"></span>
+            Đang mở form đặt lịch...
+          </p>
+
+          <button class="btn btn-primary btn-lg quick-book-btn open-booking" id="qb-manual-open" hidden>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            Mở Form Đặt Lịch
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // ═══ Quick Booking — URL Param Parser ═══
+    const SERVICE_MAP: Record<string, string> = {
+      'kham-thai': 'Khám thai định kỳ',
+      'sieu-am-5d': 'Siêu âm 5D',
+      'sieu-am': 'Siêu âm 5D',
+      'kham-phu-khoa': 'Khám phụ khoa',
+      'phu-khoa': 'Khám phụ khoa',
+      'kham-nam-khoa': 'Khám nam khoa',
+      'nam-khoa': 'Khám nam khoa',
+      'vo-sinh': 'Điều trị vô sinh',
+      'tranh-thai': 'Tư vấn tránh thai',
+      'tu-van': 'Tư vấn chung',
+    };
+
+    function parseBookingParams(): Record<string, string> {
+      const params = new URLSearchParams(window.location.search);
+      const ctx: Record<string, string> = {};
+
+      // Service
+      const dv = params.get('dv') || params.get('service') || '';
+      if (dv && SERVICE_MAP[dv]) {
+        ctx.service = SERVICE_MAP[dv];
+      } else if (dv) {
+        ctx.service = decodeURIComponent(dv);
+      }
+
+      // Name
+      const ten = params.get('ten') || params.get('name') || '';
+      if (ten) ctx.name = decodeURIComponent(ten);
+
+      // Phone
+      const sdt = params.get('sdt') || params.get('phone') || '';
+      if (sdt) ctx.phone = sdt;
+
+      // Note
+      const ghiChu = params.get('ghi-chu') || params.get('note') || '';
+      if (ghiChu) ctx.note = decodeURIComponent(ghiChu);
+
+      // Ref (tracking source)
+      const ref = params.get('ref') || params.get('source') || '';
+      if (ref) ctx.ref = ref;
+
+      // Date
+      const ngay = params.get('ngay') || params.get('date') || '';
+      if (ngay) ctx.date = ngay;
+
+      // Time slot
+      const gio = params.get('gio') || params.get('time') || '';
+      if (gio) ctx.timeSlot = gio;
+
+      // Form type
+      ctx.formType = 'quick-booking';
+
+      return ctx;
+    }
+
+    // Auto-open booking on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const ctx = parseBookingParams();
+      const loadingEl = document.getElementById('qb-loading');
+      const manualBtn = document.getElementById('qb-manual-open');
+
+      setTimeout(() => {
+        document.dispatchEvent(new CustomEvent('open-booking', { detail: ctx }));
+        if (loadingEl) loadingEl.hidden = true;
+        if (manualBtn) manualBtn.hidden = false;
+      }, 300);
+    });
+  </script>
+
+  <style>
+    .quick-book-hero {
+      min-height: calc(100vh - 80px);
+      min-height: calc(100dvh - 80px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quick-book-inner {
+      display: flex;
+      justify-content: center;
+      padding: var(--space-xl) 0;
+    }
+
+    .quick-book-card {
+      max-width: 440px;
+      width: 100%;
+      padding: var(--space-2xl);
+      text-align: center;
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .quick-book-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      text-align: left;
+    }
+    .quick-book-logo img {
+      border-radius: var(--radius-lg);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .quick-book-title {
+      font-size: 1.25rem !important;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0;
+      line-height: 1.3;
+    }
+    .quick-book-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin: 2px 0 0 !important;
+    }
+
+    .quick-book-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      text-align: left;
+    }
+    .quick-book-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+    }
+    .quick-book-item svg {
+      flex-shrink: 0;
+    }
+    .quick-book-phone {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .quick-book-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      padding: var(--space-lg) 0;
+      margin: 0;
+    }
+    .quick-book-loading[hidden] { display: none; }
+
+    .qb-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: qbSpin 0.7s linear infinite;
+    }
+    @keyframes qbSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .quick-book-btn {
+      width: 100%;
+    }
+    .quick-book-btn[hidden] { display: none; }
+
+    @media (max-width: 480px) {
+      .quick-book-card {
+        padding: var(--space-xl) var(--space-lg);
+      }
+    }
+  </style>
+</BaseLayout>

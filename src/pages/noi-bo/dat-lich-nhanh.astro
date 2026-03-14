@@ -1,0 +1,817 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import "../../styles/global.css";
+import "../../styles/landing.css";
+
+const SITE_URL = "https://phusanansinh.pages.dev";
+
+const SERVICES = [
+  { slug: "kham-thai", name: "Khám thai định kỳ", icon: "🤰", desc: "Khám thai, siêu âm, xét nghiệm" },
+  { slug: "sieu-am-5d", name: "Siêu âm 5D", icon: "📷", desc: "Siêu âm hình thái chi tiết" },
+  { slug: "kham-phu-khoa", name: "Khám phụ khoa", icon: "🩺", desc: "Khám, điều trị phụ khoa" },
+  { slug: "kham-nam-khoa", name: "Khám nam khoa", icon: "👨‍⚕️", desc: "Khám, tư vấn nam khoa" },
+  { slug: "vo-sinh", name: "Điều trị vô sinh", icon: "💝", desc: "Tư vấn, điều trị hiếm muộn" },
+  { slug: "tranh-thai", name: "Tư vấn tránh thai", icon: "💊", desc: "Tư vấn biện pháp tránh thai" },
+  { slug: "tu-van", name: "Tư vấn chung", icon: "💬", desc: "Tư vấn sức khỏe tổng quát" },
+];
+
+const QR_API = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=";
+---
+
+<BaseLayout
+  title="Đặt Lịch Nhanh — Công Cụ Nội Bộ | An Sinh"
+  description="Dashboard tạo link và QR đặt lịch nhanh cho lễ tân và bác sĩ."
+>
+  <section class="section noi-bo-hero">
+    <div class="container">
+      <!-- Header -->
+      <div class="section-header">
+        <span class="section-label">Công cụ nội bộ</span>
+        <h1>Đặt Lịch Nhanh — Link & QR</h1>
+        <p>Tạo link & QR cho khách hàng đặt lịch khám nhanh. Quét QR = Form đặt lịch mở tự động.</p>
+      </div>
+
+      <!-- URL Builder -->
+      <div class="card ub-card">
+        <h2 class="ub-heading">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+          Tạo Link Tuỳ Chỉnh
+        </h2>
+        <div class="ub-form">
+          <div class="ub-row">
+            <div class="ub-field">
+              <label for="ub-service">Dịch vụ</label>
+              <select id="ub-service">
+                <option value="">— Chung (không chọn sẵn) —</option>
+                {SERVICES.map(s => (
+                  <option value={s.slug}>{s.icon} {s.name}</option>
+                ))}
+              </select>
+            </div>
+            <div class="ub-field">
+              <label for="ub-ref">Nguồn (ref)</label>
+              <select id="ub-ref">
+                <option value="">— Không tracking —</option>
+                <option value="hoadon">Hoá đơn</option>
+                <option value="letan">Lễ tân</option>
+                <option value="bacsi">Bác sĩ</option>
+                <option value="quay">Quầy thu ngân</option>
+              </select>
+            </div>
+          </div>
+          <div class="ub-row">
+            <div class="ub-field">
+              <label for="ub-name">Tên khách (tuỳ chọn)</label>
+              <input type="text" id="ub-name" placeholder="VD: Nguyễn Thị Hoa" />
+            </div>
+            <div class="ub-field">
+              <label for="ub-phone">SĐT (tuỳ chọn)</label>
+              <input type="tel" id="ub-phone" placeholder="VD: 0901234567" />
+            </div>
+          </div>
+          <div class="ub-row">
+            <div class="ub-field ub-full">
+              <label for="ub-note">Ghi chú (tuỳ chọn)</label>
+              <input type="text" id="ub-note" placeholder="VD: Tái khám sau 2 tuần" />
+            </div>
+          </div>
+          <div class="ub-result">
+            <label>Link đặt lịch:</label>
+            <div class="ub-link-row">
+              <input type="text" id="ub-link" readonly />
+              <button type="button" class="btn btn-primary btn-sm" id="ub-copy">📋 Copy</button>
+            </div>
+            <div class="ub-qr-preview">
+              <img id="ub-qr" alt="QR đặt lịch" width="160" height="160" />
+              <button type="button" class="btn btn-outline btn-sm" id="ub-download-qr">⬇️ Tải QR</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Service Section -->
+      <div class="card st-card">
+        <h2 class="st-heading">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+          Link & QR Theo Dịch Vụ
+        </h2>
+        <p class="st-desc">Bấm Copy để lấy link, hoặc tải QR để in.</p>
+
+        <!-- Desktop: Table -->
+        <div class="st-desktop">
+          <table class="st-table">
+            <thead>
+              <tr>
+                <th>Dịch vụ</th>
+                <th>Link đặt lịch</th>
+                <th>Thao tác</th>
+                <th>QR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SERVICES.map(s => {
+                const link = `${SITE_URL}/dat-lich?dv=${s.slug}`;
+                const linkHoadon = `${SITE_URL}/dat-lich?dv=${s.slug}&ref=hoadon`;
+                const qrUrl = `${QR_API}${encodeURIComponent(link)}`;
+                return (
+                  <tr>
+                    <td class="td-service">
+                      <span class="td-icon">{s.icon}</span>
+                      <div>
+                        <strong>{s.name}</strong>
+                        <small>{s.desc}</small>
+                      </div>
+                    </td>
+                    <td class="td-link">
+                      <code>/dat-lich?dv={s.slug}</code>
+                    </td>
+                    <td class="td-actions">
+                      <button type="button" class="btn btn-sm btn-outline btn-copy-link" data-link={link}>📋 Copy</button>
+                      <button type="button" class="btn btn-sm btn-copy-link td-btn-receipt" data-link={linkHoadon}>📄 Hoá đơn</button>
+                    </td>
+                    <td class="td-qr">
+                      <img src={qrUrl} alt={`QR ${s.name}`} width="72" height="72" loading="lazy" />
+                    </td>
+                  </tr>
+                );
+              })}
+              <tr class="tr-general">
+                <td class="td-service">
+                  <span class="td-icon">📋</span>
+                  <div>
+                    <strong>Đặt lịch chung</strong>
+                    <small>Khách tự chọn dịch vụ</small>
+                  </div>
+                </td>
+                <td class="td-link">
+                  <code>/dat-lich</code>
+                </td>
+                <td class="td-actions">
+                  <button type="button" class="btn btn-sm btn-outline btn-copy-link" data-link={`${SITE_URL}/dat-lich`}>📋 Copy</button>
+                  <button type="button" class="btn btn-sm btn-copy-link td-btn-receipt" data-link={`${SITE_URL}/dat-lich?ref=hoadon`}>📄 Hoá đơn</button>
+                </td>
+                <td class="td-qr">
+                  <img src={`${QR_API}${encodeURIComponent(`${SITE_URL}/dat-lich`)}`} alt="QR đặt lịch chung" width="72" height="72" loading="lazy" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile: Card Grid -->
+        <div class="st-mobile">
+          {SERVICES.map(s => {
+            const link = `${SITE_URL}/dat-lich?dv=${s.slug}`;
+            const linkHoadon = `${SITE_URL}/dat-lich?dv=${s.slug}&ref=hoadon`;
+            const qrUrl = `${QR_API}${encodeURIComponent(link)}`;
+            return (
+              <div class="svc-card">
+                <div class="svc-card-header">
+                  <span class="svc-card-icon">{s.icon}</span>
+                  <div>
+                    <strong class="svc-card-name">{s.name}</strong>
+                    <small class="svc-card-desc">{s.desc}</small>
+                  </div>
+                </div>
+                <div class="svc-card-body">
+                  <img src={qrUrl} alt={`QR ${s.name}`} width="80" height="80" loading="lazy" class="svc-card-qr" />
+                  <div class="svc-card-actions">
+                    <button type="button" class="btn btn-sm btn-primary btn-copy-link svc-btn" data-link={link}>📋 Copy Link</button>
+                    <button type="button" class="btn btn-sm btn-copy-link svc-btn svc-btn-receipt" data-link={linkHoadon}>📄 Copy (hoá đơn)</button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          <!-- General card -->
+          <div class="svc-card svc-card-general">
+            <div class="svc-card-header">
+              <span class="svc-card-icon">📋</span>
+              <div>
+                <strong class="svc-card-name">Đặt lịch chung</strong>
+                <small class="svc-card-desc">Khách tự chọn dịch vụ</small>
+              </div>
+            </div>
+            <div class="svc-card-body">
+              <img src={`${QR_API}${encodeURIComponent(`${SITE_URL}/dat-lich`)}`} alt="QR đặt lịch chung" width="80" height="80" loading="lazy" class="svc-card-qr" />
+              <div class="svc-card-actions">
+                <button type="button" class="btn btn-sm btn-primary btn-copy-link svc-btn" data-link={`${SITE_URL}/dat-lich`}>📋 Copy Link</button>
+                <button type="button" class="btn btn-sm btn-copy-link svc-btn svc-btn-receipt" data-link={`${SITE_URL}/dat-lich?ref=hoadon`}>📄 Copy (hoá đơn)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR Lấy Số Thứ Tự -->
+      <div class="card st-card queue-card">
+        <h2 class="st-heading">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="13" y2="17"></line></svg>
+          🏥 QR Lấy Số Thứ Tự Khám
+        </h2>
+        <p class="st-desc">Khách quét QR → đăng ký → nhận số thứ tự ngay. Không cần giấy tờ.</p>
+        <div class="queue-qr-row">
+          <img src={`${QR_API}${encodeURIComponent(`${SITE_URL}/lay-so-thu-tu`)}`} alt="QR Lấy số thứ tự" width="120" height="120" loading="lazy" class="queue-qr-img" />
+          <div class="queue-qr-info">
+            <code class="queue-qr-link">/lay-so-thu-tu</code>
+            <div class="queue-qr-actions">
+              <button type="button" class="btn btn-sm btn-primary btn-copy-link" data-link={`${SITE_URL}/lay-so-thu-tu`}>📋 Copy Link</button>
+              <button type="button" class="btn btn-sm btn-outline btn-copy-link" data-link={`${SITE_URL}/lay-so-thu-tu?ref=quay`}>📄 Copy (quầy)</button>
+            </div>
+            <small class="queue-qr-note">In QR này dán tại quầy lễ tân để khách tự quét lấy số.</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Print-friendly QR cards -->
+      <div class="card print-section">
+        <h2 class="ps-heading">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          In QR Cho Hoá Đơn / Quầy
+        </h2>
+        <p class="ps-desc">Bấm "In trang này" để in các thẻ QR bên dưới. Cắt và dán lên hoá đơn hoặc quầy lễ tân.</p>
+        <button type="button" class="btn btn-primary" onclick="window.print()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          In trang này
+        </button>
+        <div class="print-cards">
+          {SERVICES.map(s => {
+            const link = `${SITE_URL}/dat-lich?dv=${s.slug}&ref=hoadon`;
+            const qrUrl = `${QR_API}${encodeURIComponent(link)}`;
+            return (
+              <div class="print-card">
+                <img src={qrUrl} alt={`QR ${s.name}`} width="100" height="100" loading="lazy" />
+                <div class="print-card-text">
+                  <strong>{s.icon} {s.name}</strong>
+                  <span>Quét QR để đặt lịch khám</span>
+                  <small>PK An Sinh — 0899 268 299</small>
+                </div>
+              </div>
+            );
+          })}
+          <div class="print-card print-card-highlight">
+            <img src={`${QR_API}${encodeURIComponent(`${SITE_URL}/dat-lich?ref=hoadon`)}`} alt="QR đặt lịch" width="100" height="100" loading="lazy" />
+            <div class="print-card-text">
+              <strong>📋 Đặt Lịch Khám</strong>
+              <span>Quét mã QR để đặt lịch tái khám</span>
+              <small>PK An Sinh — 0899 268 299</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Documentation -->
+      <div class="card api-card">
+        <h2 class="api-heading">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          Tích Hợp Hệ Thống (API Params)
+        </h2>
+        <p class="api-desc">Dùng URL params để tích hợp CRM / phần mềm quản lý phòng khám.</p>
+        <div class="st-wrap">
+          <table class="st-table api-table">
+            <thead>
+              <tr>
+                <th>Param</th>
+                <th>Alias</th>
+                <th>Mô tả</th>
+                <th>Ví dụ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>dv</code></td><td><code>service</code></td><td>Mã dịch vụ (slug)</td><td><code>kham-thai</code>, <code>sieu-am-5d</code></td></tr>
+              <tr><td><code>ten</code></td><td><code>name</code></td><td>Họ tên khách hàng</td><td><code>Nguyen+Thi+Hoa</code></td></tr>
+              <tr><td><code>sdt</code></td><td><code>phone</code></td><td>Số điện thoại</td><td><code>0901234567</code></td></tr>
+              <tr><td><code>ghi-chu</code></td><td><code>note</code></td><td>Ghi chú cho bác sĩ</td><td><code>Tai+kham+sau+2+tuan</code></td></tr>
+              <tr><td><code>ref</code></td><td><code>source</code></td><td>Nguồn tracking</td><td><code>hoadon</code>, <code>letan</code>, <code>crm</code></td></tr>
+              <tr><td><code>ngay</code></td><td><code>date</code></td><td>Ngày khám (ISO)</td><td><code>2026-03-20</code></td></tr>
+              <tr><td><code>gio</code></td><td><code>time</code></td><td>Khung giờ</td><td><code>18:00-19:00</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="api-examples-title">Ví dụ tích hợp:</h3>
+        <div class="api-examples">
+          <div class="api-example">
+            <strong>Lễ tân tạo link nhanh:</strong>
+            <code>{SITE_URL}/dat-lich?dv=kham-thai&ref=letan</code>
+          </div>
+          <div class="api-example">
+            <strong>In QR trên hoá đơn:</strong>
+            <code>{SITE_URL}/dat-lich?dv=sieu-am-5d&ref=hoadon</code>
+          </div>
+          <div class="api-example">
+            <strong>CRM gửi link SMS tự động:</strong>
+            <code>{SITE_URL}/dat-lich?dv=kham-thai&ten=Nguyen+Thi+Hoa&sdt=0901234567&ghi-chu=Tai+kham+tuan+20&ref=crm</code>
+          </div>
+          <div class="api-example">
+            <strong>Service slugs hợp lệ:</strong>
+            <code>kham-thai | sieu-am-5d | kham-phu-khoa | kham-nam-khoa | vo-sinh | tranh-thai | tu-van</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // ═══ URL Builder Logic ═══
+    const SITE = 'https://phusanansinh.pages.dev';
+
+    function buildLink() {
+      const service = (document.getElementById('ub-service') as HTMLSelectElement).value;
+      const ref = (document.getElementById('ub-ref') as HTMLSelectElement).value;
+      const name = (document.getElementById('ub-name') as HTMLInputElement).value.trim();
+      const phone = (document.getElementById('ub-phone') as HTMLInputElement).value.trim();
+      const note = (document.getElementById('ub-note') as HTMLInputElement).value.trim();
+
+      const params = new URLSearchParams();
+      if (service) params.set('dv', service);
+      if (name) params.set('ten', name);
+      if (phone) params.set('sdt', phone);
+      if (note) params.set('ghi-chu', note);
+      if (ref) params.set('ref', ref);
+
+      const qs = params.toString();
+      const link = `${SITE}/dat-lich${qs ? '?' + qs : ''}`;
+
+      const linkInput = document.getElementById('ub-link') as HTMLInputElement;
+      const qrImg = document.getElementById('ub-qr') as HTMLImageElement;
+      if (linkInput) linkInput.value = link;
+      if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(link)}`;
+    }
+
+    ['ub-service', 'ub-ref', 'ub-name', 'ub-phone', 'ub-note'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', buildLink);
+      if (el) el.addEventListener('change', buildLink);
+    });
+    buildLink();
+
+    // Copy link
+    document.getElementById('ub-copy')?.addEventListener('click', () => {
+      const linkInput = document.getElementById('ub-link') as HTMLInputElement;
+      if (linkInput) {
+        navigator.clipboard.writeText(linkInput.value).then(() => {
+          const btn = document.getElementById('ub-copy')!;
+          btn.textContent = '✅ Đã copy!';
+          setTimeout(() => { btn.textContent = '📋 Copy'; }, 1500);
+        });
+      }
+    });
+
+    // Download QR
+    document.getElementById('ub-download-qr')?.addEventListener('click', async () => {
+      const qrImg = document.getElementById('ub-qr') as HTMLImageElement;
+      if (!qrImg?.src) return;
+      try {
+        const resp = await fetch(qrImg.src);
+        const blob = await resp.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'qr-dat-lich.png';
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        window.open(qrImg.src, '_blank');
+      }
+    });
+
+    // Copy links in service table
+    document.querySelectorAll('.btn-copy-link').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const link = (btn as HTMLElement).dataset.link || '';
+        navigator.clipboard.writeText(link).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = '✅ Đã copy!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      });
+    });
+  </script>
+
+  <style>
+    /* ═══ Internal Dashboard — Uses Design System ═══ */
+    .noi-bo-hero {
+      padding-top: var(--space-2xl);
+    }
+
+    /* Cards spacing */
+    .ub-card,
+    .st-card,
+    .print-section,
+    .api-card {
+      margin-bottom: var(--space-xl);
+    }
+
+    /* Section headings — icon + text */
+    .ub-heading,
+    .st-heading,
+    .ps-heading,
+    .api-heading {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: var(--space-lg);
+      color: var(--text-primary);
+    }
+
+    /* ── URL Builder ── */
+    .ub-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+    .ub-field label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+    .ub-field input,
+    .ub-field select {
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.9375rem;
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      background: var(--bg-white);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .ub-field input:focus,
+    .ub-field select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(228, 115, 32, 0.1);
+    }
+    .ub-full { grid-column: 1 / -1; }
+
+    .ub-result {
+      margin-top: var(--space-lg);
+      padding-top: var(--space-lg);
+      border-top: 1px solid var(--border-light);
+    }
+    .ub-result label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xs);
+      display: block;
+    }
+    .ub-link-row {
+      display: flex;
+      gap: var(--space-sm);
+    }
+    .ub-link-row input {
+      flex: 1;
+      padding: 0.625rem 0.875rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: var(--primary);
+      background: var(--primary-light);
+      min-width: 0;
+    }
+
+    .ub-qr-preview {
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+    .ub-qr-preview img {
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+    }
+
+    /* ── Service Table (Desktop) ── */
+    .st-desc, .ps-desc, .api-desc {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      margin-bottom: var(--space-lg) !important;
+    }
+
+    /* Desktop/Mobile toggle */
+    .st-mobile { display: none; }
+    .st-desktop { display: block; }
+
+    .st-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .st-table th {
+      text-align: left;
+      padding: 0.75rem;
+      background: var(--surface-alt);
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border);
+    }
+    .st-table td {
+      padding: 0.875rem 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+    .td-service {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 180px;
+    }
+    .td-icon { font-size: 1.375rem; }
+    .td-service strong {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+    }
+    .td-service small {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .td-link code {
+      font-size: 0.75rem;
+      background: var(--primary-light);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      color: var(--primary);
+      word-break: break-all;
+    }
+    .td-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      min-width: 110px;
+    }
+    .td-btn-receipt {
+      background: transparent;
+      color: var(--text-secondary) !important;
+      border: 1px solid var(--border) !important;
+    }
+    .td-btn-receipt:hover {
+      border-color: var(--primary) !important;
+      color: var(--primary) !important;
+    }
+    .td-qr img {
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+    }
+    .tr-general {
+      background: var(--primary-light);
+    }
+
+    /* ── Service Cards (Mobile) ── */
+    .svc-card {
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      background: var(--bg-white);
+      margin-bottom: var(--space-md);
+    }
+    .svc-card-general {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .svc-card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .svc-card-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .svc-card-name {
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .svc-card-desc {
+      display: block;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+    .svc-card-body {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .svc-card-qr {
+      flex-shrink: 0;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+    }
+    .svc-card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      flex: 1;
+      min-width: 0;
+    }
+    .svc-btn {
+      width: 100%;
+      white-space: nowrap;
+      font-size: 0.8125rem !important;
+      padding: 0.5rem 0.75rem !important;
+    }
+    .svc-btn-receipt {
+      background: transparent;
+      color: var(--text-secondary) !important;
+      border: 1px solid var(--border) !important;
+    }
+    .svc-btn-receipt:hover {
+      border-color: var(--primary) !important;
+      color: var(--primary) !important;
+    }
+
+    /* ── Print Cards ── */
+    .print-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-xl);
+    }
+    .print-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-lg);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface-alt);
+    }
+    .print-card-highlight {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .print-card img {
+      flex-shrink: 0;
+      border-radius: var(--radius-md);
+    }
+    .print-card-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .print-card-text strong {
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+    }
+    .print-card-text span {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+    .print-card-text small {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── API Docs ── */
+    .api-table code {
+      font-size: 0.75rem;
+      background: var(--primary-light);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      color: var(--primary);
+    }
+    .api-examples-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: var(--space-xl) 0 var(--space-md);
+      color: var(--text-primary);
+    }
+    .api-examples {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .api-example {
+      padding: var(--space-md) var(--space-lg);
+      background: var(--surface-alt);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--primary);
+    }
+    .api-example strong {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      margin-bottom: var(--space-xs);
+    }
+    .api-example code {
+      font-size: 0.75rem;
+      color: var(--primary);
+      word-break: break-all;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .ub-row { grid-template-columns: 1fr; }
+      .print-cards { grid-template-columns: 1fr; }
+
+      /* Show cards, hide table */
+      .st-desktop { display: none; }
+      .st-mobile { display: block; }
+
+      /* QR preview stack */
+      .ub-qr-preview {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .ub-qr-preview img {
+        width: 120px;
+        height: 120px;
+      }
+
+      /* Print card smaller QR */
+      .print-card img {
+        width: 72px;
+        height: 72px;
+      }
+
+      /* API examples mobile */
+      .api-example {
+        padding: var(--space-sm) var(--space-md);
+      }
+    }
+
+    /* ── Queue Card ── */
+    .queue-card {
+      border: 2px solid var(--primary);
+      background: var(--primary-light);
+    }
+    .queue-qr-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xl);
+    }
+    .queue-qr-img {
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+    .queue-qr-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .queue-qr-link {
+      font-size: 0.8125rem;
+      background: var(--bg-white);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      color: var(--primary);
+      display: inline-block;
+    }
+    .queue-qr-actions {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+    .queue-qr-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    @media (max-width: 640px) {
+      .queue-qr-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+      }
+    }
+
+    /* ── Print styles ── */
+    @media print {
+      .noi-bo-hero { background: #fff; padding: 0; }
+      .section-header,
+      .ub-card,
+      .st-card,
+      .api-card,
+      .print-section > .ps-heading,
+      .print-section > .ps-desc,
+      .print-section > .btn { display: none !important; }
+
+      .print-cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+      }
+      .print-card {
+        border: 2px solid #333;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</BaseLayout>
