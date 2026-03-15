@@ -10,6 +10,15 @@ export const FORM_CONFIG = {
         queue: 'https://script.google.com/macros/s/AKfycbwypBm_W01EEdhnPtQ40i3VM9xd2cYbwohXDP4FTjdmDybwA17ZVvnhf8mJ9NX1EP1x/exec',
         queueProxy: 'https://queue-proxy.todyle.workers.dev'
     },
+    CRM_URLS: {
+        feedback: 'https://sale.todyai.io/api/reviews',
+        booking: 'https://sale.todyai.io/api/bookings',
+        queue: 'https://sale.todyai.io/api/queue/book'
+    },
+    CRM_HEADERS: {
+        'Content-Type': 'application/json',
+        'X-Tenant-Slug': 'an-sinh'
+    },
     FALLBACK_CONTACT: {
         url: 'https://zalo.me/0899268299',
         label: '💬 Nhắn Zalo hotline',
@@ -174,28 +183,66 @@ const originalText = btn.innerHTML;
     try {
         let responseData = null;
         
-        if (form.getAttribute('data-method') === 'JSONP') {
-            const formData = new FormData(form);
-            const paramsObj = {};
-            for (const [k, v] of formData.entries()) paramsObj[k] = v;
-            
-            responseData = await fetchJsonpWithRetry(
-                scriptURL, paramsObj, cfg.MAX_RETRIES,
-                (attempt, max) => {
-                    btn.innerHTML = `<span class="qb-spinner"></span> Đang thử lại (${attempt}/${max})...`;
-                    showFormToast('retrying', 'Đang thử lại...', `Lần ${attempt}/${max} — Vui lòng chờ.`);
+        // 1. Prepare CRM Payload (JSON)
+        const formData = new FormData(form);
+        const paramsObj = {};
+        for (const [k, v] of formData.entries()) paramsObj[k] = v;
+
+        // Auto-extract UTM Parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        ['utm_source', 'utm_medium', 'utm_campaign'].forEach(param => {
+            if (urlParams.has(param)) paramsObj[param] = urlParams.get(param);
+        });
+        
+        // For queue forms, we are storing area but CRM API currently does not map it natively yet.
+        // It's still passed in JSON body, backend should receive it.
+
+        // 2. Execute Dual-Write: CRM (primary) + Google Sheets (backup)
+        const crmUrl = formType === 'feedback' ? cfg.CRM_URLS.feedback : 
+                       (formType === 'queue' ? cfg.CRM_URLS.queue : cfg.CRM_URLS.booking);
+
+        // CRM API — primary, extract response data
+        if (crmUrl) {
+            try {
+                const crmRes = await fetch(crmUrl, {
+                    method: 'POST',
+                    headers: cfg.CRM_HEADERS,
+                    body: JSON.stringify(paramsObj)
+                });
+                const crmData = await crmRes.json().catch(() => null);
+                if (crmData && crmData.status === 'success') {
+                    responseData = crmData;
+                } else if (crmData && crmData.error) {
+                    console.warn('CRM API error:', crmData.error);
                 }
-            );
-        } else {
-            await fetchWithRetry(
-                scriptURL,
-                { method: 'POST', body: new FormData(form), mode: 'no-cors' },
-                cfg.MAX_RETRIES,
-                (attempt, max) => {
-                    btn.innerHTML = `<span class="qb-spinner"></span> Đang thử lại (${attempt}/${max})...`;
-                    showFormToast('retrying', 'Đang thử lại...', `Lần ${attempt}/${max} — Vui lòng chờ.`);
-                }
-            );
+            } catch (err) {
+                console.warn('CRM API unreachable, falling back to Sheets:', err);
+            }
+        }
+
+        // Google Sheets — backup (fire-and-forget)
+        try {
+            if (form.getAttribute('data-method') === 'JSONP') {
+                fetchJsonpWithRetry(
+                    scriptURL, paramsObj, cfg.MAX_RETRIES,
+                    (attempt, max) => {
+                        btn.innerHTML = `<span class="qb-spinner"></span> Đang thử lại (${attempt}/${max})...`;
+                        showFormToast('retrying', 'Đang thử lại...', `Lần ${attempt}/${max} — Vui lòng chờ.`);
+                    }
+                ).then(res => { if (!responseData) responseData = res; }).catch(() => {});
+            } else {
+                fetchWithRetry(
+                    scriptURL,
+                    { method: 'POST', body: formData, mode: 'no-cors' },
+                    cfg.MAX_RETRIES,
+                    (attempt, max) => {
+                        btn.innerHTML = `<span class="qb-spinner"></span> Đang thử lại (${attempt}/${max})...`;
+                        showFormToast('retrying', 'Đang thử lại...', `Lần ${attempt}/${max} — Vui lòng chờ.`);
+                    }
+                ).catch(() => {});
+            }
+        } catch (err) {
+            console.warn('Google Sheets backup failed:', err);
         }
 
         showFormToast('success', msgs.success.title, msgs.success.msg);

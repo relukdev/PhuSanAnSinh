@@ -1,0 +1,196 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import "../styles/global.css";
+
+const { frontmatter } = Astro.props;
+---
+
+<BaseLayout 
+  title={frontmatter.title} 
+  description={frontmatter.description}
+>
+  <article class="article-page sop-page">
+    <header class="article-header sop-header">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="/">Trang chủ</a></li>
+            <li><a href="/huong-dan">Hướng Dẫn Nội Bộ</a></li>
+            <li aria-current="page">{frontmatter.title}</li>
+          </ol>
+        </nav>
+        <span class="article-category">Tài Liệu SOP</span>
+        <h1>{frontmatter.title}</h1>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="article-layout">
+        <div class="article-content prose">
+          <slot />
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Mermaid.js: render ```mermaid blocks as diagrams -->
+  <script>
+    async function initMermaid() {
+      const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
+      mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: {
+        primaryColor: '#0d9488', primaryTextColor: '#fff', primaryBorderColor: '#0f766e',
+        lineColor: '#94a3b8', secondaryColor: '#f1f5f9', tertiaryColor: '#e2e8f0',
+        fontFamily: 'system-ui, sans-serif', fontSize: '14px'
+      }});
+      const blocks = document.querySelectorAll('pre > code.language-mermaid');
+      for (const block of blocks) {
+        const pre = block.parentElement;
+        if (!pre) continue;
+        const container = document.createElement('div');
+        container.className = 'mermaid';
+        container.textContent = block.textContent || '';
+        pre.replaceWith(container);
+      }
+      await mermaid.run({ querySelector: '.mermaid' });
+    }
+    initMermaid();
+  </script>
+</BaseLayout>
+
+<style>
+  .sop-page {
+    padding-bottom: var(--space-4xl);
+    background-color: #fafafa;
+  }
+
+  .sop-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: var(--space-3xl) 0;
+    border-bottom: 3px solid var(--border);
+  }
+
+  .breadcrumb ol {
+    display: flex;
+    gap: var(--space-sm);
+    list-style: none;
+    font-size: 0.875rem;
+    margin-bottom: var(--space-lg);
+  }
+
+  .breadcrumb li + li::before {
+    content: "›";
+    margin-right: var(--space-sm);
+    color: var(--text-muted);
+  }
+
+  .breadcrumb a {
+    color: var(--text-secondary);
+  }
+
+  .breadcrumb [aria-current] {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .article-category {
+    display: inline-block;
+    background: #ef4444;
+    color: white;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    margin-bottom: var(--space-md);
+    max-width: 800px;
+    color: var(--text-primary); /* Fix invisible text */
+  }
+
+  .article-layout {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--space-3xl);
+  }
+
+  .prose {
+    font-size: 1.0625rem;
+    line-height: 1.85;
+    background: white;
+    padding: 3rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .prose :global(h2) {
+    font-size: 1.5rem;
+    margin-top: var(--space-3xl);
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-sm);
+    border-bottom: 2px solid var(--border);
+  }
+
+  .prose :global(h3) {
+    font-size: 1.25rem;
+    margin-top: var(--space-2xl);
+    margin-bottom: var(--space-md);
+  }
+
+  .prose :global(p) { margin-bottom: var(--space-lg); color: var(--text-secondary); }
+  .prose :global(ul), .prose :global(ol) { margin-bottom: var(--space-lg); padding-left: var(--space-xl); }
+  .prose :global(li) { margin-bottom: var(--space-sm); }
+  
+  .prose :global(blockquote) {
+    border-left: 4px solid var(--warning);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--surface-alt);
+    margin: var(--space-xl) 0;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+  
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-xl) 0;
+  }
+  .prose :global(th), .prose :global(td) {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  .prose :global(th) { background: var(--surface-alt); font-weight: 600; }
+  
+  /* Admonition (Tip) support */
+  .prose :global(.admonition) {
+    background-color: #f0fdf4;
+    border-left: 4px solid #22c55e;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+
+  /* Support details/summary */
+  .prose :global(details) {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .prose :global(summary) {
+    font-weight: 600;
+    cursor: pointer;
+    color: #b91c1c; /* red-700 for alert feeling */
+  }
+
+  @media (max-width: 768px) {
+    .prose { padding: 1.5rem; }
+  }
+</style>

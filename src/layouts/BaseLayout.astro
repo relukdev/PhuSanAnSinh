@@ -3989,12 +3989,49 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           data.timestamp = new Date().toISOString();
 
           try {
-            await fetch(APPS_SCRIPT_URL, {
-              method: "POST",
-              mode: "no-cors",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(data),
+            // ═══ CRM API — primary (sale.todyai.io) ═══
+            const crmPayload: Record<string, any> = {
+              phone: data.phone,
+              name: data.name,
+              service: data.service,
+              date: data.date,
+              time_slot: data.time,
+              note: data.note,
+              form_type: data.formType || 'booking',
+              source_url: data.url || window.location.href,
+            };
+            // Auto-capture UTM params
+            const urlParams = new URLSearchParams(window.location.search);
+            ['utm_source', 'utm_medium', 'utm_campaign'].forEach(k => {
+              const v = urlParams.get(k);
+              if (v) crmPayload[k] = v;
             });
+            // Click IDs
+            const fbclid = urlParams.get('fbclid');
+            const gclid = urlParams.get('gclid');
+            if (fbclid || gclid) {
+              crmPayload.click_ids = {};
+              if (fbclid) crmPayload.click_ids.fbclid = fbclid;
+              if (gclid) crmPayload.click_ids.gclid = gclid;
+            }
+
+            // Dual-write: CRM + Google Sheets in parallel
+            await Promise.allSettled([
+              fetch('https://sale.todyai.io/api/bookings', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-Tenant-Slug': 'an-sinh'
+                },
+                body: JSON.stringify(crmPayload),
+              }),
+              fetch(APPS_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+              })
+            ]);
 
             // ═══ Smart Booking: Save booking history ═══
             try {

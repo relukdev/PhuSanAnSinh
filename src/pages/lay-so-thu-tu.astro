@@ -614,7 +614,7 @@ const SERVICES = [
           
           try {
             // Using Cloudflare proxy to hide GAS URL
-            const res = await fetch("https://queue-proxy.todyle.workers.dev/api/queue/current", {
+            const res = await fetch("https://sale.todyai.io/api/queue/current", {
               method: "GET",
               headers: { "Accept": "application/json" }
             });
