@@ -18,11 +18,6 @@ layout: ../../layouts/SopLayout.astro
 
 ```mermaid
 graph TB
-    style QT fill:#232221,stroke:#f85149,color:#E8E5DF
-    style LT fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style BS fill:#232221,stroke:#3fb950,color:#E8E5DF
-    style KT fill:#232221,stroke:#d29922,color:#E8E5DF
-
     QT["🔴 Quản Trị Viên<br/>Quản lý tổng thể"] --> LT["🔵 Lễ Tân<br/>Tiếp nhận, hướng dẫn"]
     QT --> BS["🟢 Bác Sĩ<br/>Khám bệnh, gọi số"]
     QT --> KT["🟡 Kỹ Thuật Viên<br/>Bảo trì thiết bị"]
@@ -85,14 +80,6 @@ graph TB
 
 ```mermaid
 graph TB
-    style S fill:#232221,stroke:#3fb950,color:#E8E5DF
-    style A fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style B fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style C fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style D fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style E fill:#232221,stroke:#d29922,color:#E8E5DF
-    style F fill:#232221,stroke:#3fb950,color:#E8E5DF
-
     S(["▶ Đầu ca"]) --> A["Đăng nhập /noi-bo/tiep-nhan<br/>Chọn phòng + nhập token"]
     A --> B["Nhận mã số bệnh nhân<br/>từ danh sách đăng ký"]
     B --> C["Nhập mã vào ô<br/>VD: 260315-KT-001"]

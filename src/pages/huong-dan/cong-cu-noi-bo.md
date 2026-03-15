@@ -82,12 +82,6 @@ Bấm **"In trang này"** để in các thẻ QR. Cắt ra và dán lên:
 
 ```mermaid
 graph TB
-    style S fill:#232221,stroke:#3fb950,color:#E8E5DF
-    style A fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style B fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style C fill:#232221,stroke:#d29922,color:#E8E5DF
-    style D fill:#232221,stroke:#3fb950,color:#E8E5DF
-
     S(["▶ Bác sĩ sẵn sàng"]) --> A["Nhập mã số thứ tự<br/>VD: 260315-KT-001"]
     A --> B["Nhấn 🔔 GỌI SỐ NÀY"]
     B --> C["Bảng TV hiện tên bệnh nhân<br/>+ chuông + giọng nói"]

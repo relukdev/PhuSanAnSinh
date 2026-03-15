@@ -19,13 +19,6 @@ layout: ../../layouts/SopLayout.astro
 
 ```mermaid
 graph TB
-    style S fill:#232221,stroke:#3fb950,color:#E8E5DF
-    style A fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style B fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style C fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style D fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style E fill:#232221,stroke:#3fb950,color:#E8E5DF
-
     S(["▶ Bắt đầu"]) --> A["Truy cập /dat-lich<br/>hoặc quét QR"]
     A --> B["Form booking tự mở"]
     B --> C["Chọn dịch vụ + Nhập thông tin"]

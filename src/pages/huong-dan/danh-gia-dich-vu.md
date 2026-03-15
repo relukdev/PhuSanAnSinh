@@ -19,14 +19,6 @@ layout: ../../layouts/SopLayout.astro
 
 ```mermaid
 graph TB
-    style S fill:#232221,stroke:#3fb950,color:#E8E5DF
-    style A fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style B fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style C fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style D fill:#232221,stroke:#60A5FA,color:#E8E5DF
-    style E fill:#232221,stroke:#3fb950,color:#E8E5DF
-    style F fill:#232221,stroke:#d29922,color:#E8E5DF
-
     S(["▶ Khách khám xong"]) --> A["Lễ tân mời đánh giá<br/>(link/QR)"]
     A --> B["Bước 1: Thông tin (tuỳ chọn)"]
     B --> C["Bước 2: Chọn dịch vụ +<br/>Đánh sao + Quick tags"]
