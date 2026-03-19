@@ -2934,6 +2934,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </style>
 
     <script>
+      import '../utils/form-handler.js';
       // ── Mobile Drawer Navigation ──
       const toggle = document.getElementById("mobile-toggle");
       const nav = document.getElementById("main-nav");
@@ -3959,150 +3960,74 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       setupChipGroup('booking-time-chips', (v) => { (window as any)._bookingContext.timePref = v; });
       setupChipGroup('booking-reminder-chips', (v) => { (window as any)._bookingContext.reminderHours = v === '8' ? 8 : 'morning_prior'; });
 
-      // Form submit
-      if (bookingForm) {
-        bookingForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const submitBtn = document.getElementById(
-            "booking-submit",
-          ) as HTMLButtonElement;
-          const phone = (
-            document.getElementById("booking-phone") as HTMLInputElement
-          )?.value?.trim();
-          if (!phone || !/^0[0-9]{8,10}$/.test(phone)) {
-            showToast("error", "Vui lòng nhập số điện thoại hợp lệ");
-            return;
-          }
+      // ═══════════════════════════════════════
+      // Booking Form Submission Handled by form-handler.js
+      // ═══════════════════════════════════════
 
-          if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Đang gửi...";
-          }
+      window.addEventListener('form-submit-success', (e: any) => {
+        const { formType, form, responseData } = e.detail;
+        if (formType !== 'booking' || form.id !== 'booking-form') return;
 
-          const formData = new FormData(bookingForm);
-          const data: Record<string, string> = {};
-          formData.forEach((v, k) => {
-            data[k] = v.toString();
+        const data: Record<string, string> = {};
+        new FormData(form).forEach((v, k) => { data[k] = v.toString(); });
+
+        // ═══ Smart Booking: Save booking history ═══
+        try {
+          const historyRaw = localStorage.getItem('ansinh_booking_history');
+          const history = historyRaw ? JSON.parse(historyRaw) : [];
+          history.unshift({
+            phone: data.phone || '',
+            name: data.name || '',
+            service: data.service || '',
+            date: data.date || '',
+            note: data.note || '',
+            timestamp: new Date().toISOString(),
           });
-          data.formType = data.formType || "booking";
-          data.url = data.url || window.location.href;
-          data.timestamp = new Date().toISOString();
+          localStorage.setItem('ansinh_booking_history', JSON.stringify(history.slice(0, 5)));
+        } catch (err) { /* localStorage may fail — non-critical */ }
 
-          try {
-            // ═══ CRM API — primary (sale.todyai.io) ═══
-            const crmPayload: Record<string, any> = {
-              phone: data.phone,
-              name: data.name,
-              service: data.service,
-              date: data.date,
-              time_slot: data.time,
-              note: data.note,
-              form_type: data.formType || 'booking',
-              source_url: data.url || window.location.href,
-            };
-            // Auto-capture UTM params
-            const urlParams = new URLSearchParams(window.location.search);
-            ['utm_source', 'utm_medium', 'utm_campaign'].forEach(k => {
-              const v = urlParams.get(k);
-              if (v) crmPayload[k] = v;
-            });
-            // Click IDs
-            const fbclid = urlParams.get('fbclid');
-            const gclid = urlParams.get('gclid');
-            if (fbclid || gclid) {
-              crmPayload.click_ids = {};
-              if (fbclid) crmPayload.click_ids.fbclid = fbclid;
-              if (gclid) crmPayload.click_ids.gclid = gclid;
-            }
+        // ═══ Wizard: Step 2 or Close ═══
+        const bCtx = (window as any)._bookingContext;
+        if (bCtx.milestones && bCtx.milestones.length > 0) {
+          // Morph to Step 2: Calendar Save
+          const stepForm = document.getElementById('booking-step-form');
+          const stepCal = document.getElementById('booking-step-calendar');
+          const footerEl = document.getElementById('booking-sheet')?.querySelector('.booking-sheet-footer') as HTMLElement;
+          if (stepForm) stepForm.hidden = true;
+          if (stepCal) stepCal.hidden = false;
+          if (footerEl) footerEl.hidden = true;
 
-            // Dual-write: CRM + Google Sheets in parallel
-            await Promise.allSettled([
-              fetch('https://sale.todyai.io/api/bookings', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-Tenant-Slug': 'an-sinh'
-                },
-                body: JSON.stringify(crmPayload),
-              }),
-              fetch(APPS_SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-              })
-            ]);
-
-            // ═══ Smart Booking: Save booking history ═══
-            try {
-              const historyRaw = localStorage.getItem('ansinh_booking_history');
-              const history = historyRaw ? JSON.parse(historyRaw) : [];
-              history.unshift({
-                phone: data.phone || '',
-                name: data.name || '',
-                service: data.service || '',
-                date: data.date || '',
-                note: data.note || '',
-                timestamp: new Date().toISOString(),
-              });
-              localStorage.setItem('ansinh_booking_history', JSON.stringify(history.slice(0, 5)));
-            } catch (e) { /* localStorage may fail — non-critical */ }
-
-            // ═══ Wizard: Step 2 or Toast ═══
-            const bCtx = (window as any)._bookingContext;
-            if (bCtx.milestones && bCtx.milestones.length > 0) {
-              // Morph to Step 2: Calendar Save
-              const stepForm = document.getElementById('booking-step-form');
-              const stepCal = document.getElementById('booking-step-calendar');
-              const footerEl = bookingSheet?.querySelector('.booking-sheet-footer') as HTMLElement;
-              if (stepForm) stepForm.hidden = true;
-              if (stepCal) stepCal.hidden = false;
-              if (footerEl) footerEl.hidden = true;
-
-              // Populate calendar info
-              const ms = bCtx.milestones;
-              const calInfo = document.getElementById('booking-cal-info');
-              if (calInfo) {
-                if (ms.length === 1) {
-                  calInfo.innerHTML = `<strong>${ms[0].icon} ${ms[0].title}</strong> — Tuần ${ms[0].week}<br>${ms[0].reason}`;
-                } else {
-                  calInfo.innerHTML = `<strong>📋 ${ms.length} mốc khám thai</strong><br>` + ms.map((m: any) => `${m.icon} Tuần ${m.week}: ${m.title}`).join('<br>');
-                }
-              }
-
-               // Configure buttons: 1 milestone = Google Cal + ICS, multi = ICS only
-              const btnGoogle = document.getElementById('booking-cal-google') as HTMLButtonElement;
-              const btnIcs = document.getElementById('booking-cal-ics') as HTMLButtonElement;
-              if (btnGoogle) {
-                btnGoogle.hidden = ms.length > 1;
-                btnGoogle.style.display = ms.length > 1 ? 'none' : 'flex';
-              }
-              if (btnIcs) {
-                btnIcs.textContent = ms.length > 1 ? `📲 Tải ${ms.length} lịch (.ics)` : '📲 Tải lịch (.ics)';
-              }
-
-              showToast('success', 'Đặt lịch thành công! Lưu lịch để nhắc nhở nhé.');
+          // Populate calendar info
+          const ms = bCtx.milestones;
+          const calInfo = document.getElementById('booking-cal-info');
+          if (calInfo) {
+            if (ms.length === 1) {
+              calInfo.innerHTML = `<strong>${ms[0].icon} ${ms[0].title}</strong> — Tuần ${ms[0].week}<br>${ms[0].reason}`;
             } else {
-              // No milestones: just toast and close
-              showToast('success', 'Đặt lịch thành công! Bác sĩ sẽ liên hệ bạn sớm.');
-              closeBookingSheet();
-            }
-
-            // Reset form for next use
-            const smartBanner = document.getElementById('booking-smart-banner');
-            if (smartBanner) smartBanner.hidden = true;
-            bookingForm.reset();
-            generateDateDropdown();
-          } catch {
-            showToast('error', 'Lỗi kết nối. Vui lòng gọi hotline 0899 268 299.');
-          } finally {
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> Xác Nhận Đặt Lịch';
+              calInfo.innerHTML = `<strong>📋 ${ms.length} mốc khám thai</strong><br>` + ms.map((m: any) => `${m.icon} Tuần ${m.week}: ${m.title}`).join('<br>');
             }
           }
-        });
-      }
+
+          // Configure buttons: 1 milestone = Google Cal + ICS, multi = ICS only
+          const btnGoogle = document.getElementById('booking-cal-google') as HTMLButtonElement;
+          const btnIcs = document.getElementById('booking-cal-ics') as HTMLButtonElement;
+          if (btnGoogle) {
+            btnGoogle.hidden = ms.length > 1;
+            btnGoogle.style.display = ms.length > 1 ? 'none' : 'flex';
+          }
+          if (btnIcs) {
+            btnIcs.textContent = ms.length > 1 ? `📲 Tải ${ms.length} lịch (.ics)` : '📲 Tải lịch (.ics)';
+          }
+        } else {
+          // No milestones: handled by generic success toast from form-handler.js
+          closeBookingSheet();
+        }
+
+        // Reset form metadata for next use
+        const smartBanner = document.getElementById('booking-smart-banner');
+        if (smartBanner) smartBanner.hidden = true;
+        generateDateDropdown();
+      });
 
       // ═══ Step 2: Calendar Save Button Handlers ═══
 

@@ -1,6 +1,6 @@
 /**
- * Central Form Handler — Google Sheets Integration
- * Supports: Retry logic, Toast notifications, Custom success events
+ * Central Form Handler — CRM + Google Sheets Dual-Write
+ * Supports: Retry logic, Toast notifications, UTM/click_id tracking, Custom success events
  */
 
 export const FORM_CONFIG = {
@@ -8,6 +8,7 @@ export const FORM_CONFIG = {
         feedback: 'https://script.google.com/macros/s/AKfycbw1h_Ygg1a_wVUBRVOV4wwoOLJk70nPdWJ2DPknKZSiesENZ3gKaRwfCJp7sI_KXiFLhA/exec',
         // Google Apps Script endpoint (JSONP supported)
         queue: 'https://script.google.com/macros/s/AKfycbwypBm_W01EEdhnPtQ40i3VM9xd2cYbwohXDP4FTjdmDybwA17ZVvnhf8mJ9NX1EP1x/exec',
+        booking: 'https://script.google.com/macros/s/AKfycbz5gOgCVmLJPvkRkMKGz5cwspW9pjm0fMOiqHZFp-m1R2I0dKNJoWQKG8v5VD6VGBs6/exec',
         queueProxy: 'https://queue-proxy.todyle.workers.dev'
     },
     CRM_URLS: {
@@ -38,6 +39,42 @@ export const FORM_CONFIG = {
         },
     },
 };
+
+/**
+ * Shared tracking data helper — captures UTM, click_ids, referral_code from URL.
+ * Used by all form submission paths for consistent CRM enrichment.
+ * @returns {Object} tracking payload to spread into CRM requests
+ */
+export function getTrackingData() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tracking = {};
+
+    // UTM parameters (5 standard fields)
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(k => {
+        const v = urlParams.get(k);
+        if (v) tracking[k] = v;
+    });
+
+    // Click IDs (Facebook, Google, TikTok)
+    const clickIds = {};
+    const fbclid = urlParams.get('fbclid');
+    const gclid = urlParams.get('gclid');
+    const ttclid = urlParams.get('ttclid');
+    if (fbclid) clickIds.fbclid = fbclid;
+    if (gclid) clickIds.gclid = gclid;
+    if (ttclid) clickIds.ttclid = ttclid;
+    if (Object.keys(clickIds).length > 0) tracking.click_ids = clickIds;
+
+    // Referral code
+    const ref = urlParams.get('ref') || urlParams.get('referral_code');
+    if (ref) tracking.referral_code = ref;
+
+    // Page context
+    tracking.source_url = window.location.href;
+    if (document.referrer) tracking.page_referrer = document.referrer;
+
+    return tracking;
+}
 
 export function showFormToast(type, title, msg, options = {}) {
     let container = document.querySelector('.form-toast-container');
@@ -188,49 +225,49 @@ const originalText = btn.innerHTML;
         const paramsObj = {};
         for (const [k, v] of formData.entries()) paramsObj[k] = v;
 
-        // Auto-extract UTM Parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        ['utm_source', 'utm_medium', 'utm_campaign'].forEach(param => {
-            if (urlParams.has(param)) paramsObj[param] = urlParams.get(param);
-        });
-        
-        // For queue forms, we are storing area but CRM API currently does not map it natively yet.
-        // It's still passed in JSON body, backend should receive it.
+        // Enrich with full tracking data (UTM, click_ids, referral_code)
+        const tracking = getTrackingData();
+        const crmPayload = { ...paramsObj, ...tracking };
 
         // 2. Execute Dual-Write: CRM (primary) + Google Sheets (backup)
         const crmUrl = formType === 'feedback' ? cfg.CRM_URLS.feedback : 
                        (formType === 'queue' ? cfg.CRM_URLS.queue : cfg.CRM_URLS.booking);
 
-        // CRM API — primary, extract response data
+        const promises = [];
+
+        // CRM API — primary
         if (crmUrl) {
-            try {
-                const crmRes = await fetch(crmUrl, {
+            promises.push(
+                fetch(crmUrl, {
                     method: 'POST',
                     headers: cfg.CRM_HEADERS,
-                    body: JSON.stringify(paramsObj)
-                });
-                const crmData = await crmRes.json().catch(() => null);
-                if (crmData && crmData.status === 'success') {
-                    responseData = crmData;
-                } else if (crmData && crmData.error) {
-                    console.warn('CRM API error:', crmData.error);
-                }
-            } catch (err) {
-                console.warn('CRM API unreachable, falling back to Sheets:', err);
-            }
+                    body: JSON.stringify(crmPayload)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.status === 'success') responseData = data;
+                    else if (data && data.error) console.warn('CRM API error:', data.error);
+                })
+                .catch(err => {
+                    console.warn('CRM API unreachable:', err);
+                    throw err; // Re-throw to track failure
+                })
+            );
         }
 
-        // Google Sheets — backup (fire-and-forget)
-        try {
-            if (form.getAttribute('data-method') === 'JSONP') {
+        // Google Sheets — backup
+        if (form.getAttribute('data-method') === 'JSONP') {
+            promises.push(
                 fetchJsonpWithRetry(
                     scriptURL, paramsObj, cfg.MAX_RETRIES,
                     (attempt, max) => {
                         btn.innerHTML = `<span class="qb-spinner"></span> Đang thử lại (${attempt}/${max})...`;
                         showFormToast('retrying', 'Đang thử lại...', `Lần ${attempt}/${max} — Vui lòng chờ.`);
                     }
-                ).then(res => { if (!responseData) responseData = res; }).catch(() => {});
-            } else {
+                ).then(res => { if (!responseData) responseData = res; })
+            );
+        } else {
+            promises.push(
                 fetchWithRetry(
                     scriptURL,
                     { method: 'POST', body: formData, mode: 'no-cors' },
@@ -239,10 +276,17 @@ const originalText = btn.innerHTML;
                         btn.innerHTML = `<span class="qb-spinner"></span> Đang thử lại (${attempt}/${max})...`;
                         showFormToast('retrying', 'Đang thử lại...', `Lần ${attempt}/${max} — Vui lòng chờ.`);
                     }
-                ).catch(() => {});
-            }
-        } catch (err) {
-            console.warn('Google Sheets backup failed:', err);
+                )
+            );
+        }
+
+        // Wait for both to complete
+        const results = await Promise.allSettled(promises);
+        
+        // If ALL attempted submissions failed (rejected), then we must show an error
+        const allFailed = results.length > 0 && results.every(r => r.status === 'rejected');
+        if (allFailed) {
+            throw new Error('Cả hệ thống CRM và máy chủ dự phòng đều không phản hồi.');
         }
 
         showFormToast('success', msgs.success.title, msgs.success.msg);

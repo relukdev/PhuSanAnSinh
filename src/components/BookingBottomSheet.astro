@@ -48,7 +48,7 @@
         <button type="button" class="smart-banner-dismiss" id="smart-banner-dismiss" aria-label="Bỏ qua gợi ý">✕</button>
       </div>
 
-      <form class="booking-form" id="booking-form" novalidate>
+      <form class="booking-form" id="booking-form" data-form-type="booking" novalidate onsubmit="submitToGoogleSheet(event)">
         <input type="hidden" name="url" value="">
         <input type="hidden" name="formType" value="">
         <input type="hidden" name="ref" value="">
